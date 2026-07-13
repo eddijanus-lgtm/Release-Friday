@@ -5,12 +5,12 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-13T20:57:28.766Z",
+  "generatedAt": "2026-07-13T21:08:02.736Z",
   "fetchedCount": 0,
   "curatedCount": 1,
   "fetchError": null,
   "sourceCounts": {
-    "Kuratiert": 1
+    "Republic Records + redaktionelle Prüfung": 1
   }
 } as const;
 
@@ -22,13 +22,15 @@ export const realReleases: MusicRelease[] = [
     "releaseDate": "2026-07-17",
     "country": "US",
     "kind": "album",
+    "coverUrl": "https://www.republicrecords.com/cdn/shop/files/AoGStandardCD1x1.png?v=1775850841&width=1000",
     "spotifyUrl": "https://open.spotify.com/search/DJ%20Khaled%20Aalam%20of%20God",
     "appleMusicUrl": "https://music.apple.com/de/search?term=DJ%20Khaled%20Aalam%20of%20God",
     "youtubeUrl": "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
-    "description": "DJ Khaleds angekündigtes neues Studioalbum erscheint am 17. Juli und bildet den Schwerpunkt des aktuellen US-Rap-Radars.",
+    "sourceUrl": "https://www.republicrecords.com/products/aalam-of-god-cd",
+    "description": "Der offizielle Republic-Records-Store bestätigt DJ Khaleds neues Album und stellt das Cover bereit. Mehrere Release-Kalender führen den 17. Juli 2026 als Veröffentlichungstermin.",
     "genres": [
       "Hip-Hop/Rap"
     ],
-    "source": "Kuratiert"
+    "source": "Republic Records + redaktionelle Prüfung"
   }
 ];
