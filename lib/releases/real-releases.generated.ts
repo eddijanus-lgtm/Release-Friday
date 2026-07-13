@@ -4,24 +4,27 @@
 import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
-  "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-13T20:20:24.652Z",
-  "fetchedCount": 0,
-  "curatedCount": 1,
-  "fetchError": null
+  targetDate: "2026-07-17",
+  generatedAt: "2026-07-13T20:20:24.652Z",
+  fetchedCount: 0,
+  curatedCount: 1,
+  fetchError: null,
+  sourceCounts: { Kuratiert: 1 },
 } as const;
 
 export const realReleases: MusicRelease[] = [
   {
-    "id": "curated-dj-khaled-aalam-of-god",
-    "title": "Aalam of God",
-    "artist": "DJ Khaled",
-    "releaseDate": "2026-07-17",
-    "country": "US",
-    "kind": "album",
-    "spotifyUrl": "https://open.spotify.com/search/DJ%20Khaled%20Aalam%20of%20God",
-    "appleMusicUrl": "https://music.apple.com/de/search?term=DJ%20Khaled%20Aalam%20of%20God",
-    "youtubeUrl": "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
-    "source": "curated"
-  }
+    id: "curated-dj-khaled-aalam-of-god",
+    title: "Aalam of God",
+    artist: "DJ Khaled",
+    releaseDate: "2026-07-17",
+    country: "US",
+    kind: "album",
+    spotifyUrl: "https://open.spotify.com/search/DJ%20Khaled%20Aalam%20of%20God",
+    appleMusicUrl: "https://music.apple.com/de/search?term=DJ%20Khaled%20Aalam%20of%20God",
+    youtubeUrl: "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
+    description: "DJ Khaleds angekündigtes neues Studioalbum erscheint am 17. Juli und bildet den Schwerpunkt des aktuellen US-Rap-Radars.",
+    genres: ["Hip-Hop/Rap"],
+    source: "Kuratiert",
+  },
 ];
