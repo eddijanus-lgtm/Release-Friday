@@ -1,14 +1,15 @@
-name: Deploy preview to GitHub Pages
+name: Deploy Release Friday to GitHub Pages
 
 on:
   push:
-    branches: ["agent/project-structure"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
   issues: write
   pull-requests: write
 
@@ -21,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEPLOY_TARGET: github-pages
-      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,33 +34,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Build static export
-        run: |
-          if npm run build > /tmp/pages-build.log 2>&1; then
-            cat /tmp/pages-build.log
-          else
-            {
-              echo "❌ **GitHub Pages build failed**"
-              echo
-              echo '```text'
-              tail -n 80 /tmp/pages-build.log
-              echo '```'
-            } > /tmp/pages-build-failure.md
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body-file /tmp/pages-build-failure.md
-            cat /tmp/pages-build.log
-            exit 1
-          fi
+        run: npm run build
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -68,23 +55,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  report:
-    if: always()
-    needs: [build, deploy]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Report deployment status on PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BUILD_RESULT: ${{ needs.build.result }}
-          DEPLOY_RESULT: ${{ needs.deploy.result }}
-          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
-        run: |
-          if [ "$DEPLOY_RESULT" = "success" ]; then
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "✅ Permanent GitHub Pages preview deployed: ${PAGE_URL:-https://eddijanus-lgtm.github.io/Release-Friday/}"
-          elif [ "$BUILD_RESULT" != "success" ]; then
-            echo "Build failed; detailed log was posted by the build job."
-          else
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ GitHub Pages deploy step failed after a successful build. Check Settings → Pages and confirm Source: GitHub Actions."
-          fi
