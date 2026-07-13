@@ -49,42 +49,42 @@ await page.goto(baseUrl, { waitUntil: "networkidle" });
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "networkidle" });
 await settle();
-await page.screenshot({ path: `${outputDir}/01-home-mobile.png`, fullPage: true });
+await page.screenshot({ path: `${outputDir}/01-drop-mobile.png`, fullPage: true });
 
-report.checkpoints.home = {
-  heading: await text("h1"),
-  subtitle: await text(".screenSubtitle"),
-  featuredTitle: await text(".featuredCopy h2"),
-  featuredArtist: await text(".featuredCopy p"),
-  featuredCountryAndKind: await text(".featuredCopy .releaseKicker"),
-  emptyStateVisible: await count(".emptyState"),
+report.checkpoints.drop = {
+  wordmark: await text(".wordmark"),
+  tape: await text(".tapeStrip"),
+  featuredTitle: await text(".heroCopy h1"),
+  featuredArtist: await text(".heroCopy > span"),
+  navigation: await page.locator(".tapeNav button").allInnerTexts(),
 };
-assert(report.checkpoints.home.featuredTitle === "Aalam of God", "The confirmed real release is not featured.");
-assert(report.checkpoints.home.subtitle?.startsWith("1 Release"), "Singular release copy is incorrect.");
+assert(report.checkpoints.drop.wordmark?.includes("RELEASE"), "Midnight Tape wordmark is missing.");
+assert(report.checkpoints.drop.featuredTitle === "Aalam of God", "The confirmed real release is not featured.");
+assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The approved navigation labels are not present.");
 
-const germanyButton = page.getByRole("button", { name: "Deutschland", exact: true });
+const germanyButton = page.getByRole("button", { name: "DE", exact: true });
 await germanyButton.click();
 await settle();
-await page.screenshot({ path: `${outputDir}/02-filter-germany.png`, fullPage: true });
+await page.screenshot({ path: `${outputDir}/02-filter-de.png`, fullPage: true });
 report.checkpoints.germanyFilter = {
   selected: await germanyButton.getAttribute("aria-pressed"),
-  featuredVisible: await count(".featuredRelease"),
-  emptyState: await text(".emptyState"),
+  featuredVisible: await count(".dropHero"),
+  emptyState: await text(".systemState"),
 };
-assert(report.checkpoints.germanyFilter.featuredVisible === 0, "Germany filter still shows a US featured release.");
-assert(report.checkpoints.germanyFilter.emptyState?.includes("Deutschland"), "Germany filter lacks a useful empty state.");
+assert(report.checkpoints.germanyFilter.featuredVisible === 0, "DE filter still shows a US release.");
+assert(report.checkpoints.germanyFilter.emptyState?.includes("NO DE RELEASES"), "DE filter lacks the approved empty state.");
 
-const usaButton = page.getByRole("button", { name: "USA", exact: true });
+const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
-assert(await count(".featuredRelease") === 1, "USA filter does not restore the matching featured release.");
-await page.locator(".featuredRelease").click();
+assert(await count(".dropHero") === 1, "US filter does not restore the release.");
+await page.locator(".dropHero").click();
 await settle();
 await page.screenshot({ path: `${outputDir}/03-release-detail.png`, fullPage: true });
 
-const spotifyLink = page.getByRole("link", { name: /Auf Spotify anhören/ });
-const appleLink = page.getByRole("link", { name: /Apple Music/ });
-const youtubeLink = page.getByRole("link", { name: /YouTube öffnen/ });
+const spotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
+const appleLink = page.getByRole("link", { name: "APPLE MUSIC", exact: true });
+const youtubeLink = page.getByRole("link", { name: "YOUTUBE", exact: true });
 report.checkpoints.detail = {
   heading: await text(".detailBody h1"),
   description: await text(".detailDescription"),
@@ -94,62 +94,63 @@ report.checkpoints.detail = {
   youtubeHref: await youtubeLink.getAttribute("href"),
   source: await text(".sourceNote"),
 };
-assert(report.checkpoints.detail.spotifyHref?.startsWith("https://open.spotify.com/"), "Spotify action is not a real external link.");
-assert(report.checkpoints.detail.appleHref?.startsWith("https://music.apple.com/"), "Apple Music action is not a real external link.");
-assert(report.checkpoints.detail.youtubeHref?.startsWith("https://www.youtube.com/"), "YouTube action is not a real external link.");
-assert(!report.checkpoints.detail.meta?.includes("14 TRACKS"), "Unknown track counts are still hard-coded.");
+assert(report.checkpoints.detail.spotifyHref?.startsWith("https://open.spotify.com/"), "Spotify action is not real.");
+assert(report.checkpoints.detail.appleHref?.startsWith("https://music.apple.com/"), "Apple Music action is not real.");
+assert(report.checkpoints.detail.youtubeHref?.startsWith("https://www.youtube.com/"), "YouTube action is not real.");
 
-const saveButton = page.locator(".detailTopbar button").nth(1);
+const saveButton = page.locator(".detailToolbar button").nth(1);
 await saveButton.click();
-assert((await saveButton.getAttribute("class"))?.includes("saved"), "Saving from the detail screen did not update state.");
-await page.locator(".detailTopbar button").first().click();
+assert((await saveButton.getAttribute("class"))?.includes("saved"), "Stashing from detail did not update state.");
+await page.locator(".detailToolbar button").first().click();
 await settle();
 
-await page.getByRole("button", { name: /Suche/ }).last().click();
+await page.getByRole("button", { name: "Find", exact: true }).click();
 await settle();
-const input = page.getByPlaceholder("Künstler, Album oder Single");
+const input = page.getByPlaceholder("ARTIST, ALBUM OR SINGLE");
 await input.fill("DJ Khaled");
 await settle();
-await page.screenshot({ path: `${outputDir}/04-search.png`, fullPage: true });
-report.checkpoints.search = {
-  artistCards: await page.locator(".artistCard .artistCopy strong").allInnerTexts(),
-  resultTitles: await page.locator(".releaseRow .releaseCopy strong").allInnerTexts(),
+await page.screenshot({ path: `${outputDir}/04-find.png`, fullPage: true });
+report.checkpoints.find = {
+  heading: await text(".posterTitle"),
+  resultTitles: await page.locator(".tapeRow .rowCopy strong").allInnerTexts(),
 };
-assert(report.checkpoints.search.artistCards.includes("DJ Khaled"), "Artist section is still driven by mock artists.");
-assert(!report.checkpoints.search.artistCards.includes("Luciano") && !report.checkpoints.search.artistCards.includes("Central"), "Old mock artists remain visible.");
+assert(report.checkpoints.find.heading?.includes("FIND"), "Find screen heading is missing.");
+assert(report.checkpoints.find.resultTitles.includes("AALAM OF GOD"), "Find screen does not use real release data.");
 
-await page.getByRole("button", { name: /Gespeichert/ }).last().click();
+await page.getByRole("button", { name: "Stash", exact: true }).click();
 await settle();
-await page.screenshot({ path: `${outputDir}/05-saved.png`, fullPage: true });
-report.checkpoints.saved = {
-  subtitle: await text(".screenSubtitle"),
-  titles: await page.locator(".releaseRow .releaseCopy strong").allInnerTexts(),
-  editorialTitle: await text(".editorialCard h3"),
+await page.screenshot({ path: `${outputDir}/05-stash.png`, fullPage: true });
+report.checkpoints.stash = {
+  heading: await text(".posterTitle"),
+  titles: await page.locator(".stashCard strong").allInnerTexts(),
+  reminder: await text(".reminderCard"),
 };
-assert(report.checkpoints.saved.titles.length === 1 && report.checkpoints.saved.titles[0] === "Aalam of God", "Saved list contains stale mock IDs or misses the saved release.");
-assert(report.checkpoints.saved.editorialTitle === "Aalam of God", "Saved editorial content is still hard-coded.");
+assert(report.checkpoints.stash.titles.length === 1 && report.checkpoints.stash.titles[0] === "AALAM OF GOD", "Stash contains stale or missing data.");
+assert(report.checkpoints.stash.reminder?.includes("MIDNIGHT REMINDER"), "Midnight reminder is missing.");
 
-await page.getByRole("button", { name: /Profil/ }).last().click();
+await page.getByRole("button", { name: "Me", exact: true }).click();
 await settle();
-await page.screenshot({ path: `${outputDir}/06-profile.png`, fullPage: true });
-report.checkpoints.profile = {
-  savedCount: await text(".profileCard small"),
-  version: await text(".versionCard"),
+await page.screenshot({ path: `${outputDir}/06-me.png`, fullPage: true });
+report.checkpoints.me = {
+  heading: await text(".posterTitle"),
+  savedCount: await text(".radarIdentity small"),
+  build: await text(".buildCard"),
 };
-assert(report.checkpoints.profile.savedCount?.startsWith("1 Release"), "Profile saved count includes stale releases.");
-assert(report.checkpoints.profile.version?.includes("Datenstand"), "Data freshness is not visible in the profile.");
+assert(report.checkpoints.me.savedCount?.includes("1 STASHED"), "Profile stash count is incorrect.");
+assert(report.checkpoints.me.build?.includes("SOURCES CHECKED"), "Editorial data-mode message is missing.");
 
 const desktop = await context.newPage();
 await desktop.setViewportSize({ width: 1280, height: 900 });
 await desktop.goto(baseUrl, { waitUntil: "networkidle" });
 await desktop.waitForTimeout(350);
-await desktop.screenshot({ path: `${outputDir}/07-home-desktop.png`, fullPage: true });
+await desktop.screenshot({ path: `${outputDir}/07-drop-desktop.png`, fullPage: true });
 report.checkpoints.desktop = {
   bodyScrollWidth: await desktop.evaluate(() => document.body.scrollWidth),
   viewportWidth: await desktop.evaluate(() => window.innerWidth),
   phoneWidth: await desktop.locator(".prototypePhone").evaluate((element) => Math.round(element.getBoundingClientRect().width)),
 };
 assert(report.checkpoints.desktop.bodyScrollWidth <= report.checkpoints.desktop.viewportWidth, "Desktop layout has horizontal overflow.");
+assert(report.checkpoints.desktop.phoneWidth <= 430, "Desktop phone frame is wider than the approved layout.");
 assert(report.consoleErrors.length === 0, `Console errors found: ${JSON.stringify(report.consoleErrors)}`);
 assert(report.pageErrors.length === 0, `Page errors found: ${JSON.stringify(report.pageErrors)}`);
 
