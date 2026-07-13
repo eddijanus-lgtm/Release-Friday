@@ -37,6 +37,10 @@ async function count(selector) {
   return page.locator(selector).count();
 }
 
+async function settle() {
+  await page.waitForTimeout(350);
+}
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -44,6 +48,7 @@ function assert(condition, message) {
 await page.goto(baseUrl, { waitUntil: "networkidle" });
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "networkidle" });
+await settle();
 await page.screenshot({ path: `${outputDir}/01-home-mobile.png`, fullPage: true });
 
 report.checkpoints.home = {
@@ -59,6 +64,7 @@ assert(report.checkpoints.home.subtitle?.startsWith("1 Release"), "Singular rele
 
 const germanyButton = page.getByRole("button", { name: "Deutschland", exact: true });
 await germanyButton.click();
+await settle();
 await page.screenshot({ path: `${outputDir}/02-filter-germany.png`, fullPage: true });
 report.checkpoints.germanyFilter = {
   selected: await germanyButton.getAttribute("aria-pressed"),
@@ -70,8 +76,10 @@ assert(report.checkpoints.germanyFilter.emptyState?.includes("Deutschland"), "Ge
 
 const usaButton = page.getByRole("button", { name: "USA", exact: true });
 await usaButton.click();
+await settle();
 assert(await count(".featuredRelease") === 1, "USA filter does not restore the matching featured release.");
 await page.locator(".featuredRelease").click();
+await settle();
 await page.screenshot({ path: `${outputDir}/03-release-detail.png`, fullPage: true });
 
 const spotifyLink = page.getByRole("link", { name: /Auf Spotify anhören/ });
@@ -95,10 +103,13 @@ const saveButton = page.locator(".detailTopbar button").nth(1);
 await saveButton.click();
 assert((await saveButton.getAttribute("class"))?.includes("saved"), "Saving from the detail screen did not update state.");
 await page.locator(".detailTopbar button").first().click();
+await settle();
 
 await page.getByRole("button", { name: /Suche/ }).last().click();
+await settle();
 const input = page.getByPlaceholder("Künstler, Album oder Single");
 await input.fill("DJ Khaled");
+await settle();
 await page.screenshot({ path: `${outputDir}/04-search.png`, fullPage: true });
 report.checkpoints.search = {
   artistCards: await page.locator(".artistCard .artistCopy strong").allInnerTexts(),
@@ -108,6 +119,7 @@ assert(report.checkpoints.search.artistCards.includes("DJ Khaled"), "Artist sect
 assert(!report.checkpoints.search.artistCards.includes("Luciano") && !report.checkpoints.search.artistCards.includes("Central"), "Old mock artists remain visible.");
 
 await page.getByRole("button", { name: /Gespeichert/ }).last().click();
+await settle();
 await page.screenshot({ path: `${outputDir}/05-saved.png`, fullPage: true });
 report.checkpoints.saved = {
   subtitle: await text(".screenSubtitle"),
@@ -118,6 +130,7 @@ assert(report.checkpoints.saved.titles.length === 1 && report.checkpoints.saved.
 assert(report.checkpoints.saved.editorialTitle === "Aalam of God", "Saved editorial content is still hard-coded.");
 
 await page.getByRole("button", { name: /Profil/ }).last().click();
+await settle();
 await page.screenshot({ path: `${outputDir}/06-profile.png`, fullPage: true });
 report.checkpoints.profile = {
   savedCount: await text(".profileCard small"),
@@ -129,6 +142,7 @@ assert(report.checkpoints.profile.version?.includes("Datenstand"), "Data freshne
 const desktop = await context.newPage();
 await desktop.setViewportSize({ width: 1280, height: 900 });
 await desktop.goto(baseUrl, { waitUntil: "networkidle" });
+await desktop.waitForTimeout(350);
 await desktop.screenshot({ path: `${outputDir}/07-home-desktop.png`, fullPage: true });
 report.checkpoints.desktop = {
   bodyScrollWidth: await desktop.evaluate(() => document.body.scrollWidth),
