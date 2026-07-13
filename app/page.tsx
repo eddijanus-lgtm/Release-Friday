@@ -1,6 +1,6 @@
 import { PrototypeClient } from "@/app/prototype-client";
-import { mockReleases } from "@/lib/releases/mock-releases";
+import { realReleases } from "@/lib/releases/real-releases.generated";
 
 export default function Home() {
-  return <PrototypeClient releases={mockReleases} />;
+  return <PrototypeClient releases={realReleases} />;
 }
