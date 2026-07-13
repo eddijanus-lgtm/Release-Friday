@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Country, Release } from "@/types/release";
+import type { MusicRelease, ReleaseCountry } from "@/types/release";
 import { ReleaseCard } from "./release-card";
 
-type Filter = "ALL" | Country;
+type Filter = "ALL" | ReleaseCountry;
 
 type ReleaseFeedProps = {
-  releases: Release[];
+  releases: MusicRelease[];
 };
 
 const filters: Array<{ value: Filter; label: string }> = [
