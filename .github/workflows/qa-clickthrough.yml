@@ -1,0 +1,64 @@
+name: QA click-through review
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clickthrough:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install app dependencies
+        run: npm install
+
+      - name: Install QA browser
+        run: |
+          npm install --no-save playwright@1.54.2 serve@14.2.4
+          npx playwright install --with-deps chromium
+
+      - name: Build static app
+        env:
+          DEPLOY_TARGET: github-pages
+        run: npm run build
+
+      - name: Prepare local GitHub Pages path
+        run: |
+          mkdir -p site/Release-Friday
+          cp -R out/. site/Release-Friday/
+
+      - name: Start local site
+        run: |
+          npx serve site -l 3000 > /tmp/release-friday-serve.log 2>&1 &
+          echo $! > /tmp/release-friday-serve.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/Release-Friday/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/release-friday-serve.log
+          exit 1
+
+      - name: Run click-through QA
+        run: node scripts/qa-clickthrough.mjs
+
+      - name: Upload QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-friday-clickthrough
+          path: qa-output
+          if-no-files-found: error
