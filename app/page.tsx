@@ -1,36 +1,35 @@
-const releases = [
-  { artist: "Apache 207", title: "Beispielrelease", type: "Single", country: "DE" },
-  { artist: "Central Cee", title: "Example Release", type: "Album", country: "US" },
-];
+import { ReleaseFeed } from "@/components/releases/release-feed";
+import { mockReleases } from "@/lib/releases/mock-releases";
+import { getUpcomingFriday } from "@/lib/releases/get-upcoming-friday";
+
+const dateFormatter = new Intl.DateTimeFormat("de-DE", {
+  weekday: "long",
+  day: "2-digit",
+  month: "long",
+});
 
 export default function Home() {
+  const upcomingFriday = getUpcomingFriday();
+
   return (
-    <main>
+    <main className="appShell">
       <header className="hero">
-        <p className="eyebrow">KOMMENDER FREITAG</p>
-        <h1>Release Friday</h1>
-        <p className="subtitle">Die wichtigsten Hip-Hop- und Rap-Releases aus Deutschland und den USA.</p>
+        <div>
+          <p className="dateLabel">{dateFormatter.format(upcomingFriday)}</p>
+          <h1>Release Friday</h1>
+        </div>
+        <p className="subtitle">
+          Die wichtigsten Hip-Hop- und Rap-Releases aus Deutschland und den USA.
+        </p>
       </header>
 
-      <nav className="filters" aria-label="Release-Filter">
-        <button className="active">Alle</button>
-        <button>Deutschland</button>
-        <button>USA</button>
-      </nav>
+      <ReleaseFeed releases={mockReleases} />
 
-      <section className="releaseList" aria-label="Kommende Releases">
-        {releases.map((release) => (
-          <article className="releaseCard" key={`${release.artist}-${release.title}`}>
-            <div className="cover" aria-hidden="true">RF</div>
-            <div className="releaseInfo">
-              <span>{release.country} · {release.type}</span>
-              <h2>{release.title}</h2>
-              <p>{release.artist}</p>
-            </div>
-            <button className="more" aria-label={`Details zu ${release.title}`}>›</button>
-          </article>
-        ))}
-      </section>
+      <nav className="bottomNav" aria-label="Hauptnavigation">
+        <a className="active" href="#releases" aria-current="page">Releases</a>
+        <a href="#favorites">Favoriten</a>
+        <a href="#settings">Settings</a>
+      </nav>
     </main>
   );
 }
