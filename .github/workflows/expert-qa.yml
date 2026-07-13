@@ -33,9 +33,14 @@ jobs:
           DEPLOY_TARGET: github-pages
         run: npm run build
 
+      - name: Prepare local GitHub Pages path
+        run: |
+          mkdir -p preview/Release-Friday
+          cp -R out/. preview/Release-Friday/
+
       - name: Start local site
         run: |
-          python3 -m http.server 3000 --directory out > /tmp/release-friday-server.log 2>&1 &
+          python3 -m http.server 3000 --directory preview > /tmp/release-friday-server.log 2>&1 &
           for attempt in {1..30}; do
             if curl --fail --silent http://127.0.0.1:3000/Release-Friday/ > /dev/null; then
               exit 0
@@ -43,6 +48,7 @@ jobs:
             sleep 1
           done
           cat /tmp/release-friday-server.log
+          find preview -maxdepth 3 -type f | sort | head -80
           exit 1
 
       - name: Run expert click-through
