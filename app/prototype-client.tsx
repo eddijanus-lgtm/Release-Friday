@@ -3,20 +3,12 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 
-type Tab = "releases" | "search" | "saved" | "profile";
-type CountryFilter = "ALL" | ReleaseCountry;
-type SavedFilter = "upcoming" | "live" | "all";
+type Tab = "drop" | "find" | "stash" | "me";
+type Region = "ALL" | ReleaseCountry;
 
 type PrototypeClientProps = {
   releases: MusicRelease[];
   metadata?: ReleaseDataMetadata;
-};
-
-type IconName = "home" | "search" | "star" | "profile" | "back" | "chevron" | "external";
-
-const countryLabels: Record<ReleaseCountry, string> = {
-  DE: "Deutschland",
-  US: "USA",
 };
 
 const kindLabels: Record<MusicRelease["kind"], string> = {
@@ -26,116 +18,57 @@ const kindLabels: Record<MusicRelease["kind"], string> = {
   single: "SINGLE",
 };
 
-function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
-  const common = {
-    width: size,
-    height: size,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.9,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
+const countryLabels: Record<ReleaseCountry, string> = {
+  DE: "DEUTSCHLAND",
+  US: "USA",
+};
 
-  if (name === "home") return <svg {...common}><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>;
-  if (name === "search") return <svg {...common}><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>;
-  if (name === "star") return <svg {...common}><path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9L12 3Z"/></svg>;
-  if (name === "profile") return <svg {...common}><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.4-6.3 7.5-6.3s6.7 2.1 7.5 6.3"/></svg>;
-  if (name === "back") return <svg {...common}><path d="m15 18-6-6 6-6"/></svg>;
-  if (name === "external") return <svg {...common}><path d="M14 4h6v6"/><path d="m20 4-9 9"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg>;
-  return <svg {...common}><path d="m9 18 6-6-6-6"/></svg>;
-}
-
-function parseLocalDate(dateString: string) {
-  return new Date(`${dateString}T00:00:00`);
+function parseLocalDate(value: string) {
+  return new Date(`${value}T00:00:00`);
 }
 
 function isReleaseLive(release: MusicRelease, now = new Date()) {
   return now.getTime() >= parseLocalDate(release.releaseDate).getTime();
 }
 
-function formatReleaseDate(dateString: string) {
+function formatShortDate(value: string) {
   return new Intl.DateTimeFormat("de-DE", {
-    weekday: "long",
     day: "2-digit",
-    month: "long",
-  }).format(parseLocalDate(dateString));
+    month: "short",
+    year: "numeric",
+  }).format(parseLocalDate(value)).toUpperCase();
 }
 
 function formatGeneratedAt(value?: string) {
-  if (!value) return "Noch kein Datenlauf";
+  if (!value) return "NO DATA RUN";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Datenstand unbekannt";
+  if (Number.isNaN(date.getTime())) return "UNKNOWN";
   return new Intl.DateTimeFormat("de-DE", {
     day: "2-digit",
-    month: "2-digit",
+    month: "short",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(date);
+  }).format(date).toUpperCase();
 }
 
-function pluralizeReleases(count: number) {
-  return count === 1 ? "1 Release" : `${count} Releases`;
-}
-
-function getHomeCopy(releases: MusicRelease[], now: Date) {
-  const targetDate = releases[0]?.releaseDate;
-  if (!targetDate) {
-    return {
-      eyebrow: "RELEASE RADAR",
-      title: "Noch leer",
-      subtitle: "Für den kommenden Freitag sind noch keine bestätigten Releases eingetragen.",
-    };
-  }
-
-  const target = parseLocalDate(targetDate);
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const days = Math.round((target.getTime() - today.getTime()) / 86_400_000);
-  const time = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(now);
-
-  if (days <= 0) {
-    return {
-      eyebrow: `JETZT VERFÜGBAR · ${time}`,
-      title: "Release Friday",
-      subtitle: releases.length === 1 ? "1 Release ist jetzt verfügbar." : `${releases.length} Releases sind jetzt verfügbar.`,
-    };
-  }
-
-  if (days === 1 && now.getDay() === 4) {
-    return {
-      eyebrow: `DONNERSTAG · ${time}`,
-      title: "Heute Nacht",
-      subtitle: releases.length === 1
-        ? "1 Release wartet auf Mitternacht."
-        : `${releases.length} Releases warten auf Mitternacht.`,
-    };
-  }
-
-  return {
-    eyebrow: `${new Intl.DateTimeFormat("de-DE", { weekday: "long" }).format(now).toUpperCase()} · ${time}`,
-    title: "Diesen Freitag",
-    subtitle: releases.length === 1 ? "1 Release ist aktuell bestätigt." : `${releases.length} Releases sind aktuell bestätigt.`,
-  };
+function pluralize(count: number, singular: string, plural: string) {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    const interval = window.setInterval(() => setNow(new Date()), 30_000);
-    return () => window.clearInterval(interval);
+    const id = window.setInterval(() => setNow(new Date()), 30_000);
+    return () => window.clearInterval(id);
   }, []);
   return now;
 }
 
-function useCountdown(releaseDate: string) {
+function useCountdown(date: string) {
   const [label, setLabel] = useState("--:--:--");
-
   useEffect(() => {
-    const target = parseLocalDate(releaseDate);
     const update = () => {
-      const seconds = Math.max(0, Math.floor((target.getTime() - Date.now()) / 1000));
+      const seconds = Math.max(0, Math.floor((parseLocalDate(date).getTime() - Date.now()) / 1000));
       if (seconds <= 0) {
         setLabel("LIVE");
         return;
@@ -146,432 +79,208 @@ function useCountdown(releaseDate: string) {
       setLabel(`${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`);
     };
     update();
-    const interval = window.setInterval(update, 1000);
-    return () => window.clearInterval(interval);
-  }, [releaseDate]);
-
+    const id = window.setInterval(update, 1000);
+    return () => window.clearInterval(id);
+  }, [date]);
   return label;
 }
 
-function Artwork({ release, compact = false }: { release: MusicRelease; compact?: boolean }) {
-  const className = `releaseArtwork ${compact ? "artworkCompact" : ""}`;
-  if (release.coverUrl) {
-    return (
-      <div className={className}>
-        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
-      </div>
-    );
-  }
-
+function BrandHeader({ label = "ISSUE 29", date }: { label?: string; date?: string }) {
   return (
-    <div className={`${className} artworkFallback`} aria-label={`Noch kein Cover für ${release.title}`}>
-      <div className="artGlow" />
-      <div className="artBars"><span /><span /><span /><span /><span /></div>
-    </div>
-  );
-}
-
-function ScreenHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
-  return (
-    <header className="screenHeader">
-      <p className="eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
-      {subtitle ? <p className="screenSubtitle">{subtitle}</p> : null}
+    <header className="tapeHeader">
+      <div className="wordmark">RELEASE<br />FRIDAY</div>
+      <div className="issueMeta"><span>{label}</span><strong>{date ?? "NEXT FRIDAY"}</strong></div>
     </header>
   );
 }
 
-function FilterPills<T extends string>({
-  value,
-  items,
-  onChange,
-  label,
-}: {
-  value: T;
-  items: Array<{ value: T; label: string }>;
-  onChange: (value: T) => void;
-  label: string;
-}) {
+function TapeStrip() {
+  return <div className="tapeStrip">NEW MUSIC LOADING · DE / USA · MIDNIGHT DROP</div>;
+}
+
+function Cover({ release, compact = false }: { release: MusicRelease; compact?: boolean }) {
   return (
-    <div className="filterPills" role="group" aria-label={label}>
-      {items.map((item) => (
+    <div className={`tapeCover ${compact ? "isCompact" : ""}`}>
+      {release.coverUrl ? (
+        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
+      ) : (
+        <div className="coverFallback" aria-label={`Noch kein Cover für ${release.title}`}>
+          <span>{release.artist}</span><strong>{release.title}</strong><i>RF</i>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConfirmedLabel({ live = false }: { live?: boolean }) {
+  return <span className={`confirmedLabel ${live ? "isLive" : ""}`}>{live ? "LIVE NOW" : "CONFIRMED"}</span>;
+}
+
+function RegionSwitch({ value, onChange }: { value: Region; onChange: (value: Region) => void }) {
+  const options: Array<{ value: Region; label: string }> = [
+    { value: "ALL", label: "ALL" },
+    { value: "DE", label: "DE" },
+    { value: "US", label: "US" },
+  ];
+  return (
+    <div className="regionSwitch" role="group" aria-label="Region filtern">
+      {options.map((option) => (
         <button
+          key={option.value}
           type="button"
-          key={item.value}
-          className={value === item.value ? "selected" : undefined}
-          aria-pressed={value === item.value}
-          onClick={() => onChange(item.value)}
+          aria-pressed={value === option.value}
+          className={value === option.value ? "active" : undefined}
+          onClick={() => onChange(option.value)}
         >
-          {item.label}
+          {option.label}
         </button>
       ))}
     </div>
   );
 }
 
-function EmptyState({ title, body, icon = "search" }: { title: string; body: string; icon?: IconName }) {
+function EmptyState({ title, body, action, onAction }: { title: string; body: string; action?: string; onAction?: () => void }) {
   return (
-    <div className="emptyState" role="status">
-      <Icon name={icon} size={28} />
-      <strong>{title}</strong>
-      <span>{body}</span>
-    </div>
-  );
-}
-
-function ReleaseRow({
-  release,
-  saved,
-  onOpen,
-  onToggleSaved,
-}: {
-  release: MusicRelease;
-  saved: boolean;
-  onOpen: () => void;
-  onToggleSaved: () => void;
-}) {
-  const countdown = useCountdown(release.releaseDate);
-  const live = countdown === "LIVE";
-  const shortStatus = live ? "LIVE" : countdown.slice(0, 5);
-
-  return (
-    <article className="releaseRow">
-      <button type="button" className="releaseRowMain" onClick={onOpen} aria-label={`${release.title} von ${release.artist} öffnen`}>
-        <Artwork release={release} compact />
-        <div className="releaseCopy">
-          <span className={`releaseKicker ${live ? "isLive" : ""}`}>{release.country} · {kindLabels[release.kind]}</span>
-          <strong>{release.title}</strong>
-          <span>{release.artist}</span>
-        </div>
-        <div className={`releaseStatus ${live ? "isLive" : ""}`}>{shortStatus}</div>
-      </button>
-      <button
-        type="button"
-        className={`saveMini ${saved ? "isSaved" : ""}`}
-        onClick={onToggleSaved}
-        aria-label={saved ? `${release.title} entfernen` : `${release.title} speichern`}
-        aria-pressed={saved}
-      >
-        <span />
-      </button>
-    </article>
-  );
-}
-
-function FeaturedRelease({ release, onOpen }: { release: MusicRelease; onOpen: () => void }) {
-  const countdown = useCountdown(release.releaseDate);
-  const live = countdown === "LIVE";
-
-  return (
-    <button type="button" className="featuredRelease" onClick={onOpen}>
-      <Artwork release={release} />
-      <div className="featuredCopy">
-        <span className={`releaseKicker ${live ? "isLive" : ""}`}>{release.country} · {kindLabels[release.kind]}</span>
-        <h2>{release.title}</h2>
-        <p>{release.artist}</p>
-        <div className="countdownCard">
-          <span><i className={live ? "live" : undefined} /> {live ? "JETZT" : "NOCH"}</span>
-          <strong>{countdown}</strong>
-        </div>
-      </div>
-    </button>
+    <section className="systemState" role="status">
+      <div className="stateRail" />
+      <div><strong>{title}</strong><p>{body}</p></div>
+      {action && onAction ? <button type="button" onClick={onAction}>{action}</button> : null}
+    </section>
   );
 }
 
 function BottomNav({ active, onChange }: { active: Tab; onChange: (tab: Tab) => void }) {
-  const items: Array<{ id: Tab; label: string; icon: IconName }> = [
-    { id: "releases", label: "Releases", icon: "home" },
-    { id: "search", label: "Suche", icon: "search" },
-    { id: "saved", label: "Gespeichert", icon: "star" },
-    { id: "profile", label: "Profil", icon: "profile" },
+  const items: Array<{ id: Tab; label: string; aria: string }> = [
+    { id: "drop", label: "DROP", aria: "Drop" },
+    { id: "find", label: "FIND", aria: "Find" },
+    { id: "stash", label: "STASH", aria: "Stash" },
+    { id: "me", label: "ME", aria: "Me" },
   ];
-
   return (
-    <nav className="prototypeNav" aria-label="Hauptnavigation">
+    <nav className="tapeNav" aria-label="Hauptnavigation">
       {items.map((item) => (
         <button
           type="button"
           key={item.id}
           className={active === item.id ? "active" : undefined}
           aria-current={active === item.id ? "page" : undefined}
+          aria-label={item.aria}
           onClick={() => onChange(item.id)}
         >
-          <Icon name={item.icon} />
-          <span>{item.label}</span>
+          {item.label}
         </button>
       ))}
     </nav>
   );
 }
 
-function HomeScreen({
-  releases,
-  savedIds,
-  onOpen,
-  onToggleSaved,
-}: {
+function ReleaseListRow({ release, number, saved, onOpen, onToggleSaved }: {
+  release: MusicRelease;
+  number: number;
+  saved: boolean;
+  onOpen: () => void;
+  onToggleSaved: () => void;
+}) {
+  return (
+    <article className="tapeRow">
+      <button type="button" className="tapeRowMain" onClick={onOpen} aria-label={`${release.title} öffnen`}>
+        <span className="rowNumber">{String(number).padStart(2, "0")}</span>
+        <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist}</span></div>
+        <span className="rowArrow">→</span>
+      </button>
+      <button type="button" className={`rowSave ${saved ? "saved" : ""}`} onClick={onToggleSaved} aria-pressed={saved} aria-label={saved ? "Aus Stash entfernen" : "In Stash speichern"}>+</button>
+    </article>
+  );
+}
+
+function HomeScreen({ releases, savedIds, onOpen, onToggleSaved }: {
   releases: MusicRelease[];
   savedIds: Set<string>;
   onOpen: (release: MusicRelease) => void;
   onToggleSaved: (id: string) => void;
 }) {
-  const now = useClock();
-  const [filter, setFilter] = useState<CountryFilter>("ALL");
-  const filtered = releases.filter((release) => filter === "ALL" || release.country === filter);
+  const [region, setRegion] = useState<Region>("ALL");
+  const filtered = releases.filter((release) => region === "ALL" || release.country === region);
   const featured = filtered[0];
-  const visible = filtered.slice(1);
-  const copy = getHomeCopy(releases, now);
+  const rest = filtered.slice(1);
+  const countdown = useCountdown(featured?.releaseDate ?? "2099-01-01");
+  const live = featured ? countdown === "LIVE" : false;
 
   return (
-    <section className="screenContent homeScreen">
-      <ScreenHeader eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.subtitle} />
-      {featured ? (
-        <>
-          <FeaturedRelease release={featured} onOpen={() => onOpen(featured)} />
-          <FilterPills
-            value={filter}
-            label="Region filtern"
-            onChange={setFilter}
-            items={[
-              { value: "ALL", label: "Alle" },
-              { value: "DE", label: "Deutschland" },
-              { value: "US", label: "USA" },
-            ]}
-          />
-          <h2 className="sectionTitle">Weitere Releases</h2>
-          <div className="releaseStack">
-            {visible.length ? visible.map((release) => (
-              <ReleaseRow
-                key={release.id}
-                release={release}
-                saved={savedIds.has(release.id)}
-                onOpen={() => onOpen(release)}
-                onToggleSaved={() => onToggleSaved(release.id)}
-              />
-            )) : (
-              <EmptyState
-                title="Keine weiteren Releases"
-                body="Für diese Region ist aktuell nur der hervorgehobene Release bestätigt."
-                icon="home"
-              />
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          <FilterPills
-            value={filter}
-            label="Region filtern"
-            onChange={setFilter}
-            items={[
-              { value: "ALL", label: "Alle" },
-              { value: "DE", label: "Deutschland" },
-              { value: "US", label: "USA" },
-            ]}
-          />
+    <section className="tapeScreen dropScreen">
+      <BrandHeader date={featured ? formatShortDate(featured.releaseDate) : undefined} />
+      <TapeStrip />
+      <div className="screenInner">
+        <RegionSwitch value={region} onChange={setRegion} />
+        {featured ? (
+          <>
+            <button type="button" className="dropHero" onClick={() => onOpen(featured)}>
+              <ConfirmedLabel live={live} />
+              <Cover release={featured} />
+              <div className="heroCopy">
+                <span>{featured.artist}</span>
+                <h1>{featured.title}</h1>
+                <small>{String(filtered.length).padStart(2, "0")} / RELEASES</small>
+              </div>
+              <div className="countdownTape"><span>{live ? "AVAILABLE NOW" : "MIDNIGHT IN"}</span><strong>{countdown}</strong></div>
+            </button>
+            <div className="nextTape">
+              <span>NEXT ON TAPE</span>
+              <div>{rest.length ? rest.map((release) => <button key={release.id} type="button" onClick={() => onOpen(release)}>{release.artist} — {release.title}</button>) : <small>NO MORE VERIFIED DROPS</small>}</div>
+            </div>
+            <div className="homeRows">
+              {rest.map((release, index) => (
+                <ReleaseListRow key={release.id} release={release} number={index + 2} saved={savedIds.has(release.id)} onOpen={() => onOpen(release)} onToggleSaved={() => onToggleSaved(release.id)} />
+              ))}
+            </div>
+          </>
+        ) : (
           <EmptyState
-            title={filter === "DE" ? "Noch keine Deutschland-Releases" : filter === "US" ? "Noch keine USA-Releases" : "Noch keine bestätigten Releases"}
-            body="Der Radar wird automatisch aktualisiert. Bestätigte Einträge erscheinen hier sofort."
-            icon="home"
+            title={region === "DE" ? "NO DE RELEASES YET" : region === "US" ? "NO US RELEASES YET" : "NO RELEASES YET"}
+            body="The editorial radar is quiet for this region. Verified releases appear here after approval."
           />
-        </>
-      )}
+        )}
+      </div>
     </section>
   );
 }
 
-function ArtistCard({
-  artist,
-  country,
-  followed,
-  onToggle,
-}: {
-  artist: string;
-  country: ReleaseCountry;
-  followed: boolean;
-  onToggle: () => void;
-}) {
-  const initials = artist.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "?";
-  return (
-    <article className="artistCard">
-      <div className="artistAvatar">{initials}</div>
-      <div className="artistCopy"><strong>{artist}</strong><span>{country} · RAP</span><small>Diese Woche</small></div>
-      <button type="button" className={followed ? "following" : undefined} onClick={onToggle}>{followed ? "FOLGST DU" : "FOLGEN"}</button>
-    </article>
-  );
-}
-
-function SearchScreen({
-  releases,
-  savedIds,
-  onOpen,
-  onToggleSaved,
-}: {
+function SearchScreen({ releases, savedIds, onOpen, onToggleSaved }: {
   releases: MusicRelease[];
   savedIds: Set<string>;
   onOpen: (release: MusicRelease) => void;
   onToggleSaved: (id: string) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [followedArtists, setFollowedArtists] = useState<Set<string>>(() => new Set());
   const results = useMemo(() => {
-    const normalized = query.trim().toLocaleLowerCase("de-DE");
-    if (!normalized) return releases;
-    return releases.filter((release) => `${release.title} ${release.artist}`.toLocaleLowerCase("de-DE").includes(normalized));
+    const needle = query.trim().toLocaleLowerCase("de-DE");
+    if (!needle) return releases;
+    return releases.filter((release) => `${release.title} ${release.artist}`.toLocaleLowerCase("de-DE").includes(needle));
   }, [query, releases]);
-  const trending = useMemo(() => {
-    const map = new Map<string, ReleaseCountry>();
-    for (const release of releases) if (!map.has(release.artist)) map.set(release.artist, release.country);
-    return [...map.entries()].slice(0, 3);
-  }, [releases]);
-
-  const toggleFollow = (artist: string) => {
-    setFollowedArtists((current) => {
-      const next = new Set(current);
-      if (next.has(artist)) next.delete(artist); else next.add(artist);
-      return next;
-    });
-  };
 
   return (
-    <section className="screenContent searchScreen">
-      <ScreenHeader eyebrow="DISCOVER" title="Suchen" subtitle="Durchsuche alle bestätigten Releases dieser Woche." />
-      <label className="searchField">
-        <Icon name="search" />
-        <input value={query} onChange={(event: { target: { value: string } }) => setQuery(event.target.value)} placeholder="Künstler, Album oder Single" />
-      </label>
-      <h2 className="sectionTitle">Artists diese Woche</h2>
-      <div className="artistStack">
-        {trending.length ? trending.map(([artist, country]) => (
-          <ArtistCard key={artist} artist={artist} country={country} followed={followedArtists.has(artist)} onToggle={() => toggleFollow(artist)} />
-        )) : <EmptyState title="Noch keine Artists" body="Sobald Releases bestätigt sind, erscheinen die Artists hier." icon="profile" />}
-      </div>
-      <h2 className="sectionTitle searchResultsTitle">{query ? "Suchergebnisse" : "Alle Releases"}</h2>
-      <div className="releaseStack">
-        {results.length ? results.map((release) => (
-          <ReleaseRow
-            key={release.id}
-            release={release}
-            saved={savedIds.has(release.id)}
-            onOpen={() => onOpen(release)}
-            onToggleSaved={() => onToggleSaved(release.id)}
-          />
-        )) : <EmptyState title="Nichts gefunden" body="Probiere einen anderen Künstler oder Titel." />}
-      </div>
-    </section>
-  );
-}
-
-function SavedScreen({
-  releases,
-  savedIds,
-  onOpen,
-  onToggleSaved,
-}: {
-  releases: MusicRelease[];
-  savedIds: Set<string>;
-  onOpen: (release: MusicRelease) => void;
-  onToggleSaved: (id: string) => void;
-}) {
-  const [filter, setFilter] = useState<SavedFilter>("upcoming");
-  const now = useClock();
-  const saved = releases.filter((release) => savedIds.has(release.id));
-  const visible = saved.filter((release) => {
-    if (filter === "all") return true;
-    const live = isReleaseLive(release, now);
-    return filter === "live" ? live : !live;
-  });
-  const friday = releases[0]?.releaseDate ? formatReleaseDate(releases[0].releaseDate) : "kommender Freitag";
-  const editorial = visible[0] ?? saved[0];
-
-  return (
-    <section className="screenContent savedScreen">
-      <ScreenHeader eyebrow="DEINE WOCHE" title="Gespeichert" subtitle={`${pluralizeReleases(saved.length)} · ${friday}`} />
-      <FilterPills
-        value={filter}
-        label="Gespeicherte Releases filtern"
-        onChange={setFilter}
-        items={[
-          { value: "upcoming", label: "Upcoming" },
-          { value: "live", label: "Live" },
-          { value: "all", label: "Alle" },
-        ]}
-      />
-      <h2 className="sectionTitle">Diese Woche</h2>
-      <div className="releaseStack">
-        {visible.length ? visible.map((release) => (
-          <ReleaseRow
-            key={release.id}
-            release={release}
-            saved
-            onOpen={() => onOpen(release)}
-            onToggleSaved={() => onToggleSaved(release.id)}
-          />
-        )) : <EmptyState title="Keine Releases hier" body="Speichere einen Release oder wechsle den Filter." icon="star" />}
-      </div>
-      {editorial ? (
-        <article className="editorialCard">
-          <Artwork release={editorial} />
-          <div><span>WARUM ES SPANNEND IST</span><h3>{editorial.title}</h3><p>{editorial.description ?? `${editorial.artist} veröffentlicht am ${formatReleaseDate(editorial.releaseDate)}.`}</p></div>
-        </article>
-      ) : null}
-    </section>
-  );
-}
-
-function ToggleRow({ title, subtitle, enabled, onToggle }: { title: string; subtitle: string; enabled: boolean; onToggle: () => void }) {
-  return (
-    <button type="button" className="settingsRow" onClick={onToggle} aria-pressed={enabled}>
-      <span><strong>{title}</strong><small>{subtitle}</small></span>
-      <i className={`toggle ${enabled ? "enabled" : ""}`}><b /></i>
-    </button>
-  );
-}
-
-function ProfileScreen({ savedCount, metadata }: { savedCount: number; metadata?: ReleaseDataMetadata }) {
-  const [reminders, setReminders] = useState(true);
-  const [briefing, setBriefing] = useState(true);
-  const [region, setRegion] = useState<"DE + US" | ReleaseCountry>("DE + US");
-  const cycleRegion = () => setRegion((current) => current === "DE + US" ? "DE" : current === "DE" ? "US" : "DE + US");
-
-  return (
-    <section className="screenContent profileScreen">
-      <ScreenHeader eyebrow="ACCOUNT" title="Profil" />
-      <article className="profileCard">
-        <div className="profileAvatar">JP</div>
-        <div><strong>Janus</strong><span>DEUTSCHRAP · US RAP · MELODIC</span><small>{pluralizeReleases(savedCount)} gespeichert</small></div>
-      </article>
-      <h2 className="sectionTitle settingsTitle">Einstellungen</h2>
-      <div className="settingsStack">
-        <ToggleRow title="Release-Erinnerungen" subtitle="Donnerstag am Abend" enabled={reminders} onToggle={() => setReminders((value) => !value)} />
-        <div className="settingsRow settingsStatic">
-          <span><strong>Streaming-Dienste</strong><small>Spotify, Apple Music, YouTube</small></span><Icon name="external" />
+    <section className="tapeScreen findScreen">
+      <BrandHeader label="FIND / 29" date={releases[0] ? formatShortDate(releases[0].releaseDate) : undefined} />
+      <TapeStrip />
+      <div className="screenInner">
+        <h1 className="posterTitle">FIND<br />THE DROP</h1>
+        <label className="tapeSearch">
+          <span>⌕</span>
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ARTIST, ALBUM OR SINGLE" />
+        </label>
+        <p className="microHeading">{query ? "SEARCH RESULTS" : "TRENDING / VERIFIED"}</p>
+        <div className="finderList">
+          {results.length ? results.map((release, index) => (
+            <ReleaseListRow key={release.id} release={release} number={index + 1} saved={savedIds.has(release.id)} onOpen={() => onOpen(release)} onToggleSaved={() => onToggleSaved(release.id)} />
+          )) : <EmptyState title="NOTHING FOUND" body="Try another artist, album or single." />}
         </div>
-        <button type="button" className="settingsRow" onClick={cycleRegion}>
-          <span><strong>Region</strong><small>{region === "DE + US" ? "Deutschland + USA" : countryLabels[region]}</small></span><em>{region}</em>
-        </button>
-        <ToggleRow title="Editorial Briefing" subtitle="Warum diese Releases wichtig sind" enabled={briefing} onToggle={() => setBriefing((value) => !value)} />
-      </div>
-      <div className="versionCard">
-        <strong>Release Friday · Prototype 0.4</strong>
-        <span>Datenstand: {formatGeneratedAt(metadata?.generatedAt)}</span>
-        {metadata ? <small>{metadata.fetchedCount} automatisch · {metadata.curatedCount} kuratiert</small> : null}
+        <p className="editorialNotice">ONLY RELEASES WITH CHECKED DATE + SOURCE ENTER THE RADAR.</p>
       </div>
     </section>
   );
 }
 
-function StreamingLink({ href, children, primary = false }: { href?: string; children: ReactNode; primary?: boolean }) {
-  if (!href) return <span className={`streamingLink disabled ${primary ? "primary" : ""}`}>{children}<small>Noch nicht verfügbar</small></span>;
-  return <a className={`streamingLink ${primary ? "primary" : ""}`} href={href} target="_blank" rel="noreferrer">{children}<Icon name="external" size={18} /></a>;
-}
-
-function DetailScreen({
-  release,
-  saved,
-  onBack,
-  onToggleSaved,
-}: {
+function DetailScreen({ release, saved, onBack, onToggleSaved }: {
   release: MusicRelease;
   saved: boolean;
   onBack: () => void;
@@ -582,40 +291,97 @@ function DetailScreen({
   const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
 
   return (
-    <section className="detailScreen">
-      <div className="detailGlow" />
-      <div className="detailTopbar">
-        <button type="button" onClick={onBack} aria-label="Zurück"><Icon name="back" /></button>
-        <button type="button" className={saved ? "saved" : undefined} onClick={onToggleSaved} aria-label={saved ? "Aus Gespeichert entfernen" : "Speichern"}><Icon name="star" /></button>
+    <section className="tapeScreen detailScreen">
+      <div className="detailToolbar">
+        <button type="button" onClick={onBack}>← BACK TO TAPE</button>
+        <button type="button" className={saved ? "saved" : undefined} onClick={onToggleSaved}>{saved ? "✓ STASHED" : "+ STASH"}</button>
       </div>
-      <Artwork release={release} />
+      <div className="detailCover"><Cover release={release} /></div>
       <div className="detailBody">
-        <span className={`livePill ${live ? "isLive" : ""}`}><i />{live ? "NOW LIVE" : "UPCOMING"}</span>
-        <p className="detailMeta">{release.country} · {kindLabels[release.kind]}{trackText}</p>
+        <ConfirmedLabel live={live} />
+        <span className="artistTag">{release.artist}</span>
         <h1>{release.title}</h1>
-        <p className="detailArtist">{release.artist}</p>
-        <span className="detailEyebrow">WARUM ES SPANNEND IST</span>
-        <p className="detailDescription">{release.description ?? `${release.artist} veröffentlicht ${release.kind === "single" ? "eine neue Single" : "ein neues Projekt"} am ${formatReleaseDate(release.releaseDate)}.`}</p>
-        <div className="streamingActions">
-          <StreamingLink href={release.spotifyUrl} primary>Auf Spotify anhören</StreamingLink>
-          <StreamingLink href={release.appleMusicUrl}>Apple Music</StreamingLink>
-          <StreamingLink href={release.youtubeUrl}>YouTube öffnen</StreamingLink>
+        <p className="detailMeta">{release.country} · {kindLabels[release.kind]}{trackText} · {formatShortDate(release.releaseDate)}</p>
+        <p className="detailDescription">{release.description ?? `${release.artist} delivers a verified new ${release.kind} for this Friday's radar.`}</p>
+        <div className="streamGrid">
+          {release.spotifyUrl ? <a className="primary" href={release.spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a> : <span className="disabled">SPOTIFY UNAVAILABLE</span>}
+          {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE MUSIC</a> : <span className="disabled">APPLE MUSIC</span>}
+          {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : <span className="disabled">YOUTUBE</span>}
         </div>
-        <p className="sourceNote">Quelle: {release.source}</p>
+        <p className="sourceNote">SOURCE · {release.source}</p>
       </div>
     </section>
   );
 }
 
-function PrototypeShell({ children, active, onTabChange, showNav = true }: { children: ReactNode; active: Tab; onTabChange: (tab: Tab) => void; showNav?: boolean }) {
-  const now = useClock();
-  const time = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(now);
+function StashScreen({ releases, savedIds, onOpen, onToggleSaved }: {
+  releases: MusicRelease[];
+  savedIds: Set<string>;
+  onOpen: (release: MusicRelease) => void;
+  onToggleSaved: (id: string) => void;
+}) {
+  const saved = releases.filter((release) => savedIds.has(release.id));
+  return (
+    <section className="tapeScreen stashScreen">
+      <BrandHeader label={`STASH / ${String(saved.length).padStart(2, "0")}`} date={releases[0] ? formatShortDate(releases[0].releaseDate) : undefined} />
+      <TapeStrip />
+      <div className="screenInner">
+        <h1 className="posterTitle">YOUR<br />STASH</h1>
+        <p className="screenLead">{pluralize(saved.length, "VERIFIED RELEASE", "VERIFIED RELEASES")} SAVED FOR FRIDAY</p>
+        <div className="stashList">
+          {saved.length ? saved.map((release, index) => (
+            <article className="stashCard" key={release.id}>
+              <button type="button" className="stashOpen" onClick={() => onOpen(release)}>
+                <Cover release={release} compact />
+                <div><span>{String(index + 1).padStart(2, "0")}</span><strong>{release.title}</strong><small>{release.artist} · {kindLabels[release.kind]}</small></div>
+                <b>→</b>
+              </button>
+              <button type="button" className="stashRemove" onClick={() => onToggleSaved(release.id)}>REMOVE</button>
+            </article>
+          )) : <EmptyState title="YOUR STASH IS EMPTY" body="Save a verified release and it will wait here for Friday night." />}
+        </div>
+        <div className="reminderCard"><strong>MIDNIGHT REMINDER IS ON</strong><span>Notification planned for 23:45</span></div>
+      </div>
+    </section>
+  );
+}
+
+function SettingRow({ label, value, onClick }: { label: string; value: string; onClick?: () => void }) {
+  const content = <><strong>{label}</strong><span>{value}</span></>;
+  return onClick ? <button type="button" className="settingRow" onClick={onClick}>{content}</button> : <div className="settingRow">{content}</div>;
+}
+
+function ProfileScreen({ releases, savedCount, metadata }: { releases: MusicRelease[]; savedCount: number; metadata?: ReleaseDataMetadata }) {
+  const [reminders, setReminders] = useState(true);
+  const [region, setRegion] = useState<"DE + USA" | "DE" | "USA">("DE + USA");
+  const cycleRegion = () => setRegion((value) => value === "DE + USA" ? "DE" : value === "DE" ? "USA" : "DE + USA");
+
+  return (
+    <section className="tapeScreen meScreen">
+      <BrandHeader label="ME / LOCAL" date={releases[0] ? formatShortDate(releases[0].releaseDate) : undefined} />
+      <TapeStrip />
+      <div className="screenInner">
+        <h1 className="posterTitle">MY<br />RADAR</h1>
+        <article className="radarIdentity"><div>RF</div><span><strong>RELEASE FRIDAY</strong><small>{releases.length} WATCHED · {savedCount} STASHED</small></span></article>
+        <p className="microHeading">SETTINGS</p>
+        <div className="settingsList">
+          <SettingRow label="REGION" value={region} onClick={cycleRegion} />
+          <SettingRow label="RELEASE REMINDERS" value={reminders ? "ON" : "OFF"} onClick={() => setReminders((value) => !value)} />
+          <SettingRow label="DATA MODE" value="EDITORIAL REVIEW" />
+          <SettingRow label="LAST UPDATE" value={formatGeneratedAt(metadata?.generatedAt)} />
+        </div>
+        <div className="buildCard">BUILD 0.5 · SOURCES CHECKED BEFORE PUBLISH</div>
+      </div>
+    </section>
+  );
+}
+
+function PrototypeShell({ active, onTabChange, children }: { active: Tab; onTabChange: (tab: Tab) => void; children: ReactNode }) {
   return (
     <main className="prototypePage">
       <div className="prototypePhone">
-        <div className="statusBar"><strong>{time}</strong><span>● ◌ ▬</span></div>
         {children}
-        {showNav ? <BottomNav active={active} onChange={onTabChange} /> : null}
+        <BottomNav active={active} onChange={onTabChange} />
       </div>
     </main>
   );
@@ -625,22 +391,27 @@ function loadSavedIds(releases: MusicRelease[]) {
   if (typeof window === "undefined") return new Set<string>();
   try {
     const parsed = JSON.parse(window.localStorage.getItem("release-friday:saved") ?? "[]") as string[];
-    const validIds = new Set(releases.map((release) => release.id));
-    return new Set(parsed.filter((id) => validIds.has(id)));
+    const valid = new Set(releases.map((release) => release.id));
+    return new Set(parsed.filter((id) => valid.has(id)));
   } catch {
     return new Set<string>();
   }
 }
 
 export function PrototypeClient({ releases, metadata }: PrototypeClientProps) {
-  const [activeTab, setActiveTab] = useState<Tab>("releases");
+  const [activeTab, setActiveTab] = useState<Tab>("drop");
   const [selectedRelease, setSelectedRelease] = useState<MusicRelease | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
+  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => setSavedIds(loadSavedIds(releases)), [releases]);
   useEffect(() => {
-    window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
-  }, [savedIds]);
+    setSavedIds(loadSavedIds(releases));
+    setHydrated(true);
+  }, [releases]);
+
+  useEffect(() => {
+    if (hydrated) window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
+  }, [savedIds, hydrated]);
 
   const toggleSaved = (id: string) => {
     setSavedIds((current) => {
@@ -650,31 +421,31 @@ export function PrototypeClient({ releases, metadata }: PrototypeClientProps) {
     });
   };
 
-  const changeTab = (tab: Tab) => {
-    setSelectedRelease(null);
-    setActiveTab(tab);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const openRelease = (release: MusicRelease) => {
     setSelectedRelease(release);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const validSavedCount = releases.filter((release) => savedIds.has(release.id)).length;
+  const changeTab = (tab: Tab) => {
+    setActiveTab(tab);
+    setSelectedRelease(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const savedCount = releases.filter((release) => savedIds.has(release.id)).length;
   let content: ReactNode;
 
   if (selectedRelease) {
     content = <DetailScreen release={selectedRelease} saved={savedIds.has(selectedRelease.id)} onBack={() => setSelectedRelease(null)} onToggleSaved={() => toggleSaved(selectedRelease.id)} />;
-  } else if (activeTab === "search") {
+  } else if (activeTab === "find") {
     content = <SearchScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
-  } else if (activeTab === "saved") {
-    content = <SavedScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
-  } else if (activeTab === "profile") {
-    content = <ProfileScreen savedCount={validSavedCount} metadata={metadata} />;
+  } else if (activeTab === "stash") {
+    content = <StashScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
+  } else if (activeTab === "me") {
+    content = <ProfileScreen releases={releases} savedCount={savedCount} metadata={metadata} />;
   } else {
     content = <HomeScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   }
 
-  return <PrototypeShell active={activeTab} onTabChange={changeTab} showNav={!selectedRelease}>{content}</PrototypeShell>;
+  return <PrototypeShell active={activeTab} onTabChange={changeTab}>{content}</PrototypeShell>;
 }
