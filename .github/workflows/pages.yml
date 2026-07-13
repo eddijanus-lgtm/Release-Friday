@@ -9,6 +9,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: "pages"
@@ -41,6 +43,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -48,3 +52,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  report:
+    if: always()
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report preview status on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          if [ "$DEPLOY_RESULT" = "success" ]; then
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "✅ Public preview deployed: ${PAGE_URL:-https://eddijanus-lgtm.github.io/Release-Friday/}"
+          else
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ Preview deployment did not complete. Build: $BUILD_RESULT · Deploy: $DEPLOY_RESULT. GitHub Pages may need to be enabled once under Settings → Pages → Source: GitHub Actions."
+          fi
