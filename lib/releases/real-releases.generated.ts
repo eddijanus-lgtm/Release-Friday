@@ -5,7 +5,7 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-13T21:13:17.000Z",
+  "generatedAt": "2026-07-13T21:20:00.000Z",
   "fetchedCount": 0,
   "curatedCount": 3,
   "fetchError": null,
@@ -60,6 +60,7 @@ export const realReleases: MusicRelease[] = [
     "releaseDate": "2026-07-17",
     "country": "US",
     "kind": "album",
+    "coverUrl": "https://media.pitchfork.com/photos/6a21c189fc892426f2169bc5/master/w_1280%2Cc_limit/Screenshot%25202026-06-04%2520at%25202.16.49%25E2%2580%25AFPM.png",
     "spotifyUrl": "https://open.spotify.com/search/Steve%20Lacy%20Oh%20Yeah",
     "appleMusicUrl": "https://music.apple.com/de/search?term=Steve%20Lacy%20Oh%20Yeah",
     "youtubeUrl": "https://www.youtube.com/results?search_query=Steve%20Lacy%20Oh%20Yeah",
