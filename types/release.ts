@@ -12,5 +12,18 @@ export interface MusicRelease {
   spotifyUrl?: string;
   appleMusicUrl?: string;
   youtubeUrl?: string;
+  sourceUrl?: string;
+  description?: string;
+  trackCount?: number;
+  genres?: string[];
   source: string;
+}
+
+export interface ReleaseDataMetadata {
+  targetDate: string;
+  generatedAt: string;
+  fetchedCount: number;
+  curatedCount: number;
+  fetchError?: string | null;
+  sourceCounts?: Record<string, number>;
 }
