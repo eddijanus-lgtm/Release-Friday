@@ -99,7 +99,7 @@ function getHomeCopy(releases: MusicRelease[], now: Date) {
     return {
       eyebrow: `JETZT VERFÜGBAR · ${time}`,
       title: "Release Friday",
-      subtitle: `${pluralizeReleases(releases.length)} sind jetzt verfügbar.`,
+      subtitle: releases.length === 1 ? "1 Release ist jetzt verfügbar." : `${releases.length} Releases sind jetzt verfügbar.`,
     };
   }
 
@@ -116,7 +116,7 @@ function getHomeCopy(releases: MusicRelease[], now: Date) {
   return {
     eyebrow: `${new Intl.DateTimeFormat("de-DE", { weekday: "long" }).format(now).toUpperCase()} · ${time}`,
     title: "Diesen Freitag",
-    subtitle: `${pluralizeReleases(releases.length)} sind aktuell bestätigt.`,
+    subtitle: releases.length === 1 ? "1 Release ist aktuell bestätigt." : `${releases.length} Releases sind aktuell bestätigt.`,
   };
 }
 
