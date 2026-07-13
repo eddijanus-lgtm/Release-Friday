@@ -2,26 +2,35 @@
 
 Target file: `Release Friday — Product Design`
 
+Figma file: https://www.figma.com/design/htcO9PgqJzJfFY9pZX356Q
+
 ## Pages
 
 1. `00 Cover`
 2. `01 Foundations`
 3. `02 Components`
 4. `03 Mobile`
-5. `04 Flows`
 
 ## Foundations
+
+The Figma file contains three local variable collections:
+
+- `Primitives`
+- `Semantic`
+- `Layout`
 
 ### Colors
 
 | Token | Value | Usage |
 | --- | --- | --- |
-| `color/bg` | `#09090B` | App background |
-| `color/surface` | `rgba(24,24,27,.82)` | Cards and controls |
-| `color/text` | `#FAFAFA` | Primary content |
-| `color/muted` | `#A1A1AA` | Secondary content |
-| `color/accent` | `#A78BFA` | Date and release metadata |
-| `color/border` | `rgba(255,255,255,.10)` | Surface outlines |
+| `color/background` | `#09090B` | App background |
+| `color/surface` | `#18181B` | Cards and controls |
+| `color/text/primary` | `#FAFAFA` | Primary content |
+| `color/text/muted` | `#A1A1AA` | Secondary content |
+| `color/accent` | `#A78BFA` | Release metadata |
+| `color/accent/soft` | `#C4B5FD` | Upcoming-Friday label |
+| `color/border` | `#3F3F46` | Surface outlines |
+| `color/accent/secondary` | `#EC4899` | Cover gradient |
 
 ### Radius
 
@@ -32,85 +41,87 @@ Target file: `Release Friday — Product Design`
 
 ### Spacing
 
-4, 8, 12, 16, 20, 24, 32, 40.
+4, 8, 12, 16, 20 and 24 px.
 
 ### Typography
 
-System stack led by Inter.
-
-- Display: 48/46, Extra Bold
-- Title: 18/24, Bold
-- Body: 16/24, Regular
-- Label: 12/16, Extra Bold, uppercase where appropriate
-- Navigation: 13/18, Bold
+- `Display/Hero`: 48/46, Bold
+- `Heading/Card`: 18/22, Semi Bold
+- `Body/Default`: 16/25, Regular
+- `Label/Meta`: 11/14, Semi Bold
+- `Label/Navigation`: 11/14, Semi Bold
 
 ## Components
 
 ### Filter Chip
 
+Figma node: `2:134`
+
 Variants:
 
-- State: default, selected
-- Country: all, DE, US
-- Minimum height: 42
-- Focus ring: 2 px accent with 3 px offset
+- `Active=No`
+- `Active=Yes`
+- editable `Label` text property
+
+Code mapping: `components/releases/release-feed.tsx`
 
 ### Release Card
 
+Figma node: `2:135`
+
 Properties:
 
-- Artist
-- Title
-- Country
-- Release kind
-- Cover initials or image
-- Details action
+- `Meta`
+- `Title`
+- `Artist`
 
 Layout:
 
-- Mobile width: fill container
-- Minimum height: 100
-- Padding: 12
-- Gap: 14
-- Cover: 76 × 76
-- Radius: 22
+- width: 358 px in the mobile reference
+- minimum height: 100 px
+- padding: 12 px
+- gap: 14 px
+- cover: 76 × 76 px
+- radius: 22 px
+
+Code mapping: `components/releases/release-card.tsx`
 
 ### Bottom Navigation
+
+Figma node: `2:142`
 
 Items:
 
 - Releases
+- Suche
 - Favoriten
 - Settings
 
-Variants:
-
-- Active item
-- Inactive item
-- Safe-area-aware mobile container
+Code mapping: `app/page.tsx`
 
 ## Mobile home screen
 
-Frame: iPhone 16/17 class width, 393 px.
+Figma node: `2:155`
+
+Reference frame: `Home / iPhone 16e`, 393 × 852 px.
 
 Order:
 
-1. Upcoming Friday date
+1. Upcoming Friday label
 2. `Release Friday` heading
-3. Short product description
-4. Horizontal country filters
+3. Product description
+4. Country filters
 5. Vertical release list
-6. Fixed bottom navigation
+6. Bottom navigation
 
-## Code mapping
+The screen is assembled from instances of the shared Filter Chip, Release Card and Bottom Navigation components.
 
-| Figma component | Code |
-| --- | --- |
-| `Filter Chip` | `components/releases/release-feed.tsx` |
-| `Release Card` | `components/releases/release-card.tsx` |
-| `Bottom Navigation` | `app/page.tsx` |
-| Foundations | `app/globals.css` |
+## Implementation status
 
-## Current blocker
-
-The Figma file exists, but the connected Starter plan returned an MCP tool-call limit before canvas nodes could be created. This specification is the exact source for the next Figma write operation once tool access is available.
+- Foundations created and documented
+- 26 local variables created across three collections
+- five local text styles created
+- reusable components created
+- component text properties bound to visible text layers
+- mobile home screen assembled and visually verified
+- final screenshot verified at native 393 × 852 px
