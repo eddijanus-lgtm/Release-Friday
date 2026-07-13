@@ -1,0 +1,79 @@
+name: Start live prototype preview
+
+on:
+  push:
+    branches: ["agent/project-structure"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: "live-prototype-preview"
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build static prototype
+        run: npm run build
+
+      - name: Start local web server
+        run: |
+          nohup python3 -m http.server 3000 --directory out > /tmp/release-friday-server.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/release-friday-server.log
+          exit 1
+
+      - name: Install Cloudflare tunnel client
+        run: |
+          curl --fail --location \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+            --output cloudflared
+          chmod +x cloudflared
+
+      - name: Create public preview tunnel
+        id: tunnel
+        run: |
+          nohup ./cloudflared tunnel --url http://127.0.0.1:3000 --no-autoupdate > /tmp/cloudflared.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            PREVIEW_URL=$(grep -Eo 'https://[-a-z0-9]+\.trycloudflare\.com' /tmp/cloudflared.log | head -n 1 || true)
+            if [ -n "$PREVIEW_URL" ]; then
+              echo "url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/cloudflared.log
+          exit 1
+
+      - name: Publish test link on pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_URL: ${{ steps.tunnel.outputs.url }}
+        run: |
+          gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "🚀 **Live prototype ready**\n\n$PREVIEW_URL\n\nThe link is public and remains active for up to about 5 hours. It is intended for immediate iPhone testing."
+
+      - name: Keep preview online
+        run: sleep 20700
