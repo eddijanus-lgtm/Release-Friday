@@ -1,0 +1,57 @@
+name: Expert product QA
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clickthrough:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install app dependencies
+        run: npm install
+
+      - name: Install QA browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Build static app
+        env:
+          DEPLOY_TARGET: github-pages
+        run: npm run build
+
+      - name: Start local site
+        run: |
+          python3 -m http.server 3000 --directory out > /tmp/release-friday-server.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/Release-Friday/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/release-friday-server.log
+          exit 1
+
+      - name: Run expert click-through
+        run: node scripts/expert-qa.mjs
+
+      - name: Upload QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: expert-product-qa
+          path: qa-output
+          if-no-files-found: warn
