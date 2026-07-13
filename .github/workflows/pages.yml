@@ -1,8 +1,6 @@
 name: Deploy preview to GitHub Pages
 
 on:
-  push:
-    branches: ["agent/project-structure"]
   workflow_dispatch:
 
 permissions:
@@ -19,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_TARGET: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
         run: |
           if [ "$DEPLOY_RESULT" = "success" ]; then
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "✅ Public preview deployed: ${PAGE_URL:-https://eddijanus-lgtm.github.io/Release-Friday/}"
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "✅ Permanent GitHub Pages preview deployed: ${PAGE_URL:-https://eddijanus-lgtm.github.io/Release-Friday/}"
           else
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ Preview deployment did not complete. Build: $BUILD_RESULT · Deploy: $DEPLOY_RESULT. GitHub Pages may need to be enabled once under Settings → Pages → Source: GitHub Actions."
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ Permanent Pages deployment still needs GitHub Pages enabled once under Settings → Pages → Source: GitHub Actions. Build: $BUILD_RESULT · Deploy: $DEPLOY_RESULT."
           fi
