@@ -1,7 +1,7 @@
-import type { Release } from "@/types/release";
+import type { MusicRelease } from "@/types/release";
 
 type ReleaseCardProps = {
-  release: Release;
+  release: MusicRelease;
 };
 
 export function ReleaseCard({ release }: ReleaseCardProps) {
@@ -13,7 +13,7 @@ export function ReleaseCard({ release }: ReleaseCardProps) {
 
       <div className="releaseInfo">
         <span className="releaseMeta">
-          {release.country} · {release.type}
+          {release.country} · {release.kind.toUpperCase()}
         </span>
         <h2>{release.title}</h2>
         <p>{release.artist}</p>
