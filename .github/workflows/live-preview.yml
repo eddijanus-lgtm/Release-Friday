@@ -29,7 +29,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
 
       - name: Mark Node setup complete
         run: echo node-setup > /tmp/preview-stage
