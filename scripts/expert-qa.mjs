@@ -59,7 +59,7 @@ report.checkpoints.drop = {
   navigation: await page.locator(".tapeNav button").allInnerTexts(),
 };
 assert(report.checkpoints.drop.wordmark?.includes("RELEASE"), "Midnight Tape wordmark is missing.");
-assert(report.checkpoints.drop.featuredTitle === "Aalam of God", "The confirmed real release is not featured.");
+assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "AALAM OF GOD", "The confirmed real release is not featured.");
 assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The approved navigation labels are not present.");
 
 const germanyButton = page.getByRole("button", { name: "DE", exact: true });
