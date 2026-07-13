@@ -22,23 +22,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Mark checkout complete
+        run: echo checkout > /tmp/preview-stage
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
 
+      - name: Mark Node setup complete
+        run: echo node-setup > /tmp/preview-stage
+
       - name: Install dependencies
         run: npm install
 
+      - name: Mark install complete
+        run: echo dependencies-installed > /tmp/preview-stage
+
       - name: Build static prototype
         run: npm run build
+
+      - name: Mark build complete
+        run: echo static-build-complete > /tmp/preview-stage
 
       - name: Start local web server
         run: |
           nohup python3 -m http.server 3000 --directory out > /tmp/release-friday-server.log 2>&1 &
           for attempt in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              echo local-server-running > /tmp/preview-stage
               exit 0
             fi
             sleep 1
@@ -52,6 +65,7 @@ jobs:
             https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
             --output cloudflared
           chmod +x cloudflared
+          echo cloudflared-installed > /tmp/preview-stage
 
       - name: Create public preview tunnel
         id: tunnel
@@ -61,6 +75,7 @@ jobs:
             PREVIEW_URL=$(grep -Eo 'https://[-a-z0-9]+\.trycloudflare\.com' /tmp/cloudflared.log | head -n 1 || true)
             if [ -n "$PREVIEW_URL" ]; then
               echo "url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+              echo tunnel-created > /tmp/preview-stage
               exit 0
             fi
             sleep 2
@@ -74,14 +89,18 @@ jobs:
           PREVIEW_URL: ${{ steps.tunnel.outputs.url }}
         run: |
           gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "🚀 **Live prototype ready**\n\n$PREVIEW_URL\n\nThe link is public and remains active for about 90 minutes. Open it directly on the iPhone."
+          echo preview-link-published > /tmp/preview-stage
 
       - name: Report preview failure
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          STAGE=$(cat /tmp/preview-stage 2>/dev/null || echo before-checkout-marker)
           {
             echo "❌ **Live preview failed to start**"
+            echo
+            echo "Last completed stage: \`$STAGE\`"
             echo
             echo '```text'
             if [ -f /tmp/cloudflared.log ]; then tail -n 25 /tmp/cloudflared.log; fi
