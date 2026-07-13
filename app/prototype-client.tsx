@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { MusicRelease, ReleaseCountry } from "@/types/release";
+import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 
 type Tab = "releases" | "search" | "saved" | "profile";
 type CountryFilter = "ALL" | ReleaseCountry;
@@ -9,31 +9,21 @@ type SavedFilter = "upcoming" | "live" | "all";
 
 type PrototypeClientProps = {
   releases: MusicRelease[];
+  metadata?: ReleaseDataMetadata;
 };
 
-type IconName = "home" | "search" | "star" | "profile" | "back" | "more" | "heart" | "chevron";
-
-const liveReleaseIds = new Set(["no-sleep"]);
-
-const descriptions: Record<string, string> = {
-  "neon-uber-berlin": "Das erste gemeinsame Album seit drei Jahren verbindet melodische Hooks mit einer deutlich dunkleren Berliner Nachtästhetik.",
-  "no-sleep": "Ein direkter US-Rap-Track für die Nacht: wenig Pause, viel Druck und ein Refrain, der sofort hängen bleibt.",
-  freitag: "Ein kompakter Deutschrap-Single-Release mit warmen Synths und einer Hook für die erste Fahrt ins Wochenende.",
-  "north-london": "Melodischer Rap trifft internationalen Club-Sound und eine reduzierte, kalte Produktion.",
-  nachtbus: "Eine kurze EP über späte Heimwege, leere Straßen und den Moment zwischen Donnerstag und Freitag.",
-};
-
-const artworkThemes: Record<string, string> = {
-  "neon-uber-berlin": "artworkMagenta",
-  "no-sleep": "artworkBlue",
-  freitag: "artworkViolet",
-  "north-london": "artworkOrange",
-  nachtbus: "artworkCyan",
-};
+type IconName = "home" | "search" | "star" | "profile" | "back" | "chevron" | "external";
 
 const countryLabels: Record<ReleaseCountry, string> = {
   DE: "Deutschland",
   US: "USA",
+};
+
+const kindLabels: Record<MusicRelease["kind"], string> = {
+  album: "ALBUM",
+  ep: "EP",
+  mixtape: "MIXTAPE",
+  single: "SINGLE",
 };
 
 function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
@@ -49,57 +39,101 @@ function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
     "aria-hidden": true,
   };
 
-  if (name === "home") {
-    return <svg {...common}><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>;
-  }
-  if (name === "search") {
-    return <svg {...common}><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>;
-  }
-  if (name === "star") {
-    return <svg {...common}><path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9L12 3Z"/></svg>;
-  }
-  if (name === "profile") {
-    return <svg {...common}><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.4-6.3 7.5-6.3s6.7 2.1 7.5 6.3"/></svg>;
-  }
-  if (name === "back") {
-    return <svg {...common}><path d="m15 18-6-6 6-6"/></svg>;
-  }
-  if (name === "more") {
-    return <svg {...common}><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/></svg>;
-  }
-  if (name === "heart") {
-    return <svg {...common}><path d="M20.8 5.8c-1.9-1.9-5-1.9-6.9 0L12 7.7l-1.9-1.9a4.9 4.9 0 0 0-6.9 6.9L12 21l8.8-8.3a4.9 4.9 0 0 0 0-6.9Z"/></svg>;
-  }
+  if (name === "home") return <svg {...common}><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>;
+  if (name === "search") return <svg {...common}><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>;
+  if (name === "star") return <svg {...common}><path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9L12 3Z"/></svg>;
+  if (name === "profile") return <svg {...common}><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.4-6.3 7.5-6.3s6.7 2.1 7.5 6.3"/></svg>;
+  if (name === "back") return <svg {...common}><path d="m15 18-6-6 6-6"/></svg>;
+  if (name === "external") return <svg {...common}><path d="M14 4h6v6"/><path d="m20 4-9 9"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg>;
   return <svg {...common}><path d="m9 18 6-6-6-6"/></svg>;
 }
 
-function Artwork({ release, compact = false }: { release: MusicRelease; compact?: boolean }) {
-  const theme = artworkThemes[release.id] ?? "artworkMagenta";
-  return (
-    <div className={`releaseArtwork ${theme} ${compact ? "artworkCompact" : ""}`} aria-hidden="true">
-      <div className="artGlow" />
-      <div className="artBars">
-        <span /><span /><span /><span /><span />
-      </div>
-    </div>
-  );
+function parseLocalDate(dateString: string) {
+  return new Date(`${dateString}T00:00:00`);
+}
+
+function isReleaseLive(release: MusicRelease, now = new Date()) {
+  return now.getTime() >= parseLocalDate(release.releaseDate).getTime();
+}
+
+function formatReleaseDate(dateString: string) {
+  return new Intl.DateTimeFormat("de-DE", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+  }).format(parseLocalDate(dateString));
+}
+
+function formatGeneratedAt(value?: string) {
+  if (!value) return "Noch kein Datenlauf";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Datenstand unbekannt";
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function pluralizeReleases(count: number) {
+  return count === 1 ? "1 Release" : `${count} Releases`;
+}
+
+function getHomeCopy(releases: MusicRelease[], now: Date) {
+  const targetDate = releases[0]?.releaseDate;
+  if (!targetDate) {
+    return {
+      eyebrow: "RELEASE RADAR",
+      title: "Noch leer",
+      subtitle: "Für den kommenden Freitag sind noch keine bestätigten Releases eingetragen.",
+    };
+  }
+
+  const target = parseLocalDate(targetDate);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((target.getTime() - today.getTime()) / 86_400_000);
+  const time = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(now);
+
+  if (days <= 0) {
+    return {
+      eyebrow: `JETZT VERFÜGBAR · ${time}`,
+      title: "Release Friday",
+      subtitle: `${pluralizeReleases(releases.length)} sind jetzt verfügbar.`,
+    };
+  }
+
+  if (days === 1 && now.getDay() === 4) {
+    return {
+      eyebrow: `DONNERSTAG · ${time}`,
+      title: "Heute Nacht",
+      subtitle: releases.length === 1
+        ? "1 Release wartet auf Mitternacht."
+        : `${releases.length} Releases warten auf Mitternacht.`,
+    };
+  }
+
+  return {
+    eyebrow: `${new Intl.DateTimeFormat("de-DE", { weekday: "long" }).format(now).toUpperCase()} · ${time}`,
+    title: "Diesen Freitag",
+    subtitle: `${pluralizeReleases(releases.length)} sind aktuell bestätigt.`,
+  };
 }
 
 function useClock() {
-  const [time, setTime] = useState("--:--");
+  const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    const update = () => setTime(new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(new Date()));
-    update();
-    const interval = window.setInterval(update, 30_000);
+    const interval = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(interval);
   }, []);
-  return time;
+  return now;
 }
 
 function useCountdown(releaseDate: string) {
   const [label, setLabel] = useState("--:--:--");
+
   useEffect(() => {
-    const target = new Date(`${releaseDate}T00:00:00`);
+    const target = parseLocalDate(releaseDate);
     const update = () => {
       const seconds = Math.max(0, Math.floor((target.getTime() - Date.now()) / 1000));
       if (seconds <= 0) {
@@ -115,7 +149,26 @@ function useCountdown(releaseDate: string) {
     const interval = window.setInterval(update, 1000);
     return () => window.clearInterval(interval);
   }, [releaseDate]);
+
   return label;
+}
+
+function Artwork({ release, compact = false }: { release: MusicRelease; compact?: boolean }) {
+  const className = `releaseArtwork ${compact ? "artworkCompact" : ""}`;
+  if (release.coverUrl) {
+    return (
+      <div className={className}>
+        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${className} artworkFallback`} aria-label={`Noch kein Cover für ${release.title}`}>
+      <div className="artGlow" />
+      <div className="artBars"><span /><span /><span /><span /><span /></div>
+    </div>
+  );
 }
 
 function ScreenHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
@@ -156,6 +209,16 @@ function FilterPills<T extends string>({
   );
 }
 
+function EmptyState({ title, body, icon = "search" }: { title: string; body: string; icon?: IconName }) {
+  return (
+    <div className="emptyState" role="status">
+      <Icon name={icon} size={28} />
+      <strong>{title}</strong>
+      <span>{body}</span>
+    </div>
+  );
+}
+
 function ReleaseRow({
   release,
   saved,
@@ -167,17 +230,20 @@ function ReleaseRow({
   onOpen: () => void;
   onToggleSaved: () => void;
 }) {
-  const live = liveReleaseIds.has(release.id);
+  const countdown = useCountdown(release.releaseDate);
+  const live = countdown === "LIVE";
+  const shortStatus = live ? "LIVE" : countdown.slice(0, 5);
+
   return (
     <article className="releaseRow">
       <button type="button" className="releaseRowMain" onClick={onOpen} aria-label={`${release.title} von ${release.artist} öffnen`}>
         <Artwork release={release} compact />
         <div className="releaseCopy">
-          <span className={`releaseKicker ${live ? "isLive" : ""}`}>{release.country} · {release.kind.toUpperCase()}</span>
+          <span className={`releaseKicker ${live ? "isLive" : ""}`}>{release.country} · {kindLabels[release.kind]}</span>
           <strong>{release.title}</strong>
           <span>{release.artist}</span>
         </div>
-        <div className={`releaseStatus ${live ? "isLive" : ""}`}>{live ? "LIVE" : "00:19"}</div>
+        <div className={`releaseStatus ${live ? "isLive" : ""}`}>{shortStatus}</div>
       </button>
       <button
         type="button"
@@ -194,15 +260,17 @@ function ReleaseRow({
 
 function FeaturedRelease({ release, onOpen }: { release: MusicRelease; onOpen: () => void }) {
   const countdown = useCountdown(release.releaseDate);
+  const live = countdown === "LIVE";
+
   return (
     <button type="button" className="featuredRelease" onClick={onOpen}>
       <Artwork release={release} />
       <div className="featuredCopy">
-        <span className="releaseKicker">{release.country} · {release.kind.toUpperCase()}</span>
+        <span className={`releaseKicker ${live ? "isLive" : ""}`}>{release.country} · {kindLabels[release.kind]}</span>
         <h2>{release.title}</h2>
         <p>{release.artist}</p>
         <div className="countdownCard">
-          <span><i /> NOCH</span>
+          <span><i className={live ? "live" : undefined} /> {live ? "JETZT" : "NOCH"}</span>
           <strong>{countdown}</strong>
         </div>
       </div>
@@ -247,58 +315,87 @@ function HomeScreen({
   onOpen: (release: MusicRelease) => void;
   onToggleSaved: (id: string) => void;
 }) {
-  const time = useClock();
+  const now = useClock();
   const [filter, setFilter] = useState<CountryFilter>("ALL");
-  const featured = releases[0];
-  const visible = releases.slice(1).filter((release) => filter === "ALL" || release.country === filter);
+  const filtered = releases.filter((release) => filter === "ALL" || release.country === filter);
+  const featured = filtered[0];
+  const visible = filtered.slice(1);
+  const copy = getHomeCopy(releases, now);
 
   return (
     <section className="screenContent homeScreen">
-      <ScreenHeader eyebrow={`DONNERSTAG · ${time}`} title="Heute Nacht" subtitle={`${releases.length} Releases warten auf Mitternacht.`} />
-      <FeaturedRelease release={featured} onOpen={() => onOpen(featured)} />
-      <FilterPills
-        value={filter}
-        label="Region filtern"
-        onChange={setFilter}
-        items={[
-          { value: "ALL", label: "Alle" },
-          { value: "DE", label: "Deutschland" },
-          { value: "US", label: "USA" },
-        ]}
-      />
-      <h2 className="sectionTitle">Weitere Releases</h2>
-      <div className="releaseStack">
-        {visible.map((release) => (
-          <ReleaseRow
-            key={release.id}
-            release={release}
-            saved={savedIds.has(release.id)}
-            onOpen={() => onOpen(release)}
-            onToggleSaved={() => onToggleSaved(release.id)}
+      <ScreenHeader eyebrow={copy.eyebrow} title={copy.title} subtitle={copy.subtitle} />
+      {featured ? (
+        <>
+          <FeaturedRelease release={featured} onOpen={() => onOpen(featured)} />
+          <FilterPills
+            value={filter}
+            label="Region filtern"
+            onChange={setFilter}
+            items={[
+              { value: "ALL", label: "Alle" },
+              { value: "DE", label: "Deutschland" },
+              { value: "US", label: "USA" },
+            ]}
           />
-        ))}
-      </div>
+          <h2 className="sectionTitle">Weitere Releases</h2>
+          <div className="releaseStack">
+            {visible.length ? visible.map((release) => (
+              <ReleaseRow
+                key={release.id}
+                release={release}
+                saved={savedIds.has(release.id)}
+                onOpen={() => onOpen(release)}
+                onToggleSaved={() => onToggleSaved(release.id)}
+              />
+            )) : (
+              <EmptyState
+                title="Keine weiteren Releases"
+                body="Für diese Region ist aktuell nur der hervorgehobene Release bestätigt."
+                icon="home"
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <FilterPills
+            value={filter}
+            label="Region filtern"
+            onChange={setFilter}
+            items={[
+              { value: "ALL", label: "Alle" },
+              { value: "DE", label: "Deutschland" },
+              { value: "US", label: "USA" },
+            ]}
+          />
+          <EmptyState
+            title={filter === "DE" ? "Noch keine Deutschland-Releases" : filter === "US" ? "Noch keine USA-Releases" : "Noch keine bestätigten Releases"}
+            body="Der Radar wird automatisch aktualisiert. Bestätigte Einträge erscheinen hier sofort."
+            icon="home"
+          />
+        </>
+      )}
     </section>
   );
 }
 
 function ArtistCard({
-  initials,
-  name,
-  meta,
+  artist,
+  country,
   followed,
   onToggle,
 }: {
-  initials: string;
-  name: string;
-  meta: string;
+  artist: string;
+  country: ReleaseCountry;
   followed: boolean;
   onToggle: () => void;
 }) {
+  const initials = artist.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "?";
   return (
     <article className="artistCard">
       <div className="artistAvatar">{initials}</div>
-      <div className="artistCopy"><strong>{name}</strong><span>{meta}</span><small>Diese Woche</small></div>
+      <div className="artistCopy"><strong>{artist}</strong><span>{country} · RAP</span><small>Diese Woche</small></div>
       <button type="button" className={followed ? "following" : undefined} onClick={onToggle}>{followed ? "FOLGST DU" : "FOLGEN"}</button>
     </article>
   );
@@ -316,12 +413,17 @@ function SearchScreen({
   onToggleSaved: (id: string) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [followedArtists, setFollowedArtists] = useState(new Set(["Central"]));
+  const [followedArtists, setFollowedArtists] = useState<Set<string>>(() => new Set());
   const results = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("de-DE");
-    if (!normalized) return releases.slice(0, 4);
+    if (!normalized) return releases;
     return releases.filter((release) => `${release.title} ${release.artist}`.toLocaleLowerCase("de-DE").includes(normalized));
   }, [query, releases]);
+  const trending = useMemo(() => {
+    const map = new Map<string, ReleaseCountry>();
+    for (const release of releases) if (!map.has(release.artist)) map.set(release.artist, release.country);
+    return [...map.entries()].slice(0, 3);
+  }, [releases]);
 
   const toggleFollow = (artist: string) => {
     setFollowedArtists((current) => {
@@ -333,17 +435,18 @@ function SearchScreen({
 
   return (
     <section className="screenContent searchScreen">
-      <ScreenHeader eyebrow="DISCOVER" title="Suchen" />
+      <ScreenHeader eyebrow="DISCOVER" title="Suchen" subtitle="Durchsuche alle bestätigten Releases dieser Woche." />
       <label className="searchField">
         <Icon name="search" />
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Künstler, Album oder Single" />
+        <input value={query} onChange={(event: { target: { value: string } }) => setQuery(event.target.value)} placeholder="Künstler, Album oder Single" />
       </label>
-      <h2 className="sectionTitle">Trending Artists</h2>
+      <h2 className="sectionTitle">Artists diese Woche</h2>
       <div className="artistStack">
-        <ArtistCard initials="LC" name="Luciano" meta="DE · RAP" followed={followedArtists.has("Luciano")} onToggle={() => toggleFollow("Luciano")} />
-        <ArtistCard initials="CC" name="Central" meta="UK · RAP" followed={followedArtists.has("Central")} onToggle={() => toggleFollow("Central")} />
+        {trending.length ? trending.map(([artist, country]) => (
+          <ArtistCard key={artist} artist={artist} country={country} followed={followedArtists.has(artist)} onToggle={() => toggleFollow(artist)} />
+        )) : <EmptyState title="Noch keine Artists" body="Sobald Releases bestätigt sind, erscheinen die Artists hier." icon="profile" />}
       </div>
-      <h2 className="sectionTitle searchResultsTitle">{query ? "Suchergebnisse" : "Beliebte Releases"}</h2>
+      <h2 className="sectionTitle searchResultsTitle">{query ? "Suchergebnisse" : "Alle Releases"}</h2>
       <div className="releaseStack">
         {results.length ? results.map((release) => (
           <ReleaseRow
@@ -353,7 +456,7 @@ function SearchScreen({
             onOpen={() => onOpen(release)}
             onToggleSaved={() => onToggleSaved(release.id)}
           />
-        )) : <div className="emptyState"><Icon name="search" size={30}/><strong>Nichts gefunden</strong><span>Probiere einen anderen Künstler oder Titel.</span></div>}
+        )) : <EmptyState title="Nichts gefunden" body="Probiere einen anderen Künstler oder Titel." />}
       </div>
     </section>
   );
@@ -371,13 +474,19 @@ function SavedScreen({
   onToggleSaved: (id: string) => void;
 }) {
   const [filter, setFilter] = useState<SavedFilter>("upcoming");
+  const now = useClock();
   const saved = releases.filter((release) => savedIds.has(release.id));
-  const visible = saved.filter((release) => filter === "all" || (filter === "live" ? liveReleaseIds.has(release.id) : !liveReleaseIds.has(release.id)));
-  const friday = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "long" }).format(new Date(releases[0].releaseDate));
+  const visible = saved.filter((release) => {
+    if (filter === "all") return true;
+    const live = isReleaseLive(release, now);
+    return filter === "live" ? live : !live;
+  });
+  const friday = releases[0]?.releaseDate ? formatReleaseDate(releases[0].releaseDate) : "kommender Freitag";
+  const editorial = visible[0] ?? saved[0];
 
   return (
     <section className="screenContent savedScreen">
-      <ScreenHeader eyebrow="DEINE WOCHE" title="Gespeichert" subtitle={`${saved.length} Releases · ${friday}`} />
+      <ScreenHeader eyebrow="DEINE WOCHE" title="Gespeichert" subtitle={`${pluralizeReleases(saved.length)} · ${friday}`} />
       <FilterPills
         value={filter}
         label="Gespeicherte Releases filtern"
@@ -398,12 +507,14 @@ function SavedScreen({
             onOpen={() => onOpen(release)}
             onToggleSaved={() => onToggleSaved(release.id)}
           />
-        )) : <div className="emptyState"><Icon name="star" size={30}/><strong>Keine Releases hier</strong><span>Speichere einen Release oder wechsle den Filter.</span></div>}
+        )) : <EmptyState title="Keine Releases hier" body="Speichere einen Release oder wechsle den Filter." icon="star" />}
       </div>
-      <article className="editorialCard">
-        <div className="editorialVisual" />
-        <div><span>WARUM ES SPANNEND IST</span><h3>Berlin trifft London.</h3><p>Melodischer Rap trifft internationalen Club-Sound.</p></div>
-      </article>
+      {editorial ? (
+        <article className="editorialCard">
+          <Artwork release={editorial} />
+          <div><span>WARUM ES SPANNEND IST</span><h3>{editorial.title}</h3><p>{editorial.description ?? `${editorial.artist} veröffentlicht am ${formatReleaseDate(editorial.releaseDate)}.`}</p></div>
+        </article>
+      ) : null}
     </section>
   );
 }
@@ -417,10 +528,10 @@ function ToggleRow({ title, subtitle, enabled, onToggle }: { title: string; subt
   );
 }
 
-function ProfileScreen({ savedCount, notify }: { savedCount: number; notify: (message: string) => void }) {
+function ProfileScreen({ savedCount, metadata }: { savedCount: number; metadata?: ReleaseDataMetadata }) {
   const [reminders, setReminders] = useState(true);
   const [briefing, setBriefing] = useState(true);
-  const [region, setRegion] = useState("DE + US");
+  const [region, setRegion] = useState<"DE + US" | ReleaseCountry>("DE + US");
   const cycleRegion = () => setRegion((current) => current === "DE + US" ? "DE" : current === "DE" ? "US" : "DE + US");
 
   return (
@@ -428,22 +539,31 @@ function ProfileScreen({ savedCount, notify }: { savedCount: number; notify: (me
       <ScreenHeader eyebrow="ACCOUNT" title="Profil" />
       <article className="profileCard">
         <div className="profileAvatar">JP</div>
-        <div><strong>Janus</strong><span>DEUTSCHRAP · US RAP · MELODIC</span><small>{savedCount} gespeicherte Releases</small></div>
+        <div><strong>Janus</strong><span>DEUTSCHRAP · US RAP · MELODIC</span><small>{pluralizeReleases(savedCount)} gespeichert</small></div>
       </article>
       <h2 className="sectionTitle settingsTitle">Einstellungen</h2>
       <div className="settingsStack">
-        <ToggleRow title="Release-Erinnerungen" subtitle="Donnerstag um 20:00" enabled={reminders} onToggle={() => setReminders((value) => !value)} />
-        <button type="button" className="settingsRow" onClick={() => notify("Streaming-Dienste: Spotify, Apple Music und YouTube")}> 
-          <span><strong>Streaming-Dienste</strong><small>Spotify, Apple Music, YouTube</small></span><Icon name="chevron" />
-        </button>
+        <ToggleRow title="Release-Erinnerungen" subtitle="Donnerstag am Abend" enabled={reminders} onToggle={() => setReminders((value) => !value)} />
+        <div className="settingsRow settingsStatic">
+          <span><strong>Streaming-Dienste</strong><small>Spotify, Apple Music, YouTube</small></span><Icon name="external" />
+        </div>
         <button type="button" className="settingsRow" onClick={cycleRegion}>
-          <span><strong>Region</strong><small>{region === "DE + US" ? "Deutschland + USA" : countryLabels[region as ReleaseCountry]}</small></span><em>{region}</em>
+          <span><strong>Region</strong><small>{region === "DE + US" ? "Deutschland + USA" : countryLabels[region]}</small></span><em>{region}</em>
         </button>
         <ToggleRow title="Editorial Briefing" subtitle="Warum diese Releases wichtig sind" enabled={briefing} onToggle={() => setBriefing((value) => !value)} />
       </div>
-      <div className="versionCard">Release Friday · Prototype 0.2</div>
+      <div className="versionCard">
+        <strong>Release Friday · Prototype 0.4</strong>
+        <span>Datenstand: {formatGeneratedAt(metadata?.generatedAt)}</span>
+        {metadata ? <small>{metadata.fetchedCount} automatisch · {metadata.curatedCount} kuratiert</small> : null}
+      </div>
     </section>
   );
+}
+
+function StreamingLink({ href, children, primary = false }: { href?: string; children: ReactNode; primary?: boolean }) {
+  if (!href) return <span className={`streamingLink disabled ${primary ? "primary" : ""}`}>{children}<small>Noch nicht verfügbar</small></span>;
+  return <a className={`streamingLink ${primary ? "primary" : ""}`} href={href} target="_blank" rel="noreferrer">{children}<Icon name="external" size={18} /></a>;
 }
 
 function DetailScreen({
@@ -451,15 +571,16 @@ function DetailScreen({
   saved,
   onBack,
   onToggleSaved,
-  notify,
 }: {
   release: MusicRelease;
   saved: boolean;
   onBack: () => void;
   onToggleSaved: () => void;
-  notify: (message: string) => void;
 }) {
-  const live = liveReleaseIds.has(release.id);
+  const now = useClock();
+  const live = isReleaseLive(release, now);
+  const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
+
   return (
     <section className="detailScreen">
       <div className="detailGlow" />
@@ -470,45 +591,56 @@ function DetailScreen({
       <Artwork release={release} />
       <div className="detailBody">
         <span className={`livePill ${live ? "isLive" : ""}`}><i />{live ? "NOW LIVE" : "UPCOMING"}</span>
-        <p className="detailMeta">{release.country} · {release.kind.toUpperCase()} · {release.kind === "album" ? "14 TRACKS" : "1 TRACK"}</p>
+        <p className="detailMeta">{release.country} · {kindLabels[release.kind]}{trackText}</p>
         <h1>{release.title}</h1>
         <p className="detailArtist">{release.artist}</p>
         <span className="detailEyebrow">WARUM ES SPANNEND IST</span>
-        <p className="detailDescription">{descriptions[release.id] ?? "Ein Release, den du diesen Freitag auf dem Radar haben solltest."}</p>
+        <p className="detailDescription">{release.description ?? `${release.artist} veröffentlicht ${release.kind === "single" ? "eine neue Single" : "ein neues Projekt"} am ${formatReleaseDate(release.releaseDate)}.`}</p>
         <div className="streamingActions">
-          <button type="button" className="primary" onClick={() => notify("Demo: Spotify würde jetzt geöffnet")}>Auf Spotify anhören</button>
-          <button type="button" onClick={() => notify("Demo: Apple Music würde jetzt geöffnet")}>Apple Music</button>
-          <button type="button" onClick={() => notify("Demo: YouTube würde jetzt geöffnet")}>YouTube öffnen</button>
+          <StreamingLink href={release.spotifyUrl} primary>Auf Spotify anhören</StreamingLink>
+          <StreamingLink href={release.appleMusicUrl}>Apple Music</StreamingLink>
+          <StreamingLink href={release.youtubeUrl}>YouTube öffnen</StreamingLink>
         </div>
+        <p className="sourceNote">Quelle: {release.source}</p>
       </div>
     </section>
   );
 }
 
-function PrototypeShell({ children, active, onTabChange, showNav = true, toast }: { children: ReactNode; active: Tab; onTabChange: (tab: Tab) => void; showNav?: boolean; toast: string }) {
+function PrototypeShell({ children, active, onTabChange, showNav = true }: { children: ReactNode; active: Tab; onTabChange: (tab: Tab) => void; showNav?: boolean }) {
+  const now = useClock();
+  const time = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(now);
   return (
     <main className="prototypePage">
       <div className="prototypePhone">
-        <div className="statusBar"><strong>23:41</strong><span>● ◌ ▬</span></div>
+        <div className="statusBar"><strong>{time}</strong><span>● ◌ ▬</span></div>
         {children}
         {showNav ? <BottomNav active={active} onChange={onTabChange} /> : null}
-        {toast ? <div className="prototypeToast" role="status">{toast}</div> : null}
       </div>
     </main>
   );
 }
 
-export function PrototypeClient({ releases }: PrototypeClientProps) {
+function loadSavedIds(releases: MusicRelease[]) {
+  if (typeof window === "undefined") return new Set<string>();
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem("release-friday:saved") ?? "[]") as string[];
+    const validIds = new Set(releases.map((release) => release.id));
+    return new Set(parsed.filter((id) => validIds.has(id)));
+  } catch {
+    return new Set<string>();
+  }
+}
+
+export function PrototypeClient({ releases, metadata }: PrototypeClientProps) {
   const [activeTab, setActiveTab] = useState<Tab>("releases");
   const [selectedRelease, setSelectedRelease] = useState<MusicRelease | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(["neon-uber-berlin", "no-sleep", "freitag"]));
-  const [toast, setToast] = useState("");
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
 
+  useEffect(() => setSavedIds(loadSavedIds(releases)), [releases]);
   useEffect(() => {
-    if (!toast) return;
-    const timeout = window.setTimeout(() => setToast(""), 2200);
-    return () => window.clearTimeout(timeout);
-  }, [toast]);
+    window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
+  }, [savedIds]);
 
   const toggleSaved = (id: string) => {
     setSavedIds((current) => {
@@ -529,30 +661,20 @@ export function PrototypeClient({ releases }: PrototypeClientProps) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const validSavedCount = releases.filter((release) => savedIds.has(release.id)).length;
   let content: ReactNode;
+
   if (selectedRelease) {
-    content = (
-      <DetailScreen
-        release={selectedRelease}
-        saved={savedIds.has(selectedRelease.id)}
-        onBack={() => setSelectedRelease(null)}
-        onToggleSaved={() => toggleSaved(selectedRelease.id)}
-        notify={setToast}
-      />
-    );
+    content = <DetailScreen release={selectedRelease} saved={savedIds.has(selectedRelease.id)} onBack={() => setSelectedRelease(null)} onToggleSaved={() => toggleSaved(selectedRelease.id)} />;
   } else if (activeTab === "search") {
     content = <SearchScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   } else if (activeTab === "saved") {
     content = <SavedScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   } else if (activeTab === "profile") {
-    content = <ProfileScreen savedCount={savedIds.size} notify={setToast} />;
+    content = <ProfileScreen savedCount={validSavedCount} metadata={metadata} />;
   } else {
     content = <HomeScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   }
 
-  return (
-    <PrototypeShell active={activeTab} onTabChange={changeTab} showNav={!selectedRelease} toast={toast}>
-      {content}
-    </PrototypeShell>
-  );
+  return <PrototypeShell active={activeTab} onTabChange={changeTab} showNav={!selectedRelease}>{content}</PrototypeShell>;
 }
