@@ -185,7 +185,7 @@ function mergeReleases(curated, fetched) {
 }
 
 async function main() {
-  const targetDate = process.env.RELEASE_DATE ?? getUpcomingFriday();
+  const targetDate = process.env.RELEASE_DATE?.trim() || getUpcomingFriday();
   const curated = await loadCurated(targetDate);
   let fetched = [];
   let fetchError = null;
