@@ -4,24 +4,11 @@
 import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
-  targetDate: "2026-07-17",
-  generatedAt: "2026-07-13T20:10:00.000Z",
-  fetchedCount: 0,
-  curatedCount: 1,
-  fetchError: null,
+  "targetDate": "",
+  "generatedAt": "2026-07-13T20:18:43.414Z",
+  "fetchedCount": 0,
+  "curatedCount": 0,
+  "fetchError": null
 } as const;
 
-export const realReleases: MusicRelease[] = [
-  {
-    id: "curated-dj-khaled-aalam-of-god",
-    title: "Aalam of God",
-    artist: "DJ Khaled",
-    releaseDate: "2026-07-17",
-    country: "US",
-    kind: "album",
-    spotifyUrl: "https://open.spotify.com/search/DJ%20Khaled%20Aalam%20of%20God",
-    appleMusicUrl: "https://music.apple.com/de/search?term=DJ%20Khaled%20Aalam%20of%20God",
-    youtubeUrl: "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
-    source: "curated",
-  },
-];
+export const realReleases: MusicRelease[] = [];
