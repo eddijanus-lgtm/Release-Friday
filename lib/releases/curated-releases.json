@@ -1,0 +1,16 @@
+{
+  "releases": [
+    {
+      "id": "curated-dj-khaled-aalam-of-god",
+      "title": "Aalam of God",
+      "artist": "DJ Khaled",
+      "releaseDate": "2026-07-17",
+      "country": "US",
+      "kind": "album",
+      "spotifyUrl": "https://open.spotify.com/search/DJ%20Khaled%20Aalam%20of%20God",
+      "appleMusicUrl": "https://music.apple.com/de/search?term=DJ%20Khaled%20Aalam%20of%20God",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
+      "source": "curated"
+    }
+  ]
+}
