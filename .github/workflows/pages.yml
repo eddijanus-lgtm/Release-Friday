@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEPLOY_TARGET: github-pages
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,11 +35,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
-
       - name: Build static export
-        run: npm run build
+        run: |
+          if npm run build > /tmp/pages-build.log 2>&1; then
+            cat /tmp/pages-build.log
+          else
+            {
+              echo "❌ **GitHub Pages build failed**"
+              echo
+              echo '```text'
+              tail -n 80 /tmp/pages-build.log
+              echo '```'
+            } > /tmp/pages-build-failure.md
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body-file /tmp/pages-build-failure.md
+            cat /tmp/pages-build.log
+            exit 1
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
@@ -72,6 +84,8 @@ jobs:
         run: |
           if [ "$DEPLOY_RESULT" = "success" ]; then
             gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "✅ Permanent GitHub Pages preview deployed: ${PAGE_URL:-https://eddijanus-lgtm.github.io/Release-Friday/}"
+          elif [ "$BUILD_RESULT" != "success" ]; then
+            echo "Build failed; detailed log was posted by the build job."
           else
-            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ GitHub Pages deployment did not complete. Build: $BUILD_RESULT · Deploy: $DEPLOY_RESULT. Open Settings → Pages and select Source: GitHub Actions once, then rerun the workflow."
+            gh pr comment 1 --repo "$GITHUB_REPOSITORY" --body "⚠️ GitHub Pages deploy step failed after a successful build. Check Settings → Pages and confirm Source: GitHub Actions."
           fi
