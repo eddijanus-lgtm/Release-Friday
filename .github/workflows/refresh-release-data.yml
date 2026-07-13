@@ -1,0 +1,59 @@
+name: Refresh real release data
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/refresh-release-data.yml"
+      - "scripts/fetch-releases.mjs"
+      - "lib/releases/curated-releases.json"
+  workflow_dispatch:
+  schedule:
+    - cron: "15 18 * * 4"
+      timezone: "Europe/Berlin"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: "release-data-refresh"
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Fetch upcoming Friday releases
+        env:
+          RELEASE_DATE: ${{ inputs.release_date }}
+        run: node scripts/fetch-releases.mjs
+
+      - name: Commit refreshed data
+        id: commit
+        run: |
+          if git diff --quiet -- lib/releases/real-releases.generated.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Release data is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/releases/real-releases.generated.ts
+          git commit -m "Refresh upcoming Friday releases"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy refreshed site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
