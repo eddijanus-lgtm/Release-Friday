@@ -22,13 +22,23 @@
 
 .rowCoverThumb.isFallback {
   display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 72% 22%, rgba(189,255,0,.2), transparent 32%),
-    linear-gradient(145deg, #0b100a, #192216);
+  align-content: center;
+  justify-items: center;
+  padding: 6px 3px;
+  background: #050805;
   color: var(--lime);
-  font-size: 12px;
-  font-weight: 900;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 13px;
+  line-height: .72;
+  letter-spacing: -.045em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.rowCoverThumb.isFallback span {
+  display: block;
+  width: 100%;
+  transform: scaleX(.82);
 }
 
 .tapeRow {
@@ -47,6 +57,10 @@
     width: 50px;
     border-radius: 7px;
   }
+
+  .rowCoverThumb.isFallback {
+    font-size: 11px;
+  }
 }
 
 @media (min-width: 700px) {
@@ -59,6 +73,10 @@
   .rowCoverThumb {
     width: 72px;
     border-radius: 10px;
+  }
+
+  .rowCoverThumb.isFallback {
+    font-size: 16px;
   }
 
   .tapeRow {
