@@ -1,0 +1,320 @@
+/* Tablet and iPad layout enhancements */
+@media (min-width: 768px) and (max-width: 1366px) {
+  .prototypePage,
+  .adminPage {
+    padding: 24px;
+  }
+
+  .prototypePhone,
+  .adminPhone {
+    width: min(100%, 1040px);
+    min-height: calc(100svh - 48px);
+    border: 1px solid #42473f;
+    border-radius: 28px;
+    box-shadow: 0 35px 100px rgba(0,0,0,.48);
+  }
+
+  .prototypePhone {
+    overflow: clip;
+  }
+
+  .tapeScreen {
+    min-height: calc(100svh - 48px);
+    padding-bottom: 112px;
+  }
+
+  .tapeHeader,
+  .adminHeader {
+    min-height: 108px;
+    align-items: center;
+    padding: 22px 30px 18px;
+    border-radius: 28px 28px 0 0;
+  }
+
+  .wordmark,
+  .adminWordmark {
+    font-size: 48px;
+  }
+
+  .issueMeta,
+  .adminIdentity {
+    font-size: 11px;
+  }
+
+  .tapeStrip,
+  .adminTape {
+    margin: 18px 30px;
+    padding: 15px 18px 14px;
+    font-size: 10px;
+  }
+
+  .screenInner {
+    padding: 0 30px 128px;
+  }
+
+  .regionSwitch {
+    margin-bottom: 18px;
+  }
+
+  .regionSwitch button {
+    min-width: 72px;
+    min-height: 34px;
+    font-size: 9px;
+  }
+
+  .dropHero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+    align-items: center;
+    gap: 32px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: rgba(17,23,16,.72);
+  }
+
+  .dropHero .confirmedLabel {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+  }
+
+  .dropHero > .tapeCover {
+    grid-column: 1;
+    border-radius: 18px;
+  }
+
+  .dropHero > .heroCopy {
+    grid-column: 2;
+    padding: 16px 12px;
+  }
+
+  .heroCopy h1 {
+    max-width: 100%;
+    font-size: clamp(58px, 7vw, 92px);
+  }
+
+  .heroCopy > span,
+  .artistTag {
+    font-size: 12px;
+  }
+
+  .heroCopy small {
+    position: static;
+    display: block;
+    margin-top: 20px;
+    font-size: 9px;
+  }
+
+  .countdownTape {
+    margin-top: 18px;
+    padding: 16px 18px;
+    font-size: 10px;
+  }
+
+  .countdownTape strong {
+    font-size: 20px;
+  }
+
+  .nextTape {
+    padding: 18px 12px 20px;
+  }
+
+  .nextTape > span,
+  .microHeading {
+    font-size: 10px;
+  }
+
+  .nextTape button,
+  .nextTape small {
+    font-size: 10px;
+  }
+
+  .homeRows,
+  .finderList,
+  .stashList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .tapeRow {
+    min-height: 88px;
+  }
+
+  .rowCopy strong {
+    font-size: 25px;
+  }
+
+  .rowCopy span {
+    font-size: 10px;
+  }
+
+  .posterTitle {
+    font-size: clamp(76px, 9vw, 112px);
+  }
+
+  .tapeSearch {
+    min-height: 62px;
+  }
+
+  .tapeSearch input,
+  .editorialNotice,
+  .buildCard,
+  .screenLead {
+    font-size: 10px;
+  }
+
+  .detailScreen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr);
+    align-content: start;
+    gap: 0 24px;
+    padding: 0 30px 128px;
+  }
+
+  .detailToolbar {
+    grid-column: 1 / -1;
+    padding: 20px 0 14px;
+  }
+
+  .detailCover {
+    grid-column: 1;
+    padding: 0;
+  }
+
+  .detailBody {
+    grid-column: 2;
+    padding: 12px 0 0;
+  }
+
+  .detailBody h1 {
+    max-width: 100%;
+    font-size: clamp(60px, 7vw, 92px);
+  }
+
+  .detailDescription {
+    font-size: 16px;
+  }
+
+  .streamGrid a,
+  .streamGrid span {
+    min-height: 58px;
+    font-size: 9px;
+  }
+
+  .radarIdentity {
+    grid-template-columns: 82px minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .radarIdentity > div {
+    width: 82px;
+    font-size: 24px;
+  }
+
+  .settingsList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .settingRow {
+    min-height: 66px;
+    padding: 0 18px;
+  }
+
+  .settingRow strong,
+  .settingRow span {
+    font-size: 10px;
+  }
+
+  .tapeNav {
+    bottom: 24px;
+    width: min(calc(100% - 48px), 980px);
+    min-height: 78px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #252d23;
+    border-radius: 20px;
+  }
+
+  .tapeNav button {
+    min-height: 58px;
+    font-size: 10px;
+  }
+
+  .adminLoginBody,
+  .releaseEditorBody,
+  .adminDenied {
+    padding: 12px 30px 86px;
+  }
+
+  .adminTitle {
+    font-size: clamp(76px, 9vw, 112px);
+  }
+
+  .adminIntro {
+    max-width: 760px;
+    font-size: 16px;
+  }
+
+  .releaseForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+  }
+
+  .releaseForm > .adminFormSection,
+  .releaseForm > .adminError,
+  .releaseForm > .adminSuccess,
+  .releaseForm > .adminActions {
+    min-width: 0;
+  }
+
+  .releaseForm > .adminFormSection:nth-of-type(1) {
+    grid-column: 1;
+  }
+
+  .releaseForm > .adminFormSection:nth-of-type(2) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .releaseForm > .adminFormSection:nth-of-type(3) {
+    grid-column: 1;
+  }
+
+  .releaseForm > .adminError,
+  .releaseForm > .adminSuccess,
+  .releaseForm > .adminActions {
+    grid-column: 1 / -1;
+  }
+
+  .releaseEditorBody > .adminFormSection:last-child {
+    margin-top: 20px;
+  }
+
+  .adminField input,
+  .adminField select,
+  .adminField textarea {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  .prototypePhone,
+  .adminPhone {
+    width: min(100%, 1180px);
+  }
+
+  .dropHero {
+    grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr);
+  }
+
+  .homeRows,
+  .finderList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tapeNav {
+    width: min(calc(100% - 48px), 1120px);
+  }
+}
