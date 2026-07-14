@@ -1,0 +1,37 @@
+name: Sync releases to Supabase
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 5 * * 4"
+    - cron: "15 5 * * 5"
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch upcoming releases
+        run: node scripts/fetch-releases.mjs
+
+      - name: Sync new releases to Supabase
+        run: node scripts/sync-releases-to-supabase.mjs
