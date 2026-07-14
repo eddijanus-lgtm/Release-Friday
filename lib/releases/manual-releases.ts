@@ -76,6 +76,7 @@ export async function fetchPublishedManualReleases(targetDate: string, signal?: 
   if (supabaseAnonKey.startsWith("eyJ")) headers.Authorization = `Bearer ${supabaseAnonKey}`;
 
   const response = await fetch(`${supabaseUrl}/rest/v1/releases?${query}`, {
+    cache: "no-store",
     headers,
     signal,
   });
