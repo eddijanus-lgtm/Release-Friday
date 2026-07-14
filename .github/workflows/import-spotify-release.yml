@@ -1,0 +1,57 @@
+name: Import Spotify release
+
+on:
+  workflow_dispatch:
+    inputs:
+      spotify_release:
+        description: "Spotify album URL or 22-character album ID"
+        required: true
+        type: string
+      country:
+        description: "Editorial country"
+        required: true
+        default: "DE"
+        type: choice
+        options:
+          - DE
+          - US
+      status:
+        description: "Supabase status"
+        required: true
+        default: "published"
+        type: choice
+        options:
+          - published
+          - draft
+
+permissions:
+  contents: read
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SPOTIFY_RELEASE: ${{ inputs.spotify_release }}
+      RELEASE_COUNTRY: ${{ inputs.country }}
+      RELEASE_STATUS: ${{ inputs.status }}
+      SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+      SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Import Spotify album into Supabase
+        run: node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
