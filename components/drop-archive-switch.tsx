@@ -21,31 +21,45 @@ function formatDate(value: string) {
 }
 
 export function DropArchiveSwitch() {
-  const [host, setHost] = useState<HTMLElement | null>(null);
+  const [switchHost, setSwitchHost] = useState<HTMLElement | null>(null);
+  const [contentHost, setContentHost] = useState<HTMLElement | null>(null);
   const [mode, setMode] = useState<"current" | "archive">("current");
   const [releases, setReleases] = useState<MusicRelease[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const ensureHost = () => {
+    const ensureHosts = () => {
       const screen = document.querySelector<HTMLElement>(".dropScreen");
+      const issueMeta = screen?.querySelector<HTMLElement>(".issueMeta");
       const strip = screen?.querySelector<HTMLElement>(".tapeStrip");
-      if (!screen || !strip) {
-        setHost(null);
+      if (!screen || !issueMeta || !strip) {
+        setSwitchHost(null);
+        setContentHost(null);
         return;
       }
 
-      let target = screen.querySelector<HTMLElement>(".dropArchivePortalHost");
-      if (!target) {
-        target = document.createElement("div");
-        target.className = "dropArchivePortalHost";
-        strip.insertAdjacentElement("afterend", target);
+      issueMeta.classList.add("hasArchiveSwitch");
+
+      let nextSwitchHost = issueMeta.querySelector<HTMLElement>(".issueArchiveSwitchHost");
+      if (!nextSwitchHost) {
+        nextSwitchHost = document.createElement("div");
+        nextSwitchHost.className = "issueArchiveSwitchHost";
+        issueMeta.prepend(nextSwitchHost);
       }
-      setHost(target);
+
+      let nextContentHost = screen.querySelector<HTMLElement>(".dropArchiveContentHost");
+      if (!nextContentHost) {
+        nextContentHost = document.createElement("div");
+        nextContentHost.className = "dropArchiveContentHost";
+        strip.insertAdjacentElement("afterend", nextContentHost);
+      }
+
+      setSwitchHost(nextSwitchHost);
+      setContentHost(nextContentHost);
     };
 
-    ensureHost();
-    const observer = new MutationObserver(ensureHost);
+    ensureHosts();
+    const observer = new MutationObserver(ensureHosts);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
@@ -54,7 +68,7 @@ export function DropArchiveSwitch() {
     const screen = document.querySelector<HTMLElement>(".dropScreen");
     screen?.classList.toggle("showInlineArchive", mode === "archive");
     return () => screen?.classList.remove("showInlineArchive");
-  }, [mode, host]);
+  }, [mode, contentHost]);
 
   const openArchive = async () => {
     setMode("archive");
@@ -75,70 +89,72 @@ export function DropArchiveSwitch() {
     }));
   }, [releases]);
 
-  if (!host) return null;
+  if (!switchHost || !contentHost) return null;
 
-  return createPortal(
-    <>
-      <div className="issueArchiveSwitch" role="tablist" aria-label="Drop-Ausgabe auswählen">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "current"}
-          className={mode === "current" ? "active" : undefined}
-          onClick={() => setMode("current")}
-        >
-          <span aria-hidden="true">◉</span> CURRENT ISSUE
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "archive"}
-          className={mode === "archive" ? "active" : undefined}
-          onClick={() => void openArchive()}
-        >
-          ARCHIVE
-        </button>
-      </div>
-
-      {mode === "archive" ? (
-        <div className="inlineArchive" role="tabpanel">
-          <h1 className="posterTitle">THE<br />ARCHIVE</h1>
-          {loading ? <p className="inlineArchiveState">ARCHIVE WIRD GELADEN …</p> : null}
-          {!loading && groups.length === 0 ? <p className="inlineArchiveState">NO PAST ISSUES YET.</p> : null}
-          {groups.map((group) => (
-            <section className="inlineArchiveIssue" key={group.date}>
-              <header>
-                <span>ISSUE</span>
-                <strong>{formatDate(group.date)}</strong>
-                <small>{group.releases.length} RELEASES</small>
-              </header>
-              <div className="inlineArchiveGrid">
-                {group.releases.map((release) => (
-                  <article className="inlineArchiveCard" key={release.id}>
-                    <div className="inlineArchiveCover">
-                      {release.coverUrl ? (
-                        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
-                      ) : (
-                        <div>RELEASE<br />FRIDAY</div>
-                      )}
-                    </div>
-                    <div className="inlineArchiveCopy">
-                      <strong>{release.title}</strong>
-                      <span>{release.artist} · {kindLabels[release.kind]}</span>
-                    </div>
-                    <div className="inlineArchiveLinks">
-                      {release.spotifyUrl ? <a href={release.spotifyUrl} target="_blank" rel="noreferrer">SPOTIFY</a> : null}
-                      {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE</a> : null}
-                      {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : null}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : null}
-    </>,
-    host,
+  const switcher = createPortal(
+    <div className="issueArchiveSwitch" role="tablist" aria-label="Ausgabe auswählen">
+      <button
+        type="button"
+        role="tab"
+        aria-selected={mode === "current"}
+        className={mode === "current" ? "active" : undefined}
+        onClick={() => setMode("current")}
+      >
+        ISSUE 29
+      </button>
+      <span aria-hidden="true">/</span>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={mode === "archive"}
+        className={mode === "archive" ? "active" : undefined}
+        onClick={() => void openArchive()}
+      >
+        ARCHIV
+      </button>
+    </div>,
+    switchHost,
   );
+
+  const archive = mode === "archive" ? createPortal(
+    <div className="inlineArchive" role="tabpanel">
+      <h1 className="posterTitle">THE<br />ARCHIVE</h1>
+      {loading ? <p className="inlineArchiveState">ARCHIVE WIRD GELADEN …</p> : null}
+      {!loading && groups.length === 0 ? <p className="inlineArchiveState">NO PAST ISSUES YET.</p> : null}
+      {groups.map((group) => (
+        <section className="inlineArchiveIssue" key={group.date}>
+          <header>
+            <span>ISSUE</span>
+            <strong>{formatDate(group.date)}</strong>
+            <small>{group.releases.length} RELEASES</small>
+          </header>
+          <div className="inlineArchiveGrid">
+            {group.releases.map((release) => (
+              <article className="inlineArchiveCard" key={release.id}>
+                <div className="inlineArchiveCover">
+                  {release.coverUrl ? (
+                    <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div>RELEASE<br />FRIDAY</div>
+                  )}
+                </div>
+                <div className="inlineArchiveCopy">
+                  <strong>{release.title}</strong>
+                  <span>{release.artist} · {kindLabels[release.kind]}</span>
+                </div>
+                <div className="inlineArchiveLinks">
+                  {release.spotifyUrl ? <a href={release.spotifyUrl} target="_blank" rel="noreferrer">SPOTIFY</a> : null}
+                  {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE</a> : null}
+                  {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>,
+    contentHost,
+  ) : null;
+
+  return <>{switcher}{archive}</>;
 }
