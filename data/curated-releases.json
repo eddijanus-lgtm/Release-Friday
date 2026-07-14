@@ -8,7 +8,7 @@
       "country": "DE",
       "kind": "album",
       "coverUrl": "embedded:azet-dardan-eurosport-2",
-      "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
+      "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
       "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
       "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
       "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
@@ -35,6 +35,25 @@
         "Hip-Hop/Rap"
       ],
       "source": "Republic Records + redaktionelle Prüfung"
+    },
+    {
+      "id": "curated-larry-june-who-coppin",
+      "title": "Who Coppin",
+      "artist": "Larry June",
+      "releaseDate": "2026-07-17",
+      "country": "US",
+      "kind": "album",
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/81/f5/5a/81f55ae2-0af8-dcaa-267a-d4f92993b5b2/199316582116_cover.jpg/1000x1000bb.jpg",
+      "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
+      "appleMusicUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=Larry%20June%20Who%20Coppin",
+      "sourceUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+      "description": "Larry June veröffentlicht am 17. Juli 2026 das 16-Track-Album „Who Coppin“ über The Freeminded Records / EMPIRE.",
+      "trackCount": 16,
+      "genres": [
+        "Hip-Hop/Rap"
+      ],
+      "source": "Apple Music + Spotify + redaktionelle Prüfung"
     },
     {
       "id": "curated-syd-beard",
