@@ -1,9 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
 
-let browserClient: ReturnType<typeof createClient> | null = null;
+let browserClient: SupabaseClient | null = null;
 
-export function getBrowserSupabase() {
+export function getBrowserSupabase(): SupabaseClient {
   if (!browserClient) {
     browserClient = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
