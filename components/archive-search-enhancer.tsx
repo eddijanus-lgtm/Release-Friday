@@ -1,0 +1,91 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";
+import type { MusicRelease } from "@/types/release";
+
+function openRelease(release: MusicRelease) {
+  window.dispatchEvent(new CustomEvent<MusicRelease>("release-friday:open-release", { detail: release }));
+}
+
+export function ArchiveSearchEnhancer() {
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const [query, setQuery] = useState("");
+  const [releases, setReleases] = useState<MusicRelease[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchPublishedManualReleases(undefined, controller.signal).then(setReleases).catch(() => setReleases([]));
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    let input: HTMLInputElement | null = null;
+    const onInput = () => setQuery(input?.value ?? "");
+
+    const ensureHost = () => {
+      const screen = document.querySelector<HTMLElement>(".findScreen");
+      const list = screen?.querySelector<HTMLElement>(".finderList");
+      input = screen?.querySelector<HTMLInputElement>(".tapeSearch input") ?? null;
+      if (!screen || !list || !input) {
+        setHost(null);
+        return;
+      }
+      let target = screen.querySelector<HTMLElement>(".archiveSearchHost");
+      if (!target) {
+        target = document.createElement("div");
+        target.className = "archiveSearchHost";
+        list.insertAdjacentElement("afterend", target);
+      }
+      input.removeEventListener("input", onInput);
+      input.addEventListener("input", onInput);
+      setQuery(input.value);
+      setHost(target);
+    };
+
+    ensureHost();
+    const observer = new MutationObserver(ensureHost);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      input?.removeEventListener("input", onInput);
+    };
+  }, []);
+
+  const past = useMemo(() => {
+    const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
+    const currentDate = dates[0];
+    const needle = query.trim().toLocaleLowerCase("de-DE");
+    return releases.filter((release) => {
+      const isPast = Boolean(currentDate) && release.releaseDate < currentDate;
+      const matches = !needle || `${release.title} ${release.artist}`.toLocaleLowerCase("de-DE").includes(needle);
+      return isPast && matches;
+    });
+  }, [query, releases]);
+
+  if (!host || past.length === 0) return null;
+
+  return createPortal(
+    <section className="pastSearchResults" aria-label="Vergangene Releases">
+      <p className="microHeading">PAST RELEASES</p>
+      <div className="finderList">
+        {past.map((release, index) => (
+          <article className="tapeRow pastSearchRow" key={release.id}>
+            <button type="button" className="tapeRowMain" onClick={() => openRelease(release)} aria-label={`${release.title} öffnen`}>
+              <span className="rowNumber">{String(index + 1).padStart(2, "0")}</span>
+              {release.coverUrl ? <img className="pastSearchCover" src={release.coverUrl} alt="" loading="lazy" /> : null}
+              <div className="rowCopy">
+                <strong>{release.title}</strong>
+                <span>{release.artist}</span>
+                <small className="pastReleaseLabel">PAST RELEASE</small>
+              </div>
+              <span className="rowArrow">→</span>
+            </button>
+          </article>
+        ))}
+      </div>
+    </section>,
+    host,
+  );
+}
