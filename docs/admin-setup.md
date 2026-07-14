@@ -2,13 +2,16 @@
 
 The `/admin/` route is a private editor for adding Release Friday entries from a phone. Supabase provides password authentication, Postgres storage and public cover images. GitHub Pages continues to host the frontend.
 
-## 1. Create the Supabase project
+## 1. Supabase project
 
-1. Create a project at <https://supabase.com/dashboard>.
-2. Open **SQL Editor**.
-3. Run `supabase/migrations/20260714140000_create_release_editor.sql` once.
+The `Release Friday` Supabase project is already connected to the GitHub Pages deployment. Its public project URL and publishable browser key live in `.github/workflows/pages.yml`; never replace that key with a secret or service-role key.
 
-The migration creates:
+The database migrations are tracked in `supabase/migrations/` and have already been applied to the connected project:
+
+- `20260714140000_create_release_editor.sql` creates the editor tables, policies and cover bucket.
+- `20260714150000_harden_release_editor_access.sql` prevents public bucket listing and keeps the admin allowlist checks out of the public RPC surface.
+
+Together they provide:
 
 - `release_admins`, the explicit editor allowlist;
 - `releases`, including draft and published states;
@@ -28,17 +31,6 @@ on conflict (user_id) do nothing;
 ```
 
 Do not add a public sign-up flow. Additional editors should be created and allowlisted the same way.
-
-## 3. Connect GitHub Pages
-
-In Supabase, open **Project Settings → API** and copy the project URL and the publishable key (the legacy anon key also works). Never use the service-role key in the frontend.
-
-In GitHub, open **Settings → Secrets and variables → Actions** and add:
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Then run **Actions → Deploy Release Friday to GitHub Pages → Run workflow** once. The `/admin/` login becomes active after deployment.
 
 ## Runtime behavior
 
