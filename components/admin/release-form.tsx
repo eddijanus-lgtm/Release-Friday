@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { compressCover } from "@/lib/images/compress-cover";
 import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
 import type { ReleaseCountry, ReleaseKind } from "@/types/release";
 
@@ -32,8 +33,11 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
   const [formKey, setFormKey] = useState(0);
   const [cover, setCover] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string>();
+  const [compressing, setCompressing] = useState(false);
+  const [originalCoverBytes, setOriginalCoverBytes] = useState<number>();
   const [error, setError] = useState<string>();
   const [success, setSuccess] = useState<ReleaseCreateResult>();
+  const disabled = busy || compressing;
 
   useEffect(() => {
     if (!cover) {
@@ -48,6 +52,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
   function startNew() {
     setEditing(undefined);
     setCover(null);
+    setOriginalCoverBytes(undefined);
     setError(undefined);
     setSuccess(undefined);
     setFormKey((value) => value + 1);
@@ -56,33 +61,48 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
   function startEditing(release: EditableRelease) {
     setEditing(release);
     setCover(null);
+    setOriginalCoverBytes(undefined);
     setError(undefined);
     setSuccess(undefined);
     setFormKey((value) => value + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function handleCoverChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null;
+  async function handleCoverChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const file = input.files?.[0] ?? null;
     setError(undefined);
     setSuccess(undefined);
     if (!file) {
       setCover(null);
+      setOriginalCoverBytes(undefined);
       return;
     }
     if (!allowedImageTypes.has(file.type)) {
-      event.target.value = "";
+      input.value = "";
       setCover(null);
       setError("Bitte JPG, PNG, WebP oder AVIF als Cover verwenden.");
       return;
     }
     if (file.size > maxCoverBytes) {
-      event.target.value = "";
+      input.value = "";
       setCover(null);
-      setError("Das Cover darf höchstens 8 MB groß sein.");
+      setError("Das Original-Cover darf höchstens 8 MB groß sein.");
       return;
     }
-    setCover(file);
+
+    setCompressing(true);
+    setOriginalCoverBytes(file.size);
+    try {
+      setCover(await compressCover(file));
+    } catch (compressionError) {
+      input.value = "";
+      setCover(null);
+      setOriginalCoverBytes(undefined);
+      setError(compressionError instanceof Error ? compressionError.message : "Das Cover konnte nicht komprimiert werden.");
+    } finally {
+      setCompressing(false);
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -121,10 +141,12 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
       if (!editing) {
         formElement.reset();
         setCover(null);
+        setOriginalCoverBytes(undefined);
         setFormKey((value) => value + 1);
       } else {
         setEditing((current) => current ? { ...current, ...values, status, coverUrl: coverPreview ?? current.coverUrl } : current);
         setCover(null);
+        setOriginalCoverBytes(undefined);
       }
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Der Release konnte nicht gespeichert werden.");
@@ -151,7 +173,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
           <p className="adminSectionLabel">{editing ? "EDIT ENTRY" : "NEW ENTRY"}</p>
           <h1 className="adminTitle">RELEASE<br />{editing ? "BEARBEITEN" : "ANLEGEN"}</h1>
         </div>
-        <button type="button" className="adminTextButton" onClick={() => void onLogout()} disabled={busy}>ABMELDEN</button>
+        <button type="button" className="adminTextButton" onClick={() => void onLogout()} disabled={disabled}>ABMELDEN</button>
       </div>
       <p className="adminIntro">Alle Releases liegen zentral in Supabase. Du kannst Einträge erstellen, nachträglich bearbeiten, als Entwurf speichern oder löschen.</p>
 
@@ -159,7 +181,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         <div className="adminSuccess">
           <strong>BEARBEITUNGSMODUS</strong>
           <span>{editing.artist} — {editing.title}</span>
-          <button type="button" className="adminTextButton" onClick={startNew} disabled={busy}>+ NEUEN RELEASE ANLEGEN</button>
+          <button type="button" className="adminTextButton" onClick={startNew} disabled={disabled}>+ NEUEN RELEASE ANLEGEN</button>
         </div>
       ) : null}
 
@@ -167,34 +189,34 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         <section className="adminFormSection">
           <div className="adminFormSectionTitle"><span>01</span><strong>COVER</strong></div>
           <label className={`coverUpload ${coverPreview ? "hasPreview" : ""}`}>
-            {coverPreview ? <img src={coverPreview} alt="Vorschau des ausgewählten Covers" /> : <div><strong>+ COVER AUSWÄHLEN</strong><span>JPG, PNG, WEBP ODER AVIF · MAX. 8 MB</span></div>}
-            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={handleCoverChange} disabled={busy} />
+            {coverPreview ? <img src={coverPreview} alt="Vorschau des ausgewählten Covers" /> : <div><strong>{compressing ? "COVER WIRD KOMPRIMIERT …" : "+ COVER AUSWÄHLEN"}</strong><span>JPG, PNG, WEBP ODER AVIF · AUTOMATISCH WEBP · MAX. 1600 PX</span></div>}
+            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void handleCoverChange(event)} disabled={disabled} />
           </label>
-          {cover ? <p className="coverFileName">{cover.name} · {(cover.size / 1024 / 1024).toFixed(1)} MB</p> : editing?.coverUrl ? <p className="coverFileName">Vorhandenes Cover bleibt erhalten, solange du kein neues auswählst.</p> : null}
+          {compressing ? <p className="coverFileName">Bild wird auf dem Gerät optimiert …</p> : cover ? <p className="coverFileName">{cover.name} · {(cover.size / 1024).toFixed(0)} KB{originalCoverBytes ? ` · vorher ${(originalCoverBytes / 1024).toFixed(0)} KB` : ""}</p> : editing?.coverUrl ? <p className="coverFileName">Vorhandenes Cover bleibt erhalten, solange du kein neues auswählst.</p> : null}
         </section>
 
         <section className="adminFormSection">
           <div className="adminFormSectionTitle"><span>02</span><strong>BASISDATEN</strong></div>
           <div className="adminFieldGrid">
-            <label className="adminField adminFieldWide"><span>KÜNSTLER *</span><input name="artist" required maxLength={200} disabled={busy} defaultValue={editing?.artist} placeholder="z. B. Erabi" /></label>
-            <label className="adminField adminFieldWide"><span>ALBUM / SINGLE / EP TITEL *</span><input name="title" required maxLength={240} disabled={busy} defaultValue={editing?.title} placeholder="z. B. Endgame" /></label>
-            <label className="adminField"><span>TYP *</span><select name="kind" defaultValue={editing?.kind ?? "album"} required disabled={busy}><option value="album">ALBUM</option><option value="ep">EP</option><option value="single">SINGLE</option><option value="mixtape">MIXTAPE</option></select></label>
-            <label className="adminField"><span>LAND *</span><select name="country" defaultValue={editing?.country ?? "DE"} required disabled={busy}><option value="DE">DEUTSCHLAND</option><option value="US">USA</option></select></label>
-            <label className="adminField"><span>RELEASE-DATUM *</span><input name="releaseDate" type="date" defaultValue={editing?.releaseDate ?? targetDate} required disabled={busy} /></label>
-            <label className="adminField"><span>TRACKS</span><input name="trackCount" type="number" inputMode="numeric" min={1} max={999} disabled={busy} defaultValue={editing?.trackCount} placeholder="12" /></label>
-            <label className="adminField adminFieldWide"><span>GENRES</span><input name="genres" maxLength={300} disabled={busy} defaultValue={editing?.genres.join(", ")} placeholder="Deutschrap, Hip-Hop/Rap" /><small>Mehrere Genres mit Komma trennen.</small></label>
-            <label className="adminField adminFieldWide"><span>BESCHREIBUNG</span><textarea name="description" rows={5} maxLength={5000} disabled={busy} defaultValue={editing?.description} placeholder="Kurzer redaktioneller Text zum Release …" /></label>
+            <label className="adminField adminFieldWide"><span>KÜNSTLER *</span><input name="artist" required maxLength={200} disabled={disabled} defaultValue={editing?.artist} placeholder="z. B. Erabi" /></label>
+            <label className="adminField adminFieldWide"><span>ALBUM / SINGLE / EP TITEL *</span><input name="title" required maxLength={240} disabled={disabled} defaultValue={editing?.title} placeholder="z. B. Endgame" /></label>
+            <label className="adminField"><span>TYP *</span><select name="kind" defaultValue={editing?.kind ?? "album"} required disabled={disabled}><option value="album">ALBUM</option><option value="ep">EP</option><option value="single">SINGLE</option><option value="mixtape">MIXTAPE</option></select></label>
+            <label className="adminField"><span>LAND *</span><select name="country" defaultValue={editing?.country ?? "DE"} required disabled={disabled}><option value="DE">DEUTSCHLAND</option><option value="US">USA</option></select></label>
+            <label className="adminField"><span>RELEASE-DATUM *</span><input name="releaseDate" type="date" defaultValue={editing?.releaseDate ?? targetDate} required disabled={disabled} /></label>
+            <label className="adminField"><span>TRACKS</span><input name="trackCount" type="number" inputMode="numeric" min={1} max={999} disabled={disabled} defaultValue={editing?.trackCount} placeholder="12" /></label>
+            <label className="adminField adminFieldWide"><span>GENRES</span><input name="genres" maxLength={300} disabled={disabled} defaultValue={editing?.genres.join(", ")} placeholder="Deutschrap, Hip-Hop/Rap" /><small>Mehrere Genres mit Komma trennen.</small></label>
+            <label className="adminField adminFieldWide"><span>BESCHREIBUNG</span><textarea name="description" rows={5} maxLength={5000} disabled={disabled} defaultValue={editing?.description} placeholder="Kurzer redaktioneller Text zum Release …" /></label>
           </div>
         </section>
 
         <section className="adminFormSection">
           <div className="adminFormSectionTitle"><span>03</span><strong>LINKS</strong></div>
           <div className="adminFieldGrid">
-            <label className="adminField adminFieldWide"><span>SPOTIFY</span><input name="spotifyUrl" type="url" inputMode="url" disabled={busy} defaultValue={editing?.spotifyUrl} placeholder="https://open.spotify.com/album/…" /></label>
-            <label className="adminField adminFieldWide"><span>SPOTIFY PRE-SAVE</span><input name="spotifyPreSaveUrl" type="url" inputMode="url" disabled={busy} defaultValue={editing?.spotifyPreSaveUrl} placeholder="https://…" /></label>
-            <label className="adminField adminFieldWide"><span>APPLE MUSIC</span><input name="appleMusicUrl" type="url" inputMode="url" disabled={busy} defaultValue={editing?.appleMusicUrl} placeholder="https://music.apple.com/…" /></label>
-            <label className="adminField adminFieldWide"><span>YOUTUBE</span><input name="youtubeUrl" type="url" inputMode="url" disabled={busy} defaultValue={editing?.youtubeUrl} placeholder="https://youtube.com/…" /></label>
-            <label className="adminField adminFieldWide"><span>QUELLEN-LINK</span><input name="sourceUrl" type="url" inputMode="url" disabled={busy} defaultValue={editing?.sourceUrl} placeholder="Offizielle Ankündigung oder Label-Seite" /></label>
+            <label className="adminField adminFieldWide"><span>SPOTIFY</span><input name="spotifyUrl" type="url" inputMode="url" disabled={disabled} defaultValue={editing?.spotifyUrl} placeholder="https://open.spotify.com/album/…" /></label>
+            <label className="adminField adminFieldWide"><span>SPOTIFY PRE-SAVE</span><input name="spotifyPreSaveUrl" type="url" inputMode="url" disabled={disabled} defaultValue={editing?.spotifyPreSaveUrl} placeholder="https://…" /></label>
+            <label className="adminField adminFieldWide"><span>APPLE MUSIC</span><input name="appleMusicUrl" type="url" inputMode="url" disabled={disabled} defaultValue={editing?.appleMusicUrl} placeholder="https://music.apple.com/…" /></label>
+            <label className="adminField adminFieldWide"><span>YOUTUBE</span><input name="youtubeUrl" type="url" inputMode="url" disabled={disabled} defaultValue={editing?.youtubeUrl} placeholder="https://youtube.com/…" /></label>
+            <label className="adminField adminFieldWide"><span>QUELLEN-LINK</span><input name="sourceUrl" type="url" inputMode="url" disabled={disabled} defaultValue={editing?.sourceUrl} placeholder="Offizielle Ankündigung oder Label-Seite" /></label>
           </div>
         </section>
 
@@ -208,9 +230,9 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         ) : null}
 
         <div className="adminActions">
-          {editing ? <button type="button" className="adminSecondaryButton" onClick={() => void handleDelete(editing)} disabled={busy}>LÖSCHEN</button> : null}
-          <button type="submit" name="intent" value="draft" className="adminSecondaryButton" disabled={busy}>{busy ? "SPEICHERT …" : "ALS ENTWURF"}</button>
-          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={busy}>{busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "JETZT VERÖFFENTLICHEN →"}</button>
+          {editing ? <button type="button" className="adminSecondaryButton" onClick={() => void handleDelete(editing)} disabled={disabled}>LÖSCHEN</button> : null}
+          <button type="submit" name="intent" value="draft" className="adminSecondaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : "ALS ENTWURF"}</button>
+          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "JETZT VERÖFFENTLICHEN →"}</button>
         </div>
       </form>
 
@@ -221,7 +243,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
             <div className="adminSuccess" key={release.id}>
               <strong>{release.artist} — {release.title}</strong>
               <span>{release.releaseDate} · {release.kind.toUpperCase()} · {release.status === "published" ? "VERÖFFENTLICHT" : "ENTWURF"}</span>
-              <button type="button" className="adminTextButton" onClick={() => startEditing(release)} disabled={busy}>BEARBEITEN →</button>
+              <button type="button" className="adminTextButton" onClick={() => startEditing(release)} disabled={disabled}>BEARBEITEN →</button>
             </div>
           ))}
         </div>
