@@ -1,0 +1,73 @@
+.inlineArchiveCard {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.inlineArchiveCard:active {
+  transform: translateY(1px);
+}
+
+.inlineArchiveArrow {
+  color: var(--lime);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.releaseDetailOverlay {
+  position: absolute;
+  z-index: 30;
+  inset: 0 0 72px;
+  min-height: calc(100% - 72px);
+  overflow-y: auto;
+  background: #050805;
+}
+
+.pastSearchResults {
+  margin-top: 22px;
+}
+
+.pastSearchResults .microHeading {
+  margin-bottom: 10px;
+}
+
+.pastSearchRow .tapeRowMain {
+  grid-template-columns: auto 56px minmax(0, 1fr) auto;
+}
+
+.pastSearchCover {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #33402f;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.pastReleaseLabel {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 6px;
+  border: 1px solid var(--lime);
+  color: var(--lime);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+@media (min-width: 768px) {
+  .releaseDetailOverlay {
+    inset-bottom: 84px;
+  }
+
+  .pastSearchRow .tapeRowMain {
+    grid-template-columns: auto 68px minmax(0, 1fr) auto;
+  }
+
+  .pastSearchCover {
+    width: 68px;
+    height: 68px;
+  }
+}
