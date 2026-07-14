@@ -119,6 +119,8 @@ assert(report.checkpoints.larryJune.spotifyHref === "https://open.spotify.com/al
 assert(report.checkpoints.larryJune.coverLoaded, "Larry June album cover does not render.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
+await usaButton.click();
+await settle();
 
 assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
 await page.locator(".dropHero").click();
