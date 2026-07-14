@@ -15,6 +15,7 @@ Every Thursday, the app presents the hip-hop and rap releases expected for the c
 - Mobile-first interface optimized for iPhone
 - Installable Progressive Web App (PWA)
 - Automated weekly data refresh
+- Password-protected mobile editor for manual releases and cover uploads
 
 ## Technology
 
@@ -23,6 +24,11 @@ Every Thursday, the app presents the hip-hop and rap releases expected for the c
 - React
 - CSS Modules
 - GitHub Actions for scheduled data refreshes
+- Supabase Auth, Postgres and Storage for the private release editor
+
+## Admin editor
+
+The protected editor is available at `/admin/`. It supports draft and published releases, cover uploads and streaming links. Setup instructions are in [`docs/admin-setup.md`](docs/admin-setup.md).
 
 ## Local development
 
