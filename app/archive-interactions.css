@@ -59,7 +59,7 @@
 
 @media (min-width: 768px) {
   .releaseDetailOverlay {
-    inset-bottom: 84px;
+    bottom: 84px;
   }
 
   .pastSearchRow .tapeRowMain {
