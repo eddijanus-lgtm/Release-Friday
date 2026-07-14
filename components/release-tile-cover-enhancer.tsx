@@ -17,57 +17,68 @@ function identity(artist: string, title: string) {
   return `${normalize(artist)}::${normalize(title)}`;
 }
 
+function getRowIdentity(row: HTMLElement) {
+  const title = row.querySelector<HTMLElement>(".rowCopy strong")?.textContent?.trim();
+  const artist = row.querySelector<HTMLElement>(".rowCopy span")?.textContent?.trim();
+  return title && artist ? identity(artist, title) : undefined;
+}
+
 export function ReleaseTileCoverEnhancer() {
   useEffect(() => {
     let active = true;
-    let observer: MutationObserver | undefined;
+    const covers = new Map<string, string>();
+    covers.set(identity("Azet & Dardan", "Eurosport 2"), azetDardanEurosport2Cover);
+
+    const decorateRows = () => {
+      document.querySelectorAll<HTMLElement>(".tapeRowMain").forEach((row) => {
+        const rowIdentity = getRowIdentity(row);
+        if (!rowIdentity) return;
+
+        let thumb = row.querySelector<HTMLElement>(".rowCoverThumb");
+        if (!thumb) {
+          thumb = document.createElement("span");
+          thumb.className = "rowCoverThumb isFallback";
+          thumb.textContent = "RF";
+          const copy = row.querySelector(".rowCopy");
+          row.insertBefore(thumb, copy);
+        }
+
+        const coverUrl = covers.get(rowIdentity);
+        if (!coverUrl || thumb.dataset.coverUrl === coverUrl) return;
+
+        const image = document.createElement("img");
+        image.src = coverUrl;
+        image.alt = "";
+        image.loading = "lazy";
+        image.referrerPolicy = "no-referrer";
+        image.addEventListener("load", () => {
+          if (!active) return;
+          thumb!.replaceChildren(image);
+          thumb!.classList.remove("isFallback");
+          thumb!.dataset.coverUrl = coverUrl;
+        });
+        image.addEventListener("error", () => {
+          thumb!.classList.add("isFallback");
+          thumb!.textContent = "RF";
+        });
+      });
+    };
+
+    decorateRows();
+    const observer = new MutationObserver(decorateRows);
+    observer.observe(document.body, { childList: true, subtree: true });
 
     void getPublishedReleases().then((releases) => {
       if (!active) return;
-
-      const covers = new Map(
-        releases.map((release) => [
-          identity(release.artist, release.title),
-          release.coverUrl || (identity(release.artist, release.title) === identity("Azet & Dardan", "Eurosport 2") ? azetDardanEurosport2Cover : undefined),
-        ]),
-      );
-
-      const decorateRows = () => {
-        document.querySelectorAll<HTMLElement>(".tapeRowMain").forEach((row) => {
-          if (row.querySelector(".rowCoverThumb")) return;
-          const title = row.querySelector<HTMLElement>(".rowCopy strong")?.textContent?.trim();
-          const artist = row.querySelector<HTMLElement>(".rowCopy span")?.textContent?.trim();
-          if (!title || !artist) return;
-
-          const thumb = document.createElement("span");
-          thumb.className = "rowCoverThumb";
-          const coverUrl = covers.get(identity(artist, title));
-
-          if (coverUrl) {
-            const image = document.createElement("img");
-            image.src = coverUrl;
-            image.alt = "";
-            image.loading = "lazy";
-            image.referrerPolicy = "no-referrer";
-            thumb.appendChild(image);
-          } else {
-            thumb.classList.add("isFallback");
-            thumb.textContent = "RF";
-          }
-
-          const copy = row.querySelector(".rowCopy");
-          row.insertBefore(thumb, copy);
-        });
-      };
-
+      releases.forEach((release) => {
+        if (release.coverUrl) covers.set(identity(release.artist, release.title), release.coverUrl);
+      });
       decorateRows();
-      observer = new MutationObserver(decorateRows);
-      observer.observe(document.body, { childList: true, subtree: true });
     });
 
     return () => {
       active = false;
-      observer?.disconnect();
+      observer.disconnect();
     };
   }, []);
 
