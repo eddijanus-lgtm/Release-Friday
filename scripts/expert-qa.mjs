@@ -59,7 +59,7 @@ report.checkpoints.drop = {
   navigation: await page.locator(".tapeNav button").allInnerTexts(),
 };
 assert(report.checkpoints.drop.wordmark?.includes("RELEASE"), "Midnight Tape wordmark is missing.");
-assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "AALAM OF GOD", "The confirmed real release is not featured.");
+assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "EUROSPORT 2", "The approved German release is not featured.");
 assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The approved navigation labels are not present.");
 
 const germanyButton = page.getByRole("button", { name: "DE", exact: true });
@@ -69,15 +69,18 @@ await page.screenshot({ path: `${outputDir}/02-filter-de.png`, fullPage: true })
 report.checkpoints.germanyFilter = {
   selected: await germanyButton.getAttribute("aria-pressed"),
   featuredVisible: await count(".dropHero"),
-  emptyState: await text(".systemState"),
+  featuredTitle: await text(".heroCopy h1"),
+  coverSrc: await page.locator(".dropHero .tapeCover img").getAttribute("src"),
 };
-assert(report.checkpoints.germanyFilter.featuredVisible === 0, "DE filter still shows a US release.");
-assert(report.checkpoints.germanyFilter.emptyState?.includes("NO DE RELEASES"), "DE filter lacks the approved empty state.");
+assert(report.checkpoints.germanyFilter.featuredVisible === 1, "DE filter does not show the German release.");
+assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "EUROSPORT 2", "DE filter shows the wrong release.");
+assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("data:image/webp;base64,"), "The supplied Eurosport 2 cover is not embedded.");
 
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
 assert(await count(".dropHero") === 1, "US filter does not restore the release.");
+assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
 await page.locator(".dropHero").click();
 await settle();
 await page.screenshot({ path: `${outputDir}/03-release-detail.png`, fullPage: true });
