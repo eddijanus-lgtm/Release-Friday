@@ -65,16 +65,20 @@ assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "T
 const germanyButton = page.getByRole("button", { name: "DE", exact: true });
 await germanyButton.click();
 await settle();
+const germanyCover = page.locator(".dropHero .tapeCover img");
+await germanyCover.waitFor({ state: "visible" });
 await page.screenshot({ path: `${outputDir}/02-filter-de.png`, fullPage: true });
 report.checkpoints.germanyFilter = {
   selected: await germanyButton.getAttribute("aria-pressed"),
   featuredVisible: await count(".dropHero"),
   featuredTitle: await text(".heroCopy h1"),
-  coverSrc: await page.locator(".dropHero .tapeCover img").getAttribute("src"),
+  coverSrc: await germanyCover.getAttribute("src"),
+  coverLoaded: await germanyCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
 };
 assert(report.checkpoints.germanyFilter.featuredVisible === 1, "DE filter does not show the German release.");
 assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "EUROSPORT 2", "DE filter shows the wrong release.");
 assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("data:image/webp;base64,"), "The supplied Eurosport 2 cover is not embedded.");
+assert(report.checkpoints.germanyFilter.coverLoaded, "The supplied Eurosport 2 cover does not render.");
 
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
