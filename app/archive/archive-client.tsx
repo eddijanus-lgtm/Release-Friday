@@ -33,7 +33,6 @@ export function ArchiveClient() {
 
   const groups = useMemo(() => {
     const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
-    const currentDate = dates[0];
     return dates.slice(1).map((date) => ({
       date,
       releases: releases.filter((release) => release.releaseDate === date),
@@ -44,7 +43,7 @@ export function ArchiveClient() {
     <main className="archivePage">
       <section className="archiveShell">
         <header className="archiveHeader">
-          <a href="/">← DROP</a>
+          <a href="../">← DROP</a>
           <div className="wordmark">RELEASE<br />FRIDAY</div>
           <span>ARCHIVE</span>
         </header>
@@ -82,8 +81,8 @@ export function ArchiveClient() {
           ))}
         </div>
         <nav className="archiveBottomNav">
-          <a href="/">DROP</a>
-          <a className="active" href="/archive/">ARCHIVE</a>
+          <a href="../">DROP</a>
+          <a className="active" href="./">ARCHIVE</a>
         </nav>
       </section>
     </main>
