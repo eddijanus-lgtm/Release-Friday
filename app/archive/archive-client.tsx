@@ -80,9 +80,11 @@ export function ArchiveClient() {
             </section>
           ))}
         </div>
-        <nav className="archiveBottomNav">
+        <nav className="archiveBottomNav" aria-label="Hauptnavigation">
           <a href="../">DROP</a>
-          <a className="active" href="./">ARCHIVE</a>
+          <a href="../#find">FIND</a>
+          <a className="active" href="./" aria-current="page">ARCHIVE</a>
+          <a href="../#me">ME</a>
         </nav>
       </section>
     </main>
