@@ -5,7 +5,7 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T08:43:20.160Z",
+  "generatedAt": "2026-07-14T09:13:31.172Z",
   "fetchedCount": 0,
   "curatedCount": 3,
   "fetchError": null,
