@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AccountStashSync } from "@/components/account-stash-sync";
 import { ArchiveSearchEnhancer } from "@/components/archive-search-enhancer";
 import { DropArchiveSwitch } from "@/components/drop-archive-switch";
 import { ReleaseDetailOverlay } from "@/components/release-detail-overlay";
@@ -10,6 +11,7 @@ import "./release-tile-covers.css";
 import "./archive.css";
 import "./drop-archive-switch.css";
 import "./archive-interactions.css";
+import "./account.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
@@ -32,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <DropArchiveSwitch />
         <ArchiveSearchEnhancer />
         <ReleaseDetailOverlay />
+        <AccountStashSync />
         <TabDeepLink />
       </body>
     </html>
