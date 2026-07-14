@@ -18,9 +18,14 @@ function identity(artist: string, title: string) {
 }
 
 function getRowIdentity(row: HTMLElement) {
+  if (row.dataset.releaseIdentity) return row.dataset.releaseIdentity;
   const title = row.querySelector<HTMLElement>(".rowCopy strong")?.textContent?.trim();
-  const artist = row.querySelector<HTMLElement>(".rowCopy span")?.textContent?.trim();
-  return title && artist ? identity(artist, title) : undefined;
+  const artist = row.querySelector<HTMLElement>(".rowCopy > span")?.childNodes[0]?.textContent?.trim()
+    ?? row.querySelector<HTMLElement>(".rowCopy > span")?.textContent?.trim();
+  if (!title || !artist) return undefined;
+  const value = identity(artist, title);
+  row.dataset.releaseIdentity = value;
+  return value;
 }
 
 function renderFallback(thumb: HTMLElement) {
@@ -37,6 +42,7 @@ export function ReleaseTileCoverEnhancer() {
   useEffect(() => {
     let active = true;
     const covers = new Map<string, string>();
+    const kinds = new Map<string, string>();
     covers.set(identity("Azet & Dardan", "Eurosport 2"), azetDardanEurosport2Cover);
 
     const decorateRows = () => {
@@ -51,6 +57,15 @@ export function ReleaseTileCoverEnhancer() {
           renderFallback(thumb);
           const copy = row.querySelector(".rowCopy");
           row.insertBefore(thumb, copy);
+        }
+
+        const artistLine = row.querySelector<HTMLElement>(".rowCopy > span");
+        const kind = kinds.get(rowIdentity);
+        if (artistLine && kind && !artistLine.querySelector(".rowKindBadge")) {
+          const badge = document.createElement("em");
+          badge.className = "rowKindBadge";
+          badge.textContent = kind.toUpperCase();
+          artistLine.append(" · ", badge);
         }
 
         const coverUrl = covers.get(rowIdentity);
@@ -78,7 +93,9 @@ export function ReleaseTileCoverEnhancer() {
     void getPublishedReleases().then((releases) => {
       if (!active) return;
       releases.forEach((release) => {
-        if (release.coverUrl) covers.set(identity(release.artist, release.title), release.coverUrl);
+        const key = identity(release.artist, release.title);
+        if (release.coverUrl) covers.set(key, release.coverUrl);
+        kinds.set(key, release.kind);
       });
       decorateRows();
     });
