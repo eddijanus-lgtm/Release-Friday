@@ -41,6 +41,15 @@
   transform: scaleX(.82);
 }
 
+.rowKindBadge {
+  color: var(--lime);
+  font-style: normal;
+  font-size: .8em;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
 .tapeRow {
   min-height: 86px;
 }
@@ -77,6 +86,10 @@
 
   .rowCoverThumb.isFallback {
     font-size: 16px;
+  }
+
+  .rowKindBadge {
+    font-size: .72em;
   }
 
   .tapeRow {
