@@ -107,6 +107,15 @@ if (duplicate) {
   process.exit(0);
 }
 
+const { data: admins, error: adminError } = await supabase
+  .from("release_admins")
+  .select("user_id")
+  .limit(1);
+
+if (adminError) throw adminError;
+const createdBy = admins?.[0]?.user_id;
+if (!createdBy) throw new Error("No release admin is configured in Supabase.");
+
 const row = {
   artist,
   title,
@@ -125,7 +134,7 @@ const row = {
   source_url: spotifyUrl,
   source: "Spotify Web API",
   status,
-  created_by: null,
+  created_by: createdBy,
 };
 
 const { data: inserted, error: insertError } = await supabase
