@@ -101,7 +101,7 @@ await settle();
 const erabiCover = page.locator(".detailCover img");
 await erabiCover.waitFor({ state: "visible" });
 await erabiCover.evaluate((image) => image.decode());
-const erabiPreSaveLink = page.getByRole("link", { name: "PRE-SAVE ON SPOTIFY", exact: true });
+const erabiPreSaveLink = page.locator("a.spotifyPreSave");
 const erabiSpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
 report.checkpoints.erabi = {
   heading: await text(".detailBody h1"),
