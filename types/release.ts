@@ -10,6 +10,7 @@ export interface MusicRelease {
   kind: ReleaseKind;
   coverUrl?: string;
   spotifyUrl?: string;
+  spotifyPreSaveUrl?: string;
   appleMusicUrl?: string;
   youtubeUrl?: string;
   sourceUrl?: string;
