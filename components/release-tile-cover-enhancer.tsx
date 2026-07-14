@@ -23,6 +23,16 @@ function getRowIdentity(row: HTMLElement) {
   return title && artist ? identity(artist, title) : undefined;
 }
 
+function renderFallback(thumb: HTMLElement) {
+  const release = document.createElement("span");
+  release.textContent = "RELEASE";
+  const friday = document.createElement("span");
+  friday.textContent = "FRIDAY";
+  thumb.replaceChildren(release, friday);
+  thumb.classList.add("isFallback");
+  delete thumb.dataset.coverUrl;
+}
+
 export function ReleaseTileCoverEnhancer() {
   useEffect(() => {
     let active = true;
@@ -37,8 +47,8 @@ export function ReleaseTileCoverEnhancer() {
         let thumb = row.querySelector<HTMLElement>(".rowCoverThumb");
         if (!thumb) {
           thumb = document.createElement("span");
-          thumb.className = "rowCoverThumb isFallback";
-          thumb.textContent = "RF";
+          thumb.className = "rowCoverThumb";
+          renderFallback(thumb);
           const copy = row.querySelector(".rowCopy");
           row.insertBefore(thumb, copy);
         }
@@ -57,10 +67,7 @@ export function ReleaseTileCoverEnhancer() {
           thumb!.classList.remove("isFallback");
           thumb!.dataset.coverUrl = coverUrl;
         });
-        image.addEventListener("error", () => {
-          thumb!.classList.add("isFallback");
-          thumb!.textContent = "RF";
-        });
+        image.addEventListener("error", () => renderFallback(thumb!));
       });
     };
 
