@@ -5,13 +5,14 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T10:11:29.681Z",
+  "generatedAt": "2026-07-14T11:03:17.310Z",
   "fetchedCount": 0,
-  "curatedCount": 4,
+  "curatedCount": 5,
   "fetchError": null,
   "sourceCounts": {
     "Redaktionell bestätigt · Cover direkt bereitgestellt": 1,
     "Republic Records + redaktionelle Prüfung": 1,
+    "Apple Music + Spotify + redaktionelle Prüfung": 1,
     "Pitchfork + redaktionelle Prüfung": 2
   }
 } as const;
@@ -25,7 +26,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "album",
     "coverUrl": "embedded:azet-dardan-eurosport-2",
-    "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
+    "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
     "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
     "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
     "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
@@ -52,6 +53,25 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "Republic Records + redaktionelle Prüfung"
+  },
+  {
+    "id": "curated-larry-june-who-coppin",
+    "title": "Who Coppin",
+    "artist": "Larry June",
+    "releaseDate": "2026-07-17",
+    "country": "US",
+    "kind": "album",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/81/f5/5a/81f55ae2-0af8-dcaa-267a-d4f92993b5b2/199316582116_cover.jpg/1000x1000bb.jpg",
+    "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
+    "appleMusicUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+    "youtubeUrl": "https://www.youtube.com/results?search_query=Larry%20June%20Who%20Coppin",
+    "sourceUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+    "description": "Larry June veröffentlicht am 17. Juli 2026 das 16-Track-Album „Who Coppin“ über The Freeminded Records / EMPIRE.",
+    "trackCount": 16,
+    "genres": [
+      "Hip-Hop/Rap"
+    ],
+    "source": "Apple Music + Spotify + redaktionelle Prüfung"
   },
   {
     "id": "curated-syd-beard",
