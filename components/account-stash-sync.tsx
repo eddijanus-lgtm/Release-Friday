@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
@@ -151,7 +151,7 @@ export function AccountStashSync() {
     return () => window.clearInterval(timer);
   }, [session]);
 
-  const requestMagicLink = async (event: FormEvent) => {
+  const requestMagicLink = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const cleanEmail = email.trim();
     if (!cleanEmail) return;
