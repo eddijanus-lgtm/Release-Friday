@@ -1,30 +1,38 @@
+.issueMeta.hasArchiveSwitch > span:first-of-type {
+  display: none;
+}
+
+.issueArchiveSwitchHost {
+  display: block;
+}
+
 .issueArchiveSwitch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 14px 14px 0;
-  padding: 5px;
-  border: 1px solid #2b3428;
-  background: #0a0e09;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .issueArchiveSwitch button {
-  min-height: 38px;
+  padding: 0;
   border: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: .08em;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
 }
 
 .issueArchiveSwitch button.active {
-  background: var(--lime);
-  color: #050805;
+  color: var(--lime);
 }
 
-.issueArchiveSwitch button span {
-  margin-right: 5px;
+.issueArchiveSwitch > span {
+  color: var(--muted);
 }
 
 .dropScreen.showInlineArchive > .screenInner {
@@ -146,10 +154,6 @@
 }
 
 @media (min-width: 768px) {
-  .issueArchiveSwitch {
-    margin-inline: 28px;
-  }
-
   .inlineArchive {
     padding-inline: 28px;
   }
