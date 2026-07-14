@@ -23,6 +23,13 @@ on:
         options:
           - published
           - draft
+  push:
+    branches:
+      - main
+    paths:
+      - "imports/spotify-release-request.json"
+      - ".github/workflows/import-spotify-release.yml"
+      - "scripts/import-spotify-release.mjs"
 
 permissions:
   contents: read
@@ -32,9 +39,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      SPOTIFY_RELEASE: ${{ inputs.spotify_release }}
-      RELEASE_COUNTRY: ${{ inputs.country }}
-      RELEASE_STATUS: ${{ inputs.status }}
       SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
       SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
@@ -52,6 +56,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Resolve import request
+        shell: bash
+        env:
+          DISPATCH_RELEASE: ${{ inputs.spotify_release }}
+          DISPATCH_COUNTRY: ${{ inputs.country }}
+          DISPATCH_STATUS: ${{ inputs.status }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "SPOTIFY_RELEASE=$DISPATCH_RELEASE" >> "$GITHUB_ENV"
+            echo "RELEASE_COUNTRY=$DISPATCH_COUNTRY" >> "$GITHUB_ENV"
+            echo "RELEASE_STATUS=$DISPATCH_STATUS" >> "$GITHUB_ENV"
+          else
+            node <<'NODE' >> "$GITHUB_ENV"
+          const request = require('./imports/spotify-release-request.json');
+          console.log(`SPOTIFY_RELEASE=${request.spotify_release}`);
+          console.log(`RELEASE_COUNTRY=${request.country || 'DE'}`);
+          console.log(`RELEASE_STATUS=${request.status || 'published'}`);
+          NODE
+          fi
 
       - name: Import Spotify album into Supabase
         run: node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
