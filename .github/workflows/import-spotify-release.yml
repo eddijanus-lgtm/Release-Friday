@@ -28,8 +28,6 @@ on:
       - main
     paths:
       - "imports/spotify-release-request.json"
-      - ".github/workflows/import-spotify-release.yml"
-      - "scripts/import-spotify-release.mjs"
 
 permissions:
   contents: read
