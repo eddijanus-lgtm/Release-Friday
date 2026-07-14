@@ -5,6 +5,13 @@ on:
   schedule:
     - cron: "15 5 * * 4"
     - cron: "15 5 * * 5"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/fetch-releases.mjs"
+      - "scripts/sync-releases-to-supabase.mjs"
+      - ".github/workflows/sync-releases-to-supabase.yml"
 
 permissions:
   contents: read
