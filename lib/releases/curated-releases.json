@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "id": "curated-azet-dardan-eurosport-2",
+      "title": "Eurosport 2",
+      "artist": "Azet & Dardan",
+      "releaseDate": "2026-07-17",
+      "country": "DE",
+      "kind": "album",
+      "coverUrl": "embedded:azet-dardan-eurosport-2",
+      "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
+      "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
+      "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
+      "genres": [
+        "Deutschrap",
+        "Hip-Hop/Rap"
+      ],
+      "source": "Redaktionell bestätigt · Cover direkt bereitgestellt"
+    },
+    {
       "id": "curated-dj-khaled-aalam-of-god",
       "title": "Aalam of God",
       "artist": "DJ Khaled",
@@ -13,8 +31,29 @@
       "youtubeUrl": "https://www.youtube.com/results?search_query=DJ%20Khaled%20Aalam%20of%20God",
       "sourceUrl": "https://www.republicrecords.com/products/aalam-of-god-cd",
       "description": "Der offizielle Republic-Records-Store bestätigt DJ Khaleds neues Album und stellt das Cover bereit. Mehrere Release-Kalender führen den 17. Juli 2026 als Veröffentlichungstermin.",
-      "genres": ["Hip-Hop/Rap"],
+      "genres": [
+        "Hip-Hop/Rap"
+      ],
       "source": "Republic Records + redaktionelle Prüfung"
+    },
+    {
+      "id": "curated-larry-june-who-coppin",
+      "title": "Who Coppin",
+      "artist": "Larry June",
+      "releaseDate": "2026-07-17",
+      "country": "US",
+      "kind": "album",
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/81/f5/5a/81f55ae2-0af8-dcaa-267a-d4f92993b5b2/199316582116_cover.jpg/1000x1000bb.jpg",
+      "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
+      "appleMusicUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=Larry%20June%20Who%20Coppin",
+      "sourceUrl": "https://music.apple.com/us/album/who-coppin/6786105209",
+      "description": "Larry June veröffentlicht am 17. Juli 2026 das 16-Track-Album „Who Coppin“ über The Freeminded Records / EMPIRE.",
+      "trackCount": 16,
+      "genres": [
+        "Hip-Hop/Rap"
+      ],
+      "source": "Apple Music + Spotify + redaktionelle Prüfung"
     },
     {
       "id": "curated-syd-beard",
@@ -29,7 +68,10 @@
       "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
       "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
       "trackCount": 12,
-      "genres": ["Alternative R&B", "Hip-Hop/Rap-Umfeld"],
+      "genres": [
+        "Alternative R&B",
+        "Hip-Hop/Rap-Umfeld"
+      ],
       "source": "Pitchfork + redaktionelle Prüfung"
     },
     {
@@ -46,7 +88,10 @@
       "youtubeUrl": "https://www.youtube.com/results?search_query=Steve%20Lacy%20Oh%20Yeah",
       "sourceUrl": "https://pitchfork.com/news/listen-to-steve-lacy-and-sza-duet-on-is-it-cool/",
       "description": "Steve Lacys drittes Soloalbum erscheint über RCA. Musikalisch ist es Progressive beziehungsweise Alternative R&B mit deutlicher Nähe zur Hip-Hop- und The-Internet-Szene.",
-      "genres": ["Progressive R&B", "Hip-Hop/Rap-Umfeld"],
+      "genres": [
+        "Progressive R&B",
+        "Hip-Hop/Rap-Umfeld"
+      ],
       "source": "Pitchfork + redaktionelle Prüfung"
     }
   ]

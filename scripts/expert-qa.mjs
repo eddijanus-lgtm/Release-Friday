@@ -88,7 +88,7 @@ report.checkpoints.germanyDetail = {
   spotifyHref: await germanySpotifyLink.getAttribute("href"),
 };
 assert(report.checkpoints.germanyDetail.heading?.toUpperCase() === "EUROSPORT 2", "The German release detail is incorrect.");
-assert(report.checkpoints.germanyDetail.spotifyHref === "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB", "Eurosport 2 does not use the exact Spotify album link.");
+assert(report.checkpoints.germanyDetail.spotifyHref === "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202", "Eurosport 2 points at the wrong Spotify release.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
 
@@ -96,6 +96,32 @@ const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
 assert(await count(".dropHero") === 1, "US filter does not restore the release.");
+
+const larryJuneRow = page.getByRole("button", { name: "Who Coppin öffnen", exact: true });
+assert(await larryJuneRow.count() === 1, "Larry June — Who Coppin is missing from the US releases.");
+await larryJuneRow.click();
+await settle();
+const larryJuneCover = page.locator(".detailCover img");
+await larryJuneCover.waitFor({ state: "visible" });
+await larryJuneCover.evaluate((image) => image.decode());
+const larryJuneSpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
+report.checkpoints.larryJune = {
+  heading: await text(".detailBody h1"),
+  artist: await text(".artistTag"),
+  meta: await text(".detailMeta"),
+  spotifyHref: await larryJuneSpotifyLink.getAttribute("href"),
+  coverLoaded: await larryJuneCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
+};
+assert(report.checkpoints.larryJune.heading?.toUpperCase() === "WHO COPPIN", "Larry June release detail is incorrect.");
+assert(report.checkpoints.larryJune.artist?.toUpperCase() === "LARRY JUNE", "Larry June release artist is incorrect.");
+assert(report.checkpoints.larryJune.meta?.includes("16 TRACKS"), "Larry June release is missing its 16-track metadata.");
+assert(report.checkpoints.larryJune.spotifyHref === "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB", "Larry June release does not use the supplied Spotify album link.");
+assert(report.checkpoints.larryJune.coverLoaded, "Larry June album cover does not render.");
+await page.locator(".detailToolbar button").first().click();
+await settle();
+await usaButton.click();
+await settle();
+
 assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
 await page.locator(".dropHero").click();
 await settle();
