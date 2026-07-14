@@ -1,0 +1,168 @@
+.issueArchiveSwitch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 14px 0;
+  padding: 5px;
+  border: 1px solid #2b3428;
+  background: #0a0e09;
+}
+
+.issueArchiveSwitch button {
+  min-height: 38px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.issueArchiveSwitch button.active {
+  background: var(--lime);
+  color: #050805;
+}
+
+.issueArchiveSwitch button span {
+  margin-right: 5px;
+}
+
+.dropScreen.showInlineArchive > .screenInner {
+  display: none;
+}
+
+.inlineArchive {
+  padding: 22px 14px 96px;
+}
+
+.inlineArchiveState {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.inlineArchiveIssue {
+  margin-top: 34px;
+}
+
+.inlineArchiveIssue > header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #33402f;
+}
+
+.inlineArchiveIssue > header span,
+.inlineArchiveIssue > header small {
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.inlineArchiveIssue > header strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inlineArchiveIssue > header small {
+  color: var(--muted);
+}
+
+.inlineArchiveGrid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.inlineArchiveCard {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 78px;
+  padding: 8px;
+  border: 1px solid #293226;
+  background: #10150f;
+}
+
+.inlineArchiveCover {
+  width: 64px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #000;
+}
+
+.inlineArchiveCover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inlineArchiveCover div {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--lime);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 10px;
+  line-height: .9;
+  text-align: center;
+}
+
+.inlineArchiveCopy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.inlineArchiveCopy strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inlineArchiveCopy span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.inlineArchiveLinks {
+  display: grid;
+  gap: 5px;
+  justify-items: end;
+}
+
+.inlineArchiveLinks a {
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+@media (min-width: 768px) {
+  .issueArchiveSwitch {
+    margin-inline: 28px;
+  }
+
+  .inlineArchive {
+    padding-inline: 28px;
+  }
+
+  .inlineArchiveGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inlineArchiveCard {
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+  }
+
+  .inlineArchiveCover {
+    width: 76px;
+  }
+}
