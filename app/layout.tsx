@@ -6,6 +6,7 @@ import { DropArchiveSwitch } from "@/components/drop-archive-switch";
 import { FeaturedReleaseSelector } from "@/components/admin/featured-release-selector";
 import { ReleaseDetailOverlay } from "@/components/release-detail-overlay";
 import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
+import { SpotifyCountdownEnhancer } from "@/components/spotify-countdown-enhancer";
 import { TabDeepLink } from "@/components/tab-deep-link";
 import "./globals.css";
 import "./tablet.css";
@@ -14,6 +15,7 @@ import "./archive.css";
 import "./drop-archive-switch.css";
 import "./archive-interactions.css";
 import "./account.css";
+import "./spotify-countdown.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
@@ -39,6 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <CloudStashRehydrator />
         <AccountStashSync />
         <FeaturedReleaseSelector />
+        <SpotifyCountdownEnhancer />
         <TabDeepLink />
       </body>
     </html>
