@@ -5,25 +5,29 @@ import type { MusicRelease } from "@/types/release";
 import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";
 import { mergeManualReleases } from "@/lib/releases/merge-manual-releases";
 
-export function usePublishedReleases(initialReleases: MusicRelease[], targetDate?: string) {
-  const [releases, setReleases] = useState(initialReleases);
+function newestIssue(releases: MusicRelease[]) {
+  const latestDate = releases.reduce<string | undefined>((latest, release) =>
+    !latest || release.releaseDate > latest ? release.releaseDate : latest, undefined);
+  return latestDate ? releases.filter((release) => release.releaseDate === latestDate) : releases;
+}
+
+export function usePublishedReleases(initialReleases: MusicRelease[], _targetDate?: string) {
+  const [releases, setReleases] = useState(() => newestIssue(initialReleases));
 
   useEffect(() => {
     const controller = new AbortController();
-    setReleases(initialReleases);
+    setReleases(newestIssue(initialReleases));
 
-    if (!targetDate) return () => controller.abort();
-
-    void fetchPublishedManualReleases(targetDate, controller.signal)
-      .then((manual) => setReleases(mergeManualReleases(initialReleases, manual)))
+    void fetchPublishedManualReleases(undefined, controller.signal)
+      .then((manual) => setReleases(newestIssue(mergeManualReleases(initialReleases, manual))))
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
-          setReleases(initialReleases);
+          setReleases(newestIssue(initialReleases));
         }
       });
 
     return () => controller.abort();
-  }, [initialReleases, targetDate]);
+  }, [initialReleases]);
 
   return releases;
 }
