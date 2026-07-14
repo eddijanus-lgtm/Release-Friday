@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ArchiveNavLink } from "@/components/archive-nav-link";
 import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
+import { TabDeepLink } from "@/components/tab-deep-link";
 import "./globals.css";
 import "./tablet.css";
 import "./release-tile-covers.css";
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <ReleaseTileCoverEnhancer />
         <ArchiveNavLink />
+        <TabDeepLink />
       </body>
     </html>
   );
