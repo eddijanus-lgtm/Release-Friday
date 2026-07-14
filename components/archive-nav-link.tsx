@@ -9,7 +9,7 @@ export function ArchiveNavLink() {
         if (nav.querySelector(".archiveNavLink")) return;
         const link = document.createElement("a");
         link.className = "archiveNavLink";
-        link.href = "/archive/";
+        link.href = "archive/";
         link.textContent = "ARCHIVE";
         link.setAttribute("aria-label", "Archive");
         nav.appendChild(link);
