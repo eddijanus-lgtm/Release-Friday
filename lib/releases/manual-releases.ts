@@ -60,15 +60,16 @@ function toMusicRelease(row: ManualReleaseRow): MusicRelease {
   };
 }
 
-export async function fetchPublishedManualReleases(targetDate: string, signal?: AbortSignal) {
-  if (!isSupabaseConfigured() || !targetDate) return [];
+export async function fetchPublishedManualReleases(targetDate?: string, signal?: AbortSignal) {
+  if (!isSupabaseConfigured()) return [];
 
   const query = new URLSearchParams({
     select: releaseColumns,
     status: "eq.published",
-    release_date: `eq.${targetDate}`,
-    order: "created_at.asc",
+    order: "release_date.desc,created_at.asc",
   });
+  if (targetDate) query.set("release_date", `eq.${targetDate}`);
+
   const headers: Record<string, string> = {
     Accept: "application/json",
     apikey: supabaseAnonKey,
