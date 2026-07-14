@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { ArchiveNavLink } from "@/components/archive-nav-link";
+import { DropArchiveSwitch } from "@/components/drop-archive-switch";
 import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
 import { TabDeepLink } from "@/components/tab-deep-link";
 import "./globals.css";
 import "./tablet.css";
 import "./release-tile-covers.css";
 import "./archive.css";
+import "./drop-archive-switch.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <ReleaseTileCoverEnhancer />
-        <ArchiveNavLink />
+        <DropArchiveSwitch />
         <TabDeepLink />
       </body>
     </html>
