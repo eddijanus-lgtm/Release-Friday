@@ -5,7 +5,7 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T11:03:17.310Z",
+  "generatedAt": "2026-07-14T11:09:07.380Z",
   "fetchedCount": 0,
   "curatedCount": 5,
   "fetchError": null,
@@ -74,25 +74,6 @@ export const realReleases: MusicRelease[] = [
     "source": "Apple Music + Spotify + redaktionelle Prüfung"
   },
   {
-    "id": "curated-syd-beard",
-    "title": "Beard",
-    "artist": "Syd",
-    "releaseDate": "2026-07-17",
-    "country": "US",
-    "kind": "album",
-    "spotifyUrl": "https://open.spotify.com/search/Syd%20Beard",
-    "appleMusicUrl": "https://music.apple.com/de/search?term=Syd%20Beard",
-    "youtubeUrl": "https://www.youtube.com/results?search_query=Syd%20Beard",
-    "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
-    "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
-    "trackCount": 12,
-    "genres": [
-      "Alternative R&B",
-      "Hip-Hop/Rap-Umfeld"
-    ],
-    "source": "Pitchfork + redaktionelle Prüfung"
-  },
-  {
     "id": "curated-steve-lacy-oh-yeah",
     "title": "Oh Yeah?",
     "artist": "Steve Lacy",
@@ -108,6 +89,25 @@ export const realReleases: MusicRelease[] = [
     "description": "Steve Lacys drittes Soloalbum erscheint über RCA. Musikalisch ist es Progressive beziehungsweise Alternative R&B mit deutlicher Nähe zur Hip-Hop- und The-Internet-Szene.",
     "genres": [
       "Progressive R&B",
+      "Hip-Hop/Rap-Umfeld"
+    ],
+    "source": "Pitchfork + redaktionelle Prüfung"
+  },
+  {
+    "id": "curated-syd-beard",
+    "title": "Beard",
+    "artist": "Syd",
+    "releaseDate": "2026-07-17",
+    "country": "US",
+    "kind": "album",
+    "spotifyUrl": "https://open.spotify.com/search/Syd%20Beard",
+    "appleMusicUrl": "https://music.apple.com/de/search?term=Syd%20Beard",
+    "youtubeUrl": "https://www.youtube.com/results?search_query=Syd%20Beard",
+    "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
+    "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
+    "trackCount": 12,
+    "genres": [
+      "Alternative R&B",
       "Hip-Hop/Rap-Umfeld"
     ],
     "source": "Pitchfork + redaktionelle Prüfung"
