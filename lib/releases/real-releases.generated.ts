@@ -25,7 +25,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "album",
     "coverUrl": "embedded:azet-dardan-eurosport-2",
-    "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
+    "spotifyUrl": "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB",
     "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
     "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
     "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
