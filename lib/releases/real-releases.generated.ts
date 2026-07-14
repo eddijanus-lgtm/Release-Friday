@@ -5,12 +5,13 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T11:09:07.380Z",
+  "generatedAt": "2026-07-14T11:14:40.309Z",
   "fetchedCount": 0,
-  "curatedCount": 5,
+  "curatedCount": 6,
   "fetchError": null,
   "sourceCounts": {
     "Redaktionell bestätigt · Cover direkt bereitgestellt": 1,
+    "Spotify + redaktionelle Prüfung": 1,
     "Republic Records + redaktionelle Prüfung": 1,
     "Apple Music + Spotify + redaktionelle Prüfung": 1,
     "Pitchfork + redaktionelle Prüfung": 2
@@ -35,6 +36,27 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "Redaktionell bestätigt · Cover direkt bereitgestellt"
+  },
+  {
+    "id": "curated-erabi-endgame",
+    "title": "Endgame",
+    "artist": "Erabi",
+    "releaseDate": "2026-07-17",
+    "country": "DE",
+    "kind": "ep",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27338a63a5c8033f82d0f743c35",
+    "spotifyUrl": "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s",
+    "spotifyPreSaveUrl": "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s",
+    "appleMusicUrl": "https://music.apple.com/de/search?term=Erabi%20Endgame",
+    "youtubeUrl": "https://www.youtube.com/results?search_query=Erabi%20Endgame",
+    "sourceUrl": "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s",
+    "description": "Erabi veröffentlicht zum Freitagstart am 17. Juli 2026 die sechs Tracks starke EP „Endgame“.",
+    "trackCount": 6,
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "Spotify + redaktionelle Prüfung"
   },
   {
     "id": "curated-dj-khaled-aalam-of-god",

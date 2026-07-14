@@ -92,6 +92,34 @@ assert(report.checkpoints.germanyDetail.spotifyHref === "https://open.spotify.co
 await page.locator(".detailToolbar button").first().click();
 await settle();
 
+await germanyButton.click();
+await settle();
+const erabiRow = page.getByRole("button", { name: "Endgame öffnen", exact: true });
+assert(await erabiRow.count() === 1, "Erabi — Endgame is missing from the German releases.");
+await erabiRow.click();
+await settle();
+const erabiCover = page.locator(".detailCover img");
+await erabiCover.waitFor({ state: "visible" });
+await erabiCover.evaluate((image) => image.decode());
+const erabiPreSaveLink = page.locator("a.spotifyPreSave");
+const erabiSpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
+report.checkpoints.erabi = {
+  heading: await text(".detailBody h1"),
+  artist: await text(".artistTag"),
+  meta: await text(".detailMeta"),
+  preSaveHref: await erabiPreSaveLink.getAttribute("href"),
+  spotifyHref: await erabiSpotifyLink.getAttribute("href"),
+  coverLoaded: await erabiCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
+};
+assert(report.checkpoints.erabi.heading?.toUpperCase() === "ENDGAME", "Erabi release detail is incorrect.");
+assert(report.checkpoints.erabi.artist?.toUpperCase() === "ERABI", "Erabi release artist is incorrect.");
+assert(report.checkpoints.erabi.meta?.includes("DE · EP · 6 TRACKS"), "Erabi release is missing its DE EP and 6-track metadata.");
+assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save does not use the supplied Spotify album link.");
+assert(report.checkpoints.erabi.spotifyHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi Spotify action does not use the supplied album link.");
+assert(report.checkpoints.erabi.coverLoaded, "Erabi album cover does not render.");
+await page.locator(".detailToolbar button").first().click();
+await settle();
+
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
