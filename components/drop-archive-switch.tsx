@@ -24,41 +24,66 @@ function openRelease(release: MusicRelease) {
   window.dispatchEvent(new CustomEvent<MusicRelease>("release-friday:open-release", { detail: release }));
 }
 
+function readSaved() {
+  try {
+    return new Set<string>(JSON.parse(window.localStorage.getItem("release-friday:saved") ?? "[]"));
+  } catch {
+    return new Set<string>();
+  }
+}
+
 export function DropArchiveSwitch() {
-  const [host, setHost] = useState<HTMLElement | null>(null);
+  const [switchHost, setSwitchHost] = useState<HTMLElement | null>(null);
+  const [archiveHost, setArchiveHost] = useState<HTMLElement | null>(null);
   const [mode, setMode] = useState<"current" | "archive">("current");
   const [releases, setReleases] = useState<MusicRelease[]>([]);
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const ensureHost = () => {
+    const ensureHosts = () => {
       const screen = document.querySelector<HTMLElement>(".dropScreen");
       const headerMeta = screen?.querySelector<HTMLElement>(".issueMeta");
-      if (!screen || !headerMeta) {
-        setHost(null);
+      const strip = screen?.querySelector<HTMLElement>(".tapeStrip");
+      if (!screen || !headerMeta || !strip) {
+        setSwitchHost(null);
+        setArchiveHost(null);
         return;
       }
 
-      let target = screen.querySelector<HTMLElement>(".dropArchivePortalHost");
-      if (!target) {
-        target = document.createElement("div");
-        target.className = "dropArchivePortalHost";
-        headerMeta.prepend(target);
+      let nextSwitchHost = screen.querySelector<HTMLElement>(".dropArchiveSwitchHost");
+      if (!nextSwitchHost) {
+        nextSwitchHost = document.createElement("div");
+        nextSwitchHost.className = "dropArchiveSwitchHost";
+        headerMeta.prepend(nextSwitchHost);
       }
-      setHost(target);
+
+      let nextArchiveHost = screen.querySelector<HTMLElement>(".dropArchiveContentHost");
+      if (!nextArchiveHost) {
+        nextArchiveHost = document.createElement("div");
+        nextArchiveHost.className = "dropArchiveContentHost";
+        strip.insertAdjacentElement("afterend", nextArchiveHost);
+      }
+
+      setSwitchHost(nextSwitchHost);
+      setArchiveHost(nextArchiveHost);
     };
 
-    ensureHost();
-    const observer = new MutationObserver(ensureHost);
+    ensureHosts();
+    const observer = new MutationObserver(ensureHosts);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    setSavedIds(readSaved());
   }, []);
 
   useEffect(() => {
     const screen = document.querySelector<HTMLElement>(".dropScreen");
     screen?.classList.toggle("showInlineArchive", mode === "archive");
     return () => screen?.classList.remove("showInlineArchive");
-  }, [mode, host]);
+  }, [mode, archiveHost]);
 
   const openArchive = async () => {
     setMode("archive");
@@ -71,6 +96,15 @@ export function DropArchiveSwitch() {
     }
   };
 
+  const toggleSaved = (id: string) => {
+    setSavedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      window.localStorage.setItem("release-friday:saved", JSON.stringify([...next]));
+      return next;
+    });
+  };
+
   const groups = useMemo(() => {
     const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
     return dates.slice(1).map((date) => ({
@@ -79,17 +113,18 @@ export function DropArchiveSwitch() {
     }));
   }, [releases]);
 
-  if (!host) return null;
-
-  return createPortal(
+  return (
     <>
-      <div className="issueArchiveSwitch" role="tablist" aria-label="Drop-Ausgabe auswählen">
-        <button type="button" role="tab" aria-selected={mode === "current"} className={mode === "current" ? "active" : undefined} onClick={() => setMode("current")}>ISSUE 29</button>
-        <span aria-hidden="true">/</span>
-        <button type="button" role="tab" aria-selected={mode === "archive"} className={mode === "archive" ? "active" : undefined} onClick={() => void openArchive()}>ARCHIV</button>
-      </div>
+      {switchHost ? createPortal(
+        <div className="issueArchiveSwitch" role="tablist" aria-label="Drop-Ausgabe auswählen">
+          <button type="button" role="tab" aria-selected={mode === "current"} className={mode === "current" ? "active" : undefined} onClick={() => setMode("current")}>ISSUE 29</button>
+          <span aria-hidden="true">/</span>
+          <button type="button" role="tab" aria-selected={mode === "archive"} className={mode === "archive" ? "active" : undefined} onClick={() => void openArchive()}>ARCHIV</button>
+        </div>,
+        switchHost,
+      ) : null}
 
-      {mode === "archive" ? (
+      {archiveHost && mode === "archive" ? createPortal(
         <div className="inlineArchive" role="tabpanel">
           <h1 className="posterTitle">THE<br />ARCHIVE</h1>
           {loading ? <p className="inlineArchiveState">ARCHIVE WIRD GELADEN …</p> : null}
@@ -97,22 +132,23 @@ export function DropArchiveSwitch() {
           {groups.map((group) => (
             <section className="inlineArchiveIssue" key={group.date}>
               <header><span>ISSUE</span><strong>{formatDate(group.date)}</strong><small>{group.releases.length} RELEASES</small></header>
-              <div className="inlineArchiveGrid">
-                {group.releases.map((release) => (
-                  <button type="button" className="inlineArchiveCard" key={release.id} onClick={() => openRelease(release)} aria-label={`${release.artist} – ${release.title} öffnen`}>
-                    <div className="inlineArchiveCover">
-                      {release.coverUrl ? <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" /> : <div>RELEASE<br />FRIDAY</div>}
-                    </div>
-                    <div className="inlineArchiveCopy"><strong>{release.title}</strong><span>{release.artist} · {kindLabels[release.kind]}</span></div>
-                    <span className="inlineArchiveArrow">→</span>
-                  </button>
+              <div className="homeRows inlineArchiveRows">
+                {group.releases.map((release, index) => (
+                  <article className="tapeRow" key={release.id}>
+                    <button type="button" className="tapeRowMain" onClick={() => openRelease(release)} aria-label={`${release.artist} – ${release.title} öffnen`}>
+                      <span className="rowNumber">{String(index + 1).padStart(2, "0")}</span>
+                      <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · {kindLabels[release.kind]}</span></div>
+                      <span className="rowArrow">→</span>
+                    </button>
+                    <button type="button" className={`rowSave ${savedIds.has(release.id) ? "saved" : ""}`} onClick={() => toggleSaved(release.id)} aria-pressed={savedIds.has(release.id)} aria-label={savedIds.has(release.id) ? "Aus Stash entfernen" : "In Stash speichern"}>+</button>
+                  </article>
                 ))}
               </div>
             </section>
           ))}
-        </div>
+        </div>,
+        archiveHost,
       ) : null}
-    </>,
-    host,
+    </>
   );
 }
