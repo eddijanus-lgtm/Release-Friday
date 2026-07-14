@@ -1,7 +1,3 @@
-.tapeNav:has(.archiveNavLink) {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
 .archiveNavLink {
   display: grid;
   place-items: center;
@@ -22,7 +18,7 @@
   width: min(100%, 1100px);
   min-height: 100svh;
   margin: 0 auto;
-  padding-bottom: 72px;
+  padding-bottom: 88px;
   background: #050805;
 }
 
@@ -45,7 +41,7 @@
 
 .archiveHeader > span { text-align: right; }
 .archiveHeader .wordmark { font-size: 34px; text-align: center; }
-.archiveInner { padding: 22px 14px 96px; }
+.archiveInner { padding: 22px 14px 112px; }
 .archiveState { color: var(--muted); font-size: 11px; font-weight: 800; }
 .archiveIssue { margin-top: 34px; }
 .archiveIssueTitle {
@@ -95,17 +91,33 @@
   bottom: 0;
   left: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 58px;
-  border-top: 1px solid #293226;
-  background: #050805;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 70px;
+  padding: 8px;
+  border: 1px solid #293226;
+  border-bottom: 0;
+  border-radius: 28px 28px 0 0;
+  background: #081008;
 }
-.archiveBottomNav a { display: grid; place-items: center; color: var(--muted); font-size: 9px; font-weight: 900; }
-.archiveBottomNav a.active { color: var(--lime); }
+.archiveBottomNav a {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  border-radius: 22px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  text-decoration: none;
+}
+.archiveBottomNav a.active {
+  color: #050805;
+  background: var(--lime);
+}
 
 @media (min-width: 768px) {
   .archiveInner { padding-inline: 28px; }
   .archiveGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .archiveCard { grid-template-columns: 76px minmax(0, 1fr) auto; }
   .archiveCover { width: 76px; }
+  .archiveBottomNav { left: 50%; width: min(100%, 1100px); transform: translateX(-50%); }
 }
