@@ -80,6 +80,18 @@ assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "EUROSP
 assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("data:image/webp;base64,"), "The supplied Eurosport 2 cover is not embedded.");
 assert(report.checkpoints.germanyFilter.coverLoaded, "The supplied Eurosport 2 cover does not render.");
 
+await page.locator(".dropHero").click();
+await settle();
+const germanySpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
+report.checkpoints.germanyDetail = {
+  heading: await text(".detailBody h1"),
+  spotifyHref: await germanySpotifyLink.getAttribute("href"),
+};
+assert(report.checkpoints.germanyDetail.heading?.toUpperCase() === "EUROSPORT 2", "The German release detail is incorrect.");
+assert(report.checkpoints.germanyDetail.spotifyHref === "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB", "Eurosport 2 does not use the exact Spotify album link.");
+await page.locator(".detailToolbar button").first().click();
+await settle();
+
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
