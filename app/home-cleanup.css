@@ -7,5 +7,17 @@
 }
 
 .tapeRowMain {
-  grid-template-columns: 34px minmax(0, 1fr) !important;
+  grid-template-columns: 34px 58px minmax(0, 1fr) !important;
+}
+
+@media (max-width: 360px) {
+  .tapeRowMain {
+    grid-template-columns: 28px 50px minmax(0, 1fr) !important;
+  }
+}
+
+@media (min-width: 700px) {
+  .tapeRowMain {
+    grid-template-columns: 38px 72px minmax(0, 1fr) !important;
+  }
 }
