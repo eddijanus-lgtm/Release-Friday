@@ -43,7 +43,7 @@ export const realReleases: MusicRelease[] = [
     "kind": "album",
     "coverUrl": "https://media.pitchfork.com/photos/6a21c189fc892426f2169bc5/master/w_1280%2Cc_limit/Screenshot%25202026-06-04%2520at%25202.16.49%25E2%2580%25AFPM.png",
     "spotifyUrl": "https://open.spotify.com/search/Steve%20Lacy%20Oh%20Yeah",
-    "spotifyPreSaveUrl": "https://presaves.sonymusicfans.com/?campaign_id=748027&mailing_list_ids=a0S0800000YkkRYEAZ&retargeting_consent=0&source_channel=Spotify&triggered_sends=",
+    "spotifyPreSaveUrl": "https://accounts.spotify.com/en/authorize?client_id=193204e1f39c4134852b6c27cb87c3ed&response_type=code&redirect_uri=https://presaves.sonymusicfans.com/save/&scope=playlist-read-private%20playlist-read-collaborative%20playlist-modify-private%20playlist-modify-public%20user-follow-modify%20user-follow-read%20user-library-read%20user-library-modify%20user-read-private%20user-read-email%20user-read-recently-played%20user-top-read%20ugc-image-upload&state=748027",
     "appleMusicUrl": "https://music.apple.com/de/search?term=Steve%20Lacy%20Oh%20Yeah",
     "youtubeUrl": "https://www.youtube.com/results?search_query=Steve%20Lacy%20Oh%20Yeah",
     "sourceUrl": "https://pitchfork.com/news/listen-to-steve-lacy-and-sza-duet-on-is-it-cool/",
