@@ -1,45 +1,115 @@
-# Release Friday architecture
+# Systemarchitektur
 
-## Goal
+## Überblick
 
-Every Thursday, Release Friday presents the hip-hop and rap releases scheduled for the coming Friday in Germany and the United States.
+Release Friday besteht aus vier Bereichen:
 
-## Initial architecture
+1. **Öffentliches Frontend** – Next.js/React, statisch über GitHub Pages ausgeliefert.
+2. **Redaktionsoberfläche** – geschützter Client-Bereich unter `/admin/`.
+3. **Datenplattform** – Supabase Auth, Postgres und Storage.
+4. **Automatisierung** – GitHub Actions für Recherche, Synchronisation und Deployment.
 
-- **Frontend:** Next.js App Router, React and TypeScript
-- **Domain model:** shared release types in `types/`
-- **Business logic:** release-date calculation and aggregation in `lib/releases/`
-- **Providers:** isolated source adapters in `lib/sources/`
-- **UI:** reusable components grouped by feature in `components/`
-- **Delivery:** GitHub Actions validates every push and pull request
-- **Manual editorial backend:** Supabase Auth, Postgres and Storage, protected by row-level security
-
-## Data flow
-
-1. Determine the upcoming Friday.
-2. Query all configured release sources.
-3. Normalize provider data into `MusicRelease`.
-4. De-duplicate releases.
-5. Filter by Germany or USA.
-6. Render the mobile-first release list.
-
-Published manual entries are loaded from Supabase at runtime for the same target Friday and merged with the generated static list. If the backend is unavailable, the generated list remains the safe fallback. Drafts and write operations are restricted to allowlisted users in `release_admins`.
-
-## Boundaries
-
-The UI must not depend directly on Spotify, Apple Music or scraper response formats. Every provider implements the `ReleaseSource` contract and returns normalized releases.
-
-## Planned folders
+## Laufzeitarchitektur
 
 ```text
-app/                 Routes, layouts and API endpoints
-components/ui/       Generic UI primitives
-components/releases/ Release-specific UI
-lib/releases/        Aggregation and release-date logic
-lib/sources/         External provider adapters
-hooks/               Client-side reusable behavior
-types/               Shared TypeScript domain types
-tests/               Unit and integration tests
-docs/                Architecture and product documentation
-.github/              CI and contribution templates
+Besucher auf iPhone/iPad
+        |
+        v
+GitHub Pages: statischer Next.js-Export
+        |
+        +--> generierter lokaler Fallback
+        |
+        +--> browserseitige Supabase-Abfrage
+                  |
+                  +--> public.releases
+                  +--> Storage: release-covers
 ```
+
+Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen finden deshalb browserseitig statt und dürfen den GitHub-Pages-Export nicht von einem Server-Request abhängig machen.
+
+## Datenfluss
+
+### Öffentlicher Feed
+
+1. Beim ersten Rendern steht die generierte Release-Liste als Fallback zur Verfügung.
+2. Der Browser lädt veröffentlichte Datensätze aus Supabase.
+3. Supabase-Datensätze werden mit kuratierten Fallback-Medien zusammengeführt.
+4. Leere manuelle Felder dürfen vorhandene kuratierte Cover oder Links nicht löschen.
+
+### Manuelle Redaktion
+
+1. Benutzer meldet sich über Supabase Auth an.
+2. `release_admins` entscheidet über Redaktionsrechte.
+3. Admins können Releases erstellen, bearbeiten, als Entwurf speichern, veröffentlichen oder löschen.
+4. Cover werden lokal auf maximal 1600 × 1600 Pixel verkleinert und als WebP komprimiert.
+5. Bilder werden im Bucket `release-covers` gespeichert.
+
+### Automatischer Import
+
+1. GitHub Actions startet `scripts/fetch-releases.mjs`.
+2. Die Recherche aktualisiert `lib/releases/real-releases.generated.ts`.
+3. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
+4. Nur neue Datensätze werden eingefügt.
+5. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
+
+## Datenmodell
+
+### `releases`
+
+Wichtige Felder:
+
+- `id`, `artist`, `title`, `release_date`
+- `country`: `DE` oder `US`
+- `kind`: `album`, `ep`, `single` oder `mixtape`
+- `track_count`, `description`, `genres`
+- `spotify_url`, `spotify_pre_save_url`, `apple_music_url`, `youtube_url`, `source_url`
+- `cover_url`, `storage_path`
+- `source`, `status`, `created_by` und Zeitstempel
+
+Fehlen Spotify, Apple Music oder YouTube, können Suchlinks aus Interpret und Titel verwendet werden. Pre-Save und Quellen-Link bleiben ohne echten Link deaktiviert beziehungsweise leer.
+
+### `release_admins`
+
+Explizite Allowlist aus Supabase-User-IDs. Eine erfolgreiche Anmeldung allein verleiht keine Redaktionsrechte.
+
+## Sicherheitsmodell
+
+- Anonyme Benutzer dürfen nur `published` Releases lesen.
+- Freigeschaltete Admins dürfen alle Releases lesen und verwalten.
+- Cover-Schreibrechte sind auf Admins und deren Benutzerordner beschränkt.
+- Der Publishable Key darf im Browser verwendet werden.
+- Der Service-Role-Key liegt ausschließlich im GitHub-Actions-Secret `SUPABASE_SERVICE_ROLE_KEY`.
+- Es gibt keine öffentliche Registrierung für Redakteure.
+
+## Frontend-Struktur
+
+- `app/page.tsx` – Einstieg des öffentlichen Feeds
+- `app/prototype-client.tsx` – Drop, Find, Stash, Detail und Profil
+- `app/admin/` – Adminroute und Auth-/CRUD-Client
+- `components/admin/` – Adminformulare
+- `components/release-tile-cover-enhancer.tsx` – kleine Cover und Release-Typen in Drop/Find
+- `hooks/use-published-releases.ts` – browserseitiges Laden und Zusammenführen
+- `lib/releases/` – Supabase-Mapping, Merge-Logik und generierter Fallback
+- `lib/images/compress-cover.ts` – Cover-Komprimierung
+- `app/globals.css` – Basissystem und iPhone-Layout
+- `app/tablet.css` – iPad-Layout
+- `app/release-tile-covers.css` – Kachelcover und Typ-Badges
+
+## Responsive Verhalten
+
+- iPhone bleibt die primäre mobile Ansicht.
+- Ab Tablet-Breite werden breitere Container, größere Cover und mehrspaltige Bereiche genutzt.
+- Tablet-Regeln dürfen das iPhone-Layout unterhalb des Breakpoints nicht verändern.
+
+## Deployment
+
+`.github/workflows/pages.yml` checkt das Repository aus, installiert Abhängigkeiten, baut den statischen Export, lädt `out/` als Pages-Artefakt hoch und veröffentlicht ihn.
+
+## Architekturregeln
+
+- Supabase ist die zentrale produktive Datenquelle.
+- GitHub Pages bleibt ein statisches Hostingziel.
+- Manuelle Daten haben Vorrang vor automatischer Recherche.
+- Automatisierung überschreibt keine bestehenden Releases blind.
+- Secrets gehören weder in Commits noch in Browservariablen.
+- Schema- und RLS-Änderungen werden als Migration dokumentiert.
