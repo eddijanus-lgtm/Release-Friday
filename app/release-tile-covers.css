@@ -1,0 +1,67 @@
+.tapeRowMain {
+  grid-template-columns: 34px 58px minmax(0, 1fr) 18px;
+  gap: 10px;
+}
+
+.rowCoverThumb {
+  display: block;
+  width: 58px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #354031;
+  border-radius: 8px;
+  background: #151b14;
+}
+
+.rowCoverThumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rowCoverThumb.isFallback {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 72% 22%, rgba(189,255,0,.2), transparent 32%),
+    linear-gradient(145deg, #0b100a, #192216);
+  color: var(--lime);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tapeRow {
+  min-height: 86px;
+}
+
+@media (max-width: 360px) {
+  .tapeRowMain {
+    grid-template-columns: 28px 50px minmax(0, 1fr) 16px;
+    gap: 8px;
+    padding-right: 7px;
+    padding-left: 7px;
+  }
+
+  .rowCoverThumb {
+    width: 50px;
+    border-radius: 7px;
+  }
+}
+
+@media (min-width: 700px) {
+  .tapeRowMain {
+    grid-template-columns: 38px 72px minmax(0, 1fr) 22px;
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .rowCoverThumb {
+    width: 72px;
+    border-radius: 10px;
+  }
+
+  .tapeRow {
+    min-height: 98px;
+  }
+}
