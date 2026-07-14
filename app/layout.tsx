@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AccountStashSync } from "@/components/account-stash-sync";
 import { ArchiveSearchEnhancer } from "@/components/archive-search-enhancer";
+import { CloudStashRehydrator } from "@/components/cloud-stash-rehydrator";
 import { DropArchiveSwitch } from "@/components/drop-archive-switch";
 import { ReleaseDetailOverlay } from "@/components/release-detail-overlay";
 import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <DropArchiveSwitch />
         <ArchiveSearchEnhancer />
         <ReleaseDetailOverlay />
+        <CloudStashRehydrator />
         <AccountStashSync />
         <TabDeepLink />
       </body>
