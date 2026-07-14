@@ -289,6 +289,7 @@ function DetailScreen({ release, saved, onBack, onToggleSaved }: {
   const now = useClock();
   const live = isReleaseLive(release, now);
   const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
+  const canPreSave = !live && Boolean(release.spotifyPreSaveUrl);
 
   return (
     <section className="tapeScreen detailScreen">
@@ -304,6 +305,17 @@ function DetailScreen({ release, saved, onBack, onToggleSaved }: {
         <p className="detailMeta">{release.country} · {kindLabels[release.kind]}{trackText} · {formatShortDate(release.releaseDate)}</p>
         <p className="detailDescription">{release.description ?? `${release.artist} delivers a verified new ${release.kind} for this Friday's radar.`}</p>
         <div className="streamGrid">
+          {!live ? (
+            canPreSave ? (
+              <a className="spotifyPreSave" href={release.spotifyPreSaveUrl} target="_blank" rel="noreferrer">
+                <strong>PRE-SAVE ON SPOTIFY</strong><small>OFFICIAL COUNTDOWN</small>
+              </a>
+            ) : (
+              <span className="spotifyPreSave disabled" aria-disabled="true">
+                <strong>SPOTIFY PRE-SAVE</strong><small>LINK NOT LIVE YET</small>
+              </span>
+            )
+          ) : null}
           {release.spotifyUrl ? <a className="primary" href={release.spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a> : <span className="disabled">SPOTIFY UNAVAILABLE</span>}
           {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE MUSIC</a> : <span className="disabled">APPLE MUSIC</span>}
           {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : <span className="disabled">YOUTUBE</span>}
