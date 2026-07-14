@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./tablet.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
