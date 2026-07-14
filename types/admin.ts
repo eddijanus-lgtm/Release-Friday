@@ -18,8 +18,17 @@ export type ReleaseFormValues = {
   sourceUrl?: string;
 };
 
+export type EditableRelease = ReleaseFormValues & {
+  id: string;
+  status: ReleaseWriteStatus;
+  coverUrl?: string;
+  storagePath?: string;
+  source: string;
+};
+
 export type ReleaseCreateResult = {
   id: string;
   status: ReleaseWriteStatus;
   releaseDate: string;
+  action?: "created" | "updated" | "deleted";
 };
