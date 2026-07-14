@@ -1,5 +1,5 @@
 .accountPortalHost {
-  margin-top: 18px;
+  display: none;
 }
 
 .accountCard {
@@ -91,10 +91,6 @@
 }
 
 @media (min-width: 768px) {
-  .accountPortalHost {
-    margin-top: 24px;
-  }
-
   .accountCard {
     padding: 20px;
   }
