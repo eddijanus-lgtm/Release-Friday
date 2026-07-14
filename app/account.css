@@ -1,0 +1,101 @@
+.accountPortalHost {
+  margin-top: 18px;
+}
+
+.accountCard {
+  border: 1px solid #2b3428;
+  background: #0d120c;
+  padding: 16px;
+}
+
+.accountCard form,
+.accountIdentity {
+  display: grid;
+  gap: 10px;
+}
+
+.accountCard label {
+  display: grid;
+  gap: 7px;
+}
+
+.accountCard label > span,
+.accountIdentity > span {
+  color: var(--lime);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.accountCard input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #33402f;
+  border-radius: 0;
+  background: #080c08;
+  color: #f2f5ee;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.accountCard input:focus {
+  border-color: var(--lime);
+}
+
+.accountAction {
+  min-height: 46px;
+  border: 0;
+  background: var(--lime);
+  color: #050805;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.accountAction.secondary {
+  width: 100%;
+  margin-top: 12px;
+  border: 1px solid #33402f;
+  background: transparent;
+  color: #f2f5ee;
+}
+
+.accountAction:disabled {
+  opacity: .55;
+}
+
+.accountCard form > small,
+.accountIdentity small {
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.accountIdentity strong {
+  overflow: hidden;
+  color: #f2f5ee;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountMessage {
+  margin: 2px 0 0;
+  color: var(--lime);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .accountPortalHost {
+    margin-top: 24px;
+  }
+
+  .accountCard {
+    padding: 20px;
+  }
+}
