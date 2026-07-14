@@ -1,0 +1,71 @@
+.countdownTape.spotifyCountdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 8px 0 0;
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #111710;
+  color: var(--paper);
+}
+
+.spotifyCountdownUnit {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 0 6px;
+  text-align: center;
+}
+
+.spotifyCountdownUnit + .spotifyCountdownUnit {
+  border-left: 1px solid #465043;
+}
+
+.spotifyCountdownUnit strong {
+  color: var(--paper);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(24px, 8vw, 36px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.spotifyCountdownUnit small {
+  color: var(--muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+
+.countdownTape.spotifyCountdown.isLive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+}
+
+.spotifyCountdownLive {
+  color: var(--lime);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+@media (min-width: 768px) {
+  .countdownTape.spotifyCountdown {
+    padding: 16px 12px;
+  }
+
+  .spotifyCountdownUnit strong {
+    font-size: 40px;
+  }
+
+  .spotifyCountdownUnit small {
+    font-size: 10px;
+  }
+}
