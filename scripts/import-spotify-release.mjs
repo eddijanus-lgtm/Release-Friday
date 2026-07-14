@@ -73,13 +73,15 @@ async function getSpotifyAlbum(albumId, token) {
 }
 
 const albumId = extractAlbumId(spotifyInput);
+const submittedPreSaveUrl = String(spotifyInput).startsWith("http")
+  ? String(spotifyInput).trim()
+  : `https://open.spotify.com/album/${albumId}`;
 const token = await getSpotifyToken();
 const album = await getSpotifyAlbum(albumId, token);
 
 const artist = album.artists.map((item) => item.name).join(" & ");
 const title = album.name;
 const releaseDate = normalizeReleaseDate(album.release_date, album.release_date_precision);
-const spotifyUrl = album.external_urls?.spotify || `https://open.spotify.com/album/${albumId}`;
 const coverUrl = album.images?.[0]?.url || null;
 const kind = inferKind(album);
 const genres = [...new Set(album.artists.flatMap((item) => item.genres || []))];
@@ -91,14 +93,14 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 
 const { data: existing, error: readError } = await supabase
   .from("releases")
-  .select("id,artist,title,release_date,spotify_url,status")
-  .or(`spotify_url.eq.${spotifyUrl},and(release_date.eq.${releaseDate},artist.ilike.${artist},title.ilike.${title})`)
+  .select("id,artist,title,release_date,spotify_pre_save_url,status")
+  .or(`spotify_pre_save_url.eq.${submittedPreSaveUrl},and(release_date.eq.${releaseDate},artist.ilike.${artist},title.ilike.${title})`)
   .limit(10);
 
 if (readError) throw readError;
 
 const duplicate = (existing || []).find((row) =>
-  row.spotify_url === spotifyUrl ||
+  row.spotify_pre_save_url === submittedPreSaveUrl ||
   (row.release_date === releaseDate && normalize(row.artist) === normalize(artist) && normalize(row.title) === normalize(title)),
 );
 
@@ -127,11 +129,11 @@ const row = {
   storage_path: null,
   description,
   genres,
-  spotify_url: spotifyUrl,
-  spotify_pre_save_url: null,
+  spotify_url: null,
+  spotify_pre_save_url: submittedPreSaveUrl,
   apple_music_url: null,
   youtube_url: null,
-  source_url: spotifyUrl,
+  source_url: submittedPreSaveUrl,
   source: "Spotify Web API",
   status,
   created_by: createdBy,
@@ -140,7 +142,7 @@ const row = {
 const { data: inserted, error: insertError } = await supabase
   .from("releases")
   .insert(row)
-  .select("id,artist,title,release_date,country,kind,track_count,cover_url,spotify_url,status")
+  .select("id,artist,title,release_date,country,kind,track_count,cover_url,spotify_pre_save_url,status")
   .single();
 
 if (insertError) throw insertError;
