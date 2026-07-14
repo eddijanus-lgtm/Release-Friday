@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
 import "./globals.css";
 import "./tablet.css";
+import "./release-tile-covers.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
@@ -17,7 +19,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body>
+        {children}
+        <ReleaseTileCoverEnhancer />
+      </body>
     </html>
   );
 }
