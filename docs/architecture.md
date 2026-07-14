@@ -12,6 +12,7 @@ Every Thursday, Release Friday presents the hip-hop and rap releases scheduled f
 - **Providers:** isolated source adapters in `lib/sources/`
 - **UI:** reusable components grouped by feature in `components/`
 - **Delivery:** GitHub Actions validates every push and pull request
+- **Manual editorial backend:** Supabase Auth, Postgres and Storage, protected by row-level security
 
 ## Data flow
 
@@ -21,6 +22,8 @@ Every Thursday, Release Friday presents the hip-hop and rap releases scheduled f
 4. De-duplicate releases.
 5. Filter by Germany or USA.
 6. Render the mobile-first release list.
+
+Published manual entries are loaded from Supabase at runtime for the same target Friday and merged with the generated static list. If the backend is unavailable, the generated list remains the safe fallback. Drafts and write operations are restricted to allowlisted users in `release_admins`.
 
 ## Boundaries
 

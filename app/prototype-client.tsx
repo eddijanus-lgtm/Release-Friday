@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
+import { usePublishedReleases } from "@/hooks/use-published-releases";
 
 type Tab = "drop" | "find" | "stash" | "me";
 type Region = "ALL" | ReleaseCountry;
@@ -358,8 +360,9 @@ function StashScreen({ releases, savedIds, onOpen, onToggleSaved }: {
   );
 }
 
-function SettingRow({ label, value, onClick }: { label: string; value: string; onClick?: () => void }) {
+function SettingRow({ label, value, onClick, href }: { label: string; value: string; onClick?: () => void; href?: string }) {
   const content = <><strong>{label}</strong><span>{value}</span></>;
+  if (href) return <Link className="settingRow" href={href}>{content}</Link>;
   return onClick ? <button type="button" className="settingRow" onClick={onClick}>{content}</button> : <div className="settingRow">{content}</div>;
 }
 
@@ -379,6 +382,7 @@ function ProfileScreen({ releases, savedCount, metadata }: { releases: MusicRele
         <div className="settingsList">
           <SettingRow label="REGION" value={region} onClick={cycleRegion} />
           <SettingRow label="RELEASE REMINDERS" value={reminders ? "ON" : "OFF"} onClick={() => setReminders((value) => !value)} />
+          <SettingRow label="RELEASE ANLEGEN" value="ADMIN →" href="/admin" />
           <SettingRow label="DATA MODE" value="EDITORIAL REVIEW" />
           <SettingRow label="LAST UPDATE" value={formatGeneratedAt(metadata?.generatedAt)} />
         </div>
@@ -410,7 +414,8 @@ function loadSavedIds(releases: MusicRelease[]) {
   }
 }
 
-export function PrototypeClient({ releases, metadata }: PrototypeClientProps) {
+export function PrototypeClient({ releases: initialReleases, metadata }: PrototypeClientProps) {
+  const releases = usePublishedReleases(initialReleases, metadata?.targetDate);
   const [activeTab, setActiveTab] = useState<Tab>("drop");
   const [selectedRelease, setSelectedRelease] = useState<MusicRelease | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());

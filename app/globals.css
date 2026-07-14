@@ -19,11 +19,11 @@
 * { box-sizing: border-box; }
 html { min-height: 100%; background: #31332f; }
 body { min-height: 100%; margin: 0; background: #31332f; color: var(--paper); }
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
-button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 
 .prototypePage {
   min-height: 100svh;
@@ -443,9 +443,291 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
   background: var(--panel);
   text-align: left;
 }
-button.settingRow { cursor: pointer; }
+button.settingRow, a.settingRow { cursor: pointer; }
 .settingRow strong { font-size: 8px; }
 .settingRow span { color: var(--muted); font-size: 8px; text-align: right; }
+
+.adminPage {
+  min-height: 100svh;
+  background: #31332f;
+}
+
+.adminPhone {
+  width: min(100%, 540px);
+  min-height: 100svh;
+  margin: 0 auto;
+  background:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    var(--ink);
+  background-size: 100% 62px;
+}
+
+.adminHeader {
+  display: flex;
+  min-height: 92px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid #1d241b;
+  background: #030603;
+}
+
+.adminWordmark,
+.adminTitle {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  text-transform: uppercase;
+}
+
+.adminWordmark {
+  color: var(--lime);
+  font-size: 38px;
+  line-height: .8;
+  letter-spacing: -.035em;
+}
+
+.adminIdentity {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  max-width: 58%;
+  padding-top: 3px;
+  font-size: 8px;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.adminIdentity span { color: var(--lime); }
+.adminIdentity strong { overflow: hidden; max-width: 100%; color: var(--muted); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+
+.adminTape {
+  margin: 14px;
+  padding: 13px 10px 12px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--lime);
+  color: #050805;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.adminLoginBody,
+.releaseEditorBody,
+.adminDenied {
+  padding: 8px 14px 72px;
+}
+
+.adminSectionLabel {
+  margin: 0 0 11px;
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.adminTitle {
+  margin: 0;
+  color: var(--paper);
+  font-size: clamp(58px, 17vw, 82px);
+  line-height: .78;
+  letter-spacing: -.03em;
+}
+
+.adminIntro {
+  margin: 22px 0;
+  color: #c5cbc0;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.adminNotice,
+.adminSuccess {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 18px;
+  padding: 15px;
+  border: 1px solid #5e6a58;
+  border-left: 5px solid var(--lime);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.adminNotice strong,
+.adminSuccess strong { color: var(--paper); font-size: 10px; }
+.adminNotice span,
+.adminSuccess span { color: var(--muted); font-family: ui-sans-serif, -apple-system, sans-serif; font-size: 12px; line-height: 1.45; }
+.adminSuccess { margin-top: 14px; border-color: rgba(189,255,0,.35); background: rgba(189,255,0,.08); }
+.adminSuccess a { margin-top: 4px; color: var(--lime); font-size: 8px; font-weight: 900; }
+
+.adminLoginForm,
+.releaseForm,
+.adminFieldGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.adminFieldGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.adminFieldWide { grid-column: 1 / -1; }
+
+.adminField {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.adminField > span {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .055em;
+}
+
+.adminField input,
+.adminField select,
+.adminField textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 13px;
+  border: 1px solid #354031;
+  border-radius: 7px;
+  outline: 0;
+  background: var(--panel);
+  color: var(--paper);
+  font-size: 12px;
+}
+
+.adminField textarea { min-height: 118px; resize: vertical; font-family: ui-sans-serif, -apple-system, sans-serif; line-height: 1.5; }
+.adminField select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--lime) 50%), linear-gradient(135deg, var(--lime) 50%, transparent 50%); background-position: calc(100% - 17px) 21px, calc(100% - 12px) 21px; background-repeat: no-repeat; background-size: 5px 5px, 5px 5px; }
+.adminField input:focus,
+.adminField select:focus,
+.adminField textarea:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(189,255,0,.08); }
+.adminField input::placeholder,
+.adminField textarea::placeholder { color: #717a6d; }
+.adminField input:disabled,
+.adminField select:disabled,
+.adminField textarea:disabled { cursor: not-allowed; opacity: .58; }
+.adminField small { color: var(--muted-2); font-size: 7px; line-height: 1.4; }
+
+.adminPrimaryButton,
+.adminSecondaryButton {
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--lime);
+  border-radius: 8px;
+  background: var(--lime);
+  color: #050805;
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.adminSecondaryButton { border-color: #495444; background: var(--panel); color: var(--paper); }
+.adminPrimaryButton:disabled,
+.adminSecondaryButton:disabled { cursor: wait; opacity: .55; }
+.adminLoginForm .adminPrimaryButton { margin-top: 4px; }
+
+.adminSecurityNote {
+  margin: 18px 0 0;
+  color: var(--muted-2);
+  font-size: 7px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.adminError {
+  margin: 2px 0 0;
+  padding: 13px;
+  border: 1px solid rgba(255,75,55,.48);
+  border-radius: 7px;
+  background: rgba(255,75,55,.1);
+  color: #ff8d7f;
+  font-family: ui-sans-serif, -apple-system, sans-serif;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.adminEditorHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.adminTextButton {
+  flex: 0 0 auto;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.adminFormSection {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(17,23,16,.86);
+}
+
+.adminFormSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.adminFormSectionTitle span { display: grid; width: 28px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--lime); color: #050805; font-size: 8px; font-weight: 900; }
+.adminFormSectionTitle strong { font-size: 9px; letter-spacing: .05em; }
+
+.coverUpload {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed #586452;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 75% 20%, rgba(189,255,0,.13), transparent 26%),
+    #0b100a;
+  cursor: pointer;
+}
+
+.coverUpload > div { display: grid; justify-items: center; gap: 9px; padding: 20px; text-align: center; }
+.coverUpload strong { color: var(--lime); font-size: 10px; }
+.coverUpload span { color: var(--muted); font-size: 7px; line-height: 1.5; }
+.coverUpload img { width: 100%; height: 100%; object-fit: cover; }
+.coverUpload.hasPreview { border-style: solid; border-color: var(--lime); }
+.coverUpload:focus-within { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(189,255,0,.08); }
+.coverUpload input { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0; }
+.coverFileName { margin: 9px 2px 0; overflow: hidden; color: var(--muted); font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+
+.adminActions {
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.adminLoading {
+  display: grid;
+  min-height: 48svh;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.adminLoading span { width: 34px; aspect-ratio: 1; border: 3px solid #273024; border-top-color: var(--lime); border-radius: 50%; animation: adminSpin .8s linear infinite; }
+@keyframes adminSpin { to { transform: rotate(360deg); } }
 
 .systemState {
   display: grid;
@@ -503,12 +785,21 @@ button.settingRow { cursor: pointer; }
   .heroCopy h1, .detailBody h1 { font-size: 51px; }
   .stashOpen { grid-template-columns: 76px minmax(0, 1fr) 18px; }
   .tapeCover.isCompact { width: 76px; min-width: 76px; }
+  .adminHeader { padding-right: 13px; padding-left: 13px; }
+  .adminTape { margin-right: 10px; margin-left: 10px; font-size: 7px; }
+  .adminLoginBody, .releaseEditorBody, .adminDenied { padding-right: 10px; padding-left: 10px; }
+  .adminFormSection { padding: 11px; }
+  .adminFieldGrid, .adminActions { grid-template-columns: 1fr; }
+  .adminFieldWide { grid-column: auto; }
 }
 
 @media (min-width: 700px) {
   .prototypePage { padding: 28px 0; }
   .prototypePhone { min-height: 860px; border: 1px solid #42473f; border-radius: 28px; box-shadow: 0 35px 100px rgba(0,0,0,.48); }
   .tapeNav { bottom: 28px; border-bottom: 1px solid #252d23; border-radius: 18px; }
+  .adminPage { padding: 28px 0; }
+  .adminPhone { min-height: 860px; border: 1px solid #42473f; border-radius: 28px; box-shadow: 0 35px 100px rgba(0,0,0,.48); }
+  .adminHeader { border-radius: 28px 28px 0 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -212,11 +212,33 @@ report.checkpoints.me = {
 assert(report.checkpoints.me.savedCount?.includes("1 STASHED"), "Profile stash count is incorrect.");
 assert(report.checkpoints.me.build?.includes("SOURCES CHECKED"), "Editorial data-mode message is missing.");
 
+const adminLink = page.getByRole("link", { name: /RELEASE ANLEGEN/ });
+assert(await adminLink.count() === 1, "The private release editor is not linked from the profile.");
+report.checkpoints.adminEntry = {
+  href: await adminLink.getAttribute("href"),
+};
+await adminLink.click();
+await page.waitForURL(/\/admin\/?$/);
+await settle();
+await page.screenshot({ path: `${outputDir}/07-admin-login.png`, fullPage: true });
+report.checkpoints.adminLogin = {
+  url: page.url(),
+  heading: await text(".adminTitle"),
+  setupNotice: await text(".adminNotice strong"),
+  emailDisabled: await page.locator('input[name="email"]').isDisabled(),
+  homeHref: await page.locator(".adminWordmark").getAttribute("href"),
+};
+assert(report.checkpoints.adminEntry.href?.includes("/admin"), "The profile admin link points to the wrong route.");
+assert(report.checkpoints.adminLogin.heading?.replace(/\s+/g, " ").toUpperCase() === "ADMIN LOGIN", "The admin login screen is missing.");
+assert(report.checkpoints.adminLogin.setupNotice === "BACKEND NOCH NICHT VERBUNDEN", "The safe unconfigured admin state is missing.");
+assert(report.checkpoints.adminLogin.emailDisabled, "The admin login must stay disabled without backend configuration.");
+assert(report.checkpoints.adminLogin.homeHref?.endsWith("/Release-Friday/"), "The admin back link does not return to Release Friday.");
+
 const desktop = await context.newPage();
 await desktop.setViewportSize({ width: 1280, height: 900 });
 await desktop.goto(baseUrl, { waitUntil: "networkidle" });
 await desktop.waitForTimeout(350);
-await desktop.screenshot({ path: `${outputDir}/07-drop-desktop.png`, fullPage: true });
+await desktop.screenshot({ path: `${outputDir}/08-drop-desktop.png`, fullPage: true });
 report.checkpoints.desktop = {
   bodyScrollWidth: await desktop.evaluate(() => document.body.scrollWidth),
   viewportWidth: await desktop.evaluate(() => window.innerWidth),
