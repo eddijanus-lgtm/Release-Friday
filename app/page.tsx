@@ -1,3 +1,4 @@
+import { HashTabBridge } from "@/app/hash-tab-bridge";
 import { PrototypeClient } from "@/app/prototype-client";
 import { azetDardanEurosport2Cover } from "@/lib/covers/azet-dardan-eurosport-2";
 import { realReleases, releaseDataMetadata } from "@/lib/releases/real-releases.generated";
@@ -9,5 +10,10 @@ const releasesWithLocalCovers = realReleases.map((release) =>
 );
 
 export default function Home() {
-  return <PrototypeClient releases={releasesWithLocalCovers} metadata={releaseDataMetadata} />;
+  return (
+    <>
+      <HashTabBridge />
+      <PrototypeClient releases={releasesWithLocalCovers} metadata={releaseDataMetadata} />
+    </>
+  );
 }
