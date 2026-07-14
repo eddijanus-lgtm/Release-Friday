@@ -15,6 +15,39 @@
       "description": "Der offizielle Republic-Records-Store bestätigt DJ Khaleds neues Album und stellt das Cover bereit. Mehrere Release-Kalender führen den 17. Juli 2026 als Veröffentlichungstermin.",
       "genres": ["Hip-Hop/Rap"],
       "source": "Republic Records + redaktionelle Prüfung"
+    },
+    {
+      "id": "curated-syd-beard",
+      "title": "Beard",
+      "artist": "Syd",
+      "releaseDate": "2026-07-17",
+      "country": "US",
+      "kind": "album",
+      "spotifyUrl": "https://open.spotify.com/search/Syd%20Beard",
+      "appleMusicUrl": "https://music.apple.com/de/search?term=Syd%20Beard",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=Syd%20Beard",
+      "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
+      "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
+      "trackCount": 12,
+      "genres": ["Alternative R&B", "Hip-Hop/Rap-Umfeld"],
+      "source": "Pitchfork + redaktionelle Prüfung"
+    },
+    {
+      "id": "curated-steve-lacy-oh-yeah",
+      "title": "Oh Yeah?",
+      "artist": "Steve Lacy",
+      "releaseDate": "2026-07-17",
+      "country": "US",
+      "kind": "album",
+      "coverUrl": "https://media.pitchfork.com/photos/6a21c189fc892426f2169bc5/master/w_1280%2Cc_limit/Screenshot%25202026-06-04%2520at%25202.16.49%25E2%2580%25AFPM.png",
+      "spotifyUrl": "https://open.spotify.com/search/Steve%20Lacy%20Oh%20Yeah",
+      "spotifyPreSaveUrl": "https://presaves.sonymusicfans.com/?campaign_id=748027&mailing_list_ids=a0S0800000YkkRYEAZ&retargeting_consent=0&source_channel=Spotify&triggered_sends=",
+      "appleMusicUrl": "https://music.apple.com/de/search?term=Steve%20Lacy%20Oh%20Yeah",
+      "youtubeUrl": "https://www.youtube.com/results?search_query=Steve%20Lacy%20Oh%20Yeah",
+      "sourceUrl": "https://pitchfork.com/news/listen-to-steve-lacy-and-sza-duet-on-is-it-cool/",
+      "description": "Steve Lacys drittes Soloalbum erscheint über RCA. Musikalisch ist es Progressive beziehungsweise Alternative R&B mit deutlicher Nähe zur Hip-Hop- und The-Internet-Szene.",
+      "genres": ["Progressive R&B", "Hip-Hop/Rap-Umfeld"],
+      "source": "Pitchfork + redaktionelle Prüfung"
     }
   ]
 }
