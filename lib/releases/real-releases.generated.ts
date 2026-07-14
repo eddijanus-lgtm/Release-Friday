@@ -5,17 +5,36 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T09:13:31.172Z",
+  "generatedAt": "2026-07-14T10:11:29.681Z",
   "fetchedCount": 0,
-  "curatedCount": 3,
+  "curatedCount": 4,
   "fetchError": null,
   "sourceCounts": {
+    "Redaktionell bestätigt · Cover direkt bereitgestellt": 1,
     "Republic Records + redaktionelle Prüfung": 1,
     "Pitchfork + redaktionelle Prüfung": 2
   }
 } as const;
 
 export const realReleases: MusicRelease[] = [
+  {
+    "id": "curated-azet-dardan-eurosport-2",
+    "title": "Eurosport 2",
+    "artist": "Azet & Dardan",
+    "releaseDate": "2026-07-17",
+    "country": "DE",
+    "kind": "album",
+    "coverUrl": "embedded:azet-dardan-eurosport-2",
+    "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
+    "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
+    "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
+    "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "Redaktionell bestätigt · Cover direkt bereitgestellt"
+  },
   {
     "id": "curated-dj-khaled-aalam-of-god",
     "title": "Aalam of God",
@@ -35,6 +54,25 @@ export const realReleases: MusicRelease[] = [
     "source": "Republic Records + redaktionelle Prüfung"
   },
   {
+    "id": "curated-syd-beard",
+    "title": "Beard",
+    "artist": "Syd",
+    "releaseDate": "2026-07-17",
+    "country": "US",
+    "kind": "album",
+    "spotifyUrl": "https://open.spotify.com/search/Syd%20Beard",
+    "appleMusicUrl": "https://music.apple.com/de/search?term=Syd%20Beard",
+    "youtubeUrl": "https://www.youtube.com/results?search_query=Syd%20Beard",
+    "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
+    "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
+    "trackCount": 12,
+    "genres": [
+      "Alternative R&B",
+      "Hip-Hop/Rap-Umfeld"
+    ],
+    "source": "Pitchfork + redaktionelle Prüfung"
+  },
+  {
     "id": "curated-steve-lacy-oh-yeah",
     "title": "Oh Yeah?",
     "artist": "Steve Lacy",
@@ -50,25 +88,6 @@ export const realReleases: MusicRelease[] = [
     "description": "Steve Lacys drittes Soloalbum erscheint über RCA. Musikalisch ist es Progressive beziehungsweise Alternative R&B mit deutlicher Nähe zur Hip-Hop- und The-Internet-Szene.",
     "genres": [
       "Progressive R&B",
-      "Hip-Hop/Rap-Umfeld"
-    ],
-    "source": "Pitchfork + redaktionelle Prüfung"
-  },
-  {
-    "id": "curated-syd-beard",
-    "title": "Beard",
-    "artist": "Syd",
-    "releaseDate": "2026-07-17",
-    "country": "US",
-    "kind": "album",
-    "spotifyUrl": "https://open.spotify.com/search/Syd%20Beard",
-    "appleMusicUrl": "https://music.apple.com/de/search?term=Syd%20Beard",
-    "youtubeUrl": "https://www.youtube.com/results?search_query=Syd%20Beard",
-    "sourceUrl": "https://pitchfork.com/news/syd-announces-first-album-in-four-years/",
-    "description": "Syd veröffentlicht ihr drittes Soloalbum über Free Lunch Records. Das Album gehört stilistisch eher zu Alternative R&B, ist aber wegen Syds Odd-Future- und The-Internet-Bezug für den US-Rap-Radar relevant.",
-    "trackCount": 12,
-    "genres": [
-      "Alternative R&B",
       "Hip-Hop/Rap-Umfeld"
     ],
     "source": "Pitchfork + redaktionelle Prüfung"
