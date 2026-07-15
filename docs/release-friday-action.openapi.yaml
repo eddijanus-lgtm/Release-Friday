@@ -1,0 +1,103 @@
+openapi: 3.1.0
+info:
+  title: Release Friday Spotify Import Action
+  version: 1.0.0
+  description: Queue Spotify album and prerelease imports and check their processing status.
+servers:
+  - url: https://otjvkorslczqdpzltjpj.supabase.co/functions/v1/release-friday-import
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      operationId: checkReleaseFridayActionHealth
+      summary: Check whether the Release Friday Action API is available
+      responses:
+        "200":
+          description: Service is available
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /imports:
+    post:
+      operationId: queueSpotifyReleaseImport
+      summary: Queue a Spotify album or prerelease for Release Friday
+      description: Use this when the user provides an open.spotify.com album or prerelease URL. Country must be DE or US. For prereleases, include release_date when it is known because Spotify may not expose it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - spotify_release
+                - country
+              properties:
+                spotify_release:
+                  type: string
+                  format: uri
+                  description: Full Spotify album or prerelease URL.
+                  examples:
+                    - https://open.spotify.com/album/513jv6L44NNDZQGSaPNg7S
+                    - https://open.spotify.com/prerelease/0cp9glwPa5yjkxvQ9NVxsS
+                country:
+                  type: string
+                  enum: [DE, US]
+                status:
+                  type: string
+                  enum: [published, draft]
+                  default: published
+                release_date:
+                  type: [string, "null"]
+                  format: date
+                  description: Optional release date in YYYY-MM-DD format, especially for prereleases.
+      responses:
+        "200":
+          description: Release already exists or an active request already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "202":
+          description: Import request was queued
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Invalid request
+        "401":
+          description: Invalid API key
+  /imports/{requestId}:
+    get:
+      operationId: getSpotifyReleaseImportStatus
+      summary: Check a queued Spotify import request
+      description: Call this with the request ID returned by queueSpotifyReleaseImport. Report success only when status is completed and a release object is returned.
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current request status and, after completion, the stored release
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "404":
+          description: Request was not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
