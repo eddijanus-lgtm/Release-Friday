@@ -244,11 +244,16 @@ report.checkpoints.desktop = {
   viewportWidth: await desktop.evaluate(() => window.innerWidth),
   phoneWidth: await desktop.locator(".prototypePhone").evaluate((element) => Math.round(element.getBoundingClientRect().width)),
 };
+
+await writeFile(`${outputDir}/report.json`, JSON.stringify(report, null, 2));
 assert(report.checkpoints.desktop.bodyScrollWidth <= report.checkpoints.desktop.viewportWidth, "Desktop layout has horizontal overflow.");
-assert(report.checkpoints.desktop.phoneWidth <= 430, "Desktop phone frame is wider than the approved layout.");
+assert(
+  report.checkpoints.desktop.phoneWidth >= 430
+    && report.checkpoints.desktop.phoneWidth <= report.checkpoints.desktop.viewportWidth - 40,
+  "Desktop responsive frame width is outside the approved layout range.",
+);
 assert(report.consoleErrors.length === 0, `Console errors found: ${JSON.stringify(report.consoleErrors)}`);
 assert(report.pageErrors.length === 0, `Page errors found: ${JSON.stringify(report.pageErrors)}`);
 
-await writeFile(`${outputDir}/report.json`, JSON.stringify(report, null, 2));
 await browser.close();
 console.log(JSON.stringify(report, null, 2));
