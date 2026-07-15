@@ -69,8 +69,10 @@ jobs:
         run: |
           node --check scripts/import-spotify-release.mjs
           node --check scripts/import-spotify-prerelease.mjs
+          node --check scripts/process-release-import-queue.mjs
 
-      - name: Resolve import request
+      - name: Resolve direct import request
+        if: github.event_name != 'schedule'
         shell: bash
         env:
           DISPATCH_RELEASE: ${{ inputs.spotify_release }}
@@ -86,22 +88,15 @@ jobs:
           else
             node <<'NODE' >> "$GITHUB_ENV"
           const request = require('./imports/spotify-release-request.json');
-          const requestedAt = Date.parse(request.requested_at || '');
-          const ageHours = Number.isFinite(requestedAt) ? (Date.now() - requestedAt) / 3_600_000 : 0;
-
           console.log(`SPOTIFY_RELEASE=${request.spotify_release}`);
           console.log(`RELEASE_COUNTRY=${request.country || 'DE'}`);
           console.log(`RELEASE_STATUS=${request.status || 'published'}`);
           console.log(`RELEASE_DATE=${request.release_date || ''}`);
-
-          if (process.env.GITHUB_EVENT_NAME === 'schedule' && ageHours > 6) {
-            console.log('SKIP_IMPORT=true');
-          }
           NODE
           fi
 
-      - name: Import Spotify release into Supabase
-        if: env.SKIP_IMPORT != 'true'
+      - name: Import direct Spotify release into Supabase
+        if: github.event_name != 'schedule'
         shell: bash
         run: |
           if [[ "$SPOTIFY_RELEASE" == *"/prerelease/"* ]]; then
@@ -110,6 +105,6 @@ jobs:
             node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
           fi
 
-      - name: Skip stale scheduled request
-        if: env.SKIP_IMPORT == 'true'
-        run: echo "Scheduled fallback skipped because the request is older than six hours."
+      - name: Process Custom GPT import queue
+        if: github.event_name == 'schedule'
+        run: node scripts/process-release-import-queue.mjs
