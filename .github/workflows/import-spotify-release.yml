@@ -3,13 +3,17 @@ name: Import Spotify release
 on:
   workflow_dispatch:
     inputs:
+      queue_request_id:
+        description: "Optional Supabase queue request UUID"
+        required: false
+        type: string
       spotify_release:
         description: "Spotify album/prerelease URL or 22-character ID"
-        required: true
+        required: false
         type: string
       country:
         description: "Editorial country"
-        required: true
+        required: false
         default: "DE"
         type: choice
         options:
@@ -17,7 +21,7 @@ on:
           - US
       status:
         description: "Supabase status"
-        required: true
+        required: false
         default: "published"
         type: choice
         options:
@@ -32,8 +36,6 @@ on:
       - main
     paths:
       - "imports/spotify-release-request.json"
-  schedule:
-    - cron: "*/10 * * * *"
 
 permissions:
   contents: read
@@ -71,8 +73,14 @@ jobs:
           node --check scripts/import-spotify-prerelease.mjs
           node --check scripts/process-release-import-queue.mjs
 
+      - name: Process dispatched Custom GPT import
+        if: github.event_name == 'workflow_dispatch' && inputs.queue_request_id != ''
+        env:
+          IMPORT_REQUEST_ID: ${{ inputs.queue_request_id }}
+        run: node scripts/process-release-import-queue.mjs
+
       - name: Resolve direct import request
-        if: github.event_name != 'schedule'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.queue_request_id == '')
         shell: bash
         env:
           DISPATCH_RELEASE: ${{ inputs.spotify_release }}
@@ -81,9 +89,13 @@ jobs:
           DISPATCH_RELEASE_DATE: ${{ inputs.release_date }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ -z "$DISPATCH_RELEASE" ]]; then
+              echo "::error::spotify_release is required when queue_request_id is empty"
+              exit 1
+            fi
             echo "SPOTIFY_RELEASE=$DISPATCH_RELEASE" >> "$GITHUB_ENV"
-            echo "RELEASE_COUNTRY=$DISPATCH_COUNTRY" >> "$GITHUB_ENV"
-            echo "RELEASE_STATUS=$DISPATCH_STATUS" >> "$GITHUB_ENV"
+            echo "RELEASE_COUNTRY=${DISPATCH_COUNTRY:-DE}" >> "$GITHUB_ENV"
+            echo "RELEASE_STATUS=${DISPATCH_STATUS:-published}" >> "$GITHUB_ENV"
             echo "RELEASE_DATE=$DISPATCH_RELEASE_DATE" >> "$GITHUB_ENV"
           else
             node <<'NODE' >> "$GITHUB_ENV"
@@ -96,7 +108,7 @@ jobs:
           fi
 
       - name: Import direct Spotify release into Supabase
-        if: github.event_name != 'schedule'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.queue_request_id == '')
         shell: bash
         run: |
           if [[ "$SPOTIFY_RELEASE" == *"/prerelease/"* ]]; then
@@ -104,7 +116,3 @@ jobs:
           else
             node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
           fi
-
-      - name: Process Custom GPT import queue
-        if: github.event_name == 'schedule'
-        run: node scripts/process-release-import-queue.mjs

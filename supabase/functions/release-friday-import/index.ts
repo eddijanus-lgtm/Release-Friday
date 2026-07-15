@@ -9,6 +9,8 @@ const headers = {
   "Cache-Control": "no-store",
 };
 
+const githubDispatchUrl = "https://api.github.com/repos/eddijanus-lgtm/Release-Friday/actions/workflows/import-spotify-release.yml/dispatches";
+
 function reply(status: number, body: unknown) {
   return new Response(JSON.stringify(body), { status, headers });
 }
@@ -28,6 +30,28 @@ function dateInput(value: unknown) {
   return value;
 }
 
+async function dispatchImport(requestId: string, token: string) {
+  const response = await fetch(githubDispatchUrl, {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "User-Agent": "release-friday-import-action",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+    body: JSON.stringify({
+      ref: "main",
+      inputs: { queue_request_id: requestId },
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 1000);
+    throw new Error(`GitHub workflow dispatch failed with HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+  }
+}
+
 Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers });
   const configured = Deno.env.get("RELEASE_FRIDAY_ACTION_API_KEY") ?? "";
@@ -43,7 +67,11 @@ Deno.serve(async (request: Request) => {
 
   try {
     if (request.method === "GET" && (path === "/" || path === "/health")) {
-      return reply(200, { status: "ok", processing: "queued imports run through GitHub Actions" });
+      return reply(200, {
+        status: "ok",
+        processing: "event-driven GitHub workflow dispatch",
+        github_dispatch_configured: Boolean(Deno.env.get("GITHUB_ACTIONS_TOKEN")),
+      });
     }
 
     if (request.method === "POST" && path === "/imports") {
@@ -78,6 +106,11 @@ Deno.serve(async (request: Request) => {
       if (activeError) throw activeError;
       if (active) return reply(200, { action: "already_queued", request: active });
 
+      const githubToken = Deno.env.get("GITHUB_ACTIONS_TOKEN") ?? "";
+      if (!githubToken) {
+        return reply(503, { error: "GitHub workflow dispatch is not configured" });
+      }
+
       const { data, error } = await supabase
         .from("release_import_requests")
         .insert({
@@ -93,7 +126,20 @@ Deno.serve(async (request: Request) => {
         .select("*")
         .single();
       if (error) throw error;
-      return reply(202, { action: "queued", request: data });
+
+      try {
+        await dispatchImport(data.id, githubToken);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "GitHub workflow dispatch failed";
+        const now = new Date().toISOString();
+        await supabase
+          .from("release_import_requests")
+          .update({ status: "failed", error_message: message.slice(0, 4000), completed_at: now, updated_at: now })
+          .eq("id", data.id);
+        return reply(502, { error: message, request_id: data.id });
+      }
+
+      return reply(202, { action: "dispatched", request: data });
     }
 
     const match = path.match(/^\/imports\/([0-9a-fA-F-]{36})$/);
