@@ -22,6 +22,9 @@ create index if not exists release_import_requests_status_created_idx
 create index if not exists release_import_requests_spotify_idx
   on public.release_import_requests (spotify_release, country, created_at desc);
 
+create index if not exists release_import_requests_release_id_idx
+  on public.release_import_requests (release_id);
+
 create unique index if not exists release_import_requests_active_unique
   on public.release_import_requests (spotify_release, country)
   where status in ('queued', 'processing');
