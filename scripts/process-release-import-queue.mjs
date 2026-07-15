@@ -2,10 +2,17 @@ import { spawn } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
-const batchSize = Math.max(1, Math.min(Number(process.env.IMPORT_QUEUE_BATCH_SIZE || 5), 10));
+const requestId = String(process.env.IMPORT_REQUEST_ID || "").trim();
+const batchSize = requestId
+  ? 1
+  : Math.max(1, Math.min(Number(process.env.IMPORT_QUEUE_BATCH_SIZE || 5), 10));
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error("Supabase queue credentials are missing.");
+}
+
+if (requestId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
+  throw new Error("IMPORT_REQUEST_ID must be a valid UUID.");
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -40,15 +47,27 @@ function runNodeScript(script, spotifyRelease, request) {
 }
 
 async function claimNextRequest() {
-  const { data: candidate, error: selectError } = await supabase
+  let query = supabase
     .from("release_import_requests")
-    .select("*")
-    .eq("status", "queued")
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .select("*");
+
+  if (requestId) {
+    query = query.eq("id", requestId);
+  } else {
+    query = query.eq("status", "queued").order("created_at", { ascending: true });
+  }
+
+  const { data: candidate, error: selectError } = await query.limit(1).maybeSingle();
   if (selectError) throw selectError;
-  if (!candidate) return null;
+  if (!candidate) {
+    if (requestId) throw new Error(`Import request ${requestId} was not found.`);
+    return null;
+  }
+
+  if (candidate.status !== "queued") {
+    console.log(`Import request ${candidate.id} is already ${candidate.status}; no work is required.`);
+    return null;
+  }
 
   const now = new Date().toISOString();
   const { data: claimed, error: claimError } = await supabase
@@ -140,5 +159,5 @@ for (let index = 0; index < batchSize; index += 1) {
   console.log(`Completed queued import ${request.id}: ${release.artist} — ${release.title}`);
 }
 
-console.log(JSON.stringify({ processed, failed }, null, 2));
+console.log(JSON.stringify({ requestId: requestId || null, processed, failed }, null, 2));
 if (failed > 0) process.exitCode = 1;
