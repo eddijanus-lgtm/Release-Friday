@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       spotify_release:
-        description: "Spotify album URL or 22-character album ID"
+        description: "Spotify album/prerelease URL or 22-character ID"
         required: true
         type: string
       country:
@@ -28,9 +28,15 @@ on:
       - main
     paths:
       - "imports/spotify-release-request.json"
+  schedule:
+    - cron: "*/10 * * * *"
 
 permissions:
   contents: read
+
+concurrency:
+  group: spotify-release-import
+  cancel-in-progress: false
 
 jobs:
   import:
@@ -55,6 +61,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate importer syntax
+        run: node --check scripts/import-spotify-release.mjs
+
       - name: Resolve import request
         shell: bash
         env:
@@ -69,11 +78,23 @@ jobs:
           else
             node <<'NODE' >> "$GITHUB_ENV"
           const request = require('./imports/spotify-release-request.json');
+          const requestedAt = Date.parse(request.requested_at || '');
+          const ageHours = Number.isFinite(requestedAt) ? (Date.now() - requestedAt) / 3_600_000 : 0;
+
           console.log(`SPOTIFY_RELEASE=${request.spotify_release}`);
           console.log(`RELEASE_COUNTRY=${request.country || 'DE'}`);
           console.log(`RELEASE_STATUS=${request.status || 'published'}`);
+
+          if (process.env.GITHUB_EVENT_NAME === 'schedule' && ageHours > 6) {
+            console.log('SKIP_IMPORT=true');
+          }
           NODE
           fi
 
-      - name: Import Spotify album into Supabase
+      - name: Import Spotify release into Supabase
+        if: env.SKIP_IMPORT != 'true'
         run: node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
+
+      - name: Skip stale scheduled request
+        if: env.SKIP_IMPORT == 'true'
+        run: echo "Scheduled fallback skipped because the request is older than six hours."
