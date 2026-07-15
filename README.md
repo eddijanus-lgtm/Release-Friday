@@ -43,6 +43,7 @@ GitHub Pages liefert die statische Next.js-App aus; der Browser lädt veröffent
 - [Betrieb und Administration](docs/operations.md)
 - [Entwicklungsgeschichte](docs/history.md)
 - [ChatGPT-Template zum Anlegen eines Releases](docs/chatgpt-release-template.md)
+- [ChatGPT-Entwurfstest mit einer eingeschränkten GPT Action](docs/chatgpt-release-draft-poc.md)
 - [Supabase-Admin-Setup](docs/admin-setup.md)
 
 ## Lokale Entwicklung
