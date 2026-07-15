@@ -179,10 +179,14 @@ async function searchSpotifyAlbum(title, artist, token) {
   ];
 
   for (const query of queries) {
-    const response = await fetch(`https://api.spotify.com/v1/search?${new URLSearchParams({ q: query, type: "album", market: "DE", limit: "50" })}`, {
+    const params = new URLSearchParams({ q: query, type: "album", market: "DE", limit: "10" });
+    const response = await fetch(`https://api.spotify.com/v1/search?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error(`Spotify album search failed (${response.status}).`);
+    if (!response.ok) {
+      const responseBody = await response.text();
+      throw new Error(`Spotify album search failed (${response.status}) for ${query}: ${responseBody.slice(0, 300)}`);
+    }
     const items = (await response.json()).albums?.items ?? [];
     const exact = items.find((item) =>
       normalize(item.name) === normalize(title)
