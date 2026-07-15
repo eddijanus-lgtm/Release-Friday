@@ -71,7 +71,7 @@ function inferKind(album) {
     if (album.total_tracks >= 4 && album.total_tracks <= 7) return "ep";
     return "single";
   }
-  return "album";
+  return album.album_type === "ep" ? "ep" : "album";
 }
 
 function isFutureDate(date) {
@@ -80,7 +80,10 @@ function isFutureDate(date) {
 }
 
 function parsePrereleaseTitle(rawTitle) {
-  const title = decodeHtml(rawTitle)
+  const original = decodeHtml(rawTitle);
+  const kindMatch = original.match(/Upcoming\s+(Album|Single|EP|Mixtape)/i);
+  const kind = kindMatch ? kindMatch[1].toLowerCase() : undefined;
+  const title = original
     .replace(/\s*\|\s*Spotify\s*$/i, "")
     .replace(/^Spotify\s*[–—-]\s*/i, "")
     .trim();
@@ -94,9 +97,42 @@ function parsePrereleaseTitle(rawTitle) {
 
   for (const pattern of patterns) {
     const match = title.match(pattern);
-    if (match) return { title: match[1].trim(), artist: match[2].trim() };
+    if (match) return { title: match[1].trim(), artist: match[2].trim(), kind };
   }
   return null;
+}
+
+function extractMetaContent(html, key) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${escaped}["'][^>]+content=["']([^"']+)["']`, "i"))?.[1]
+    || html.match(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${escaped}["']`, "i"))?.[1]
+    || null;
+}
+
+function extractReleaseDate(html) {
+  const explicitPatterns = [
+    /["']releaseDate["']\s*:\s*["'](20\d{2}-\d{2}-\d{2})/i,
+    /["']release_date["']\s*:\s*["'](20\d{2}-\d{2}-\d{2})/i,
+    /["']datePublished["']\s*:\s*["'](20\d{2}-\d{2}-\d{2})/i,
+    /(?:release|available|countdown)[\s\S]{0,160}?(20\d{2}-\d{2}-\d{2})/i,
+  ];
+
+  for (const pattern of explicitPatterns) {
+    const match = html.match(pattern);
+    if (match) return match[1];
+  }
+
+  const metaDate = extractMetaContent(html, "music:release_date")
+    || extractMetaContent(html, "release_date")
+    || extractMetaContent(html, "release-date");
+  const normalizedMetaDate = metaDate?.match(/20\d{2}-\d{2}-\d{2}/)?.[0];
+  if (normalizedMetaDate) return normalizedMetaDate;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const futureDates = [...new Set(html.match(/20\d{2}-\d{2}-\d{2}/g) || [])]
+    .filter((date) => date >= today)
+    .sort();
+  return futureDates[0] || null;
 }
 
 async function getSpotifyToken() {
@@ -124,15 +160,12 @@ async function getSpotifyAlbum(albumId, token) {
 
 async function getPrereleaseIdentity(prereleaseId) {
   const url = canonicalPrereleaseUrl(prereleaseId);
+  let oembed = null;
 
   const oembedResponse = await fetch(`https://open.spotify.com/oembed?${new URLSearchParams({ url })}`, {
     headers: { "User-Agent": "Mozilla/5.0 ReleaseFridayBot/1.0" },
   });
-  if (oembedResponse.ok) {
-    const oembed = await oembedResponse.json();
-    const parsed = parsePrereleaseTitle(oembed.title);
-    if (parsed) return { ...parsed, prereleaseUrl: url, metadataSource: "oembed" };
-  }
+  if (oembedResponse.ok) oembed = await oembedResponse.json();
 
   const response = await fetch(url, {
     redirect: "follow",
@@ -158,18 +191,37 @@ async function getPrereleaseIdentity(prereleaseId) {
   }
 
   const titleCandidates = [
-    html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)?.[1],
-    html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i)?.[1],
+    oembed?.title,
+    extractMetaContent(html, "og:title"),
     html.match(/<title>([^<]+)<\/title>/i)?.[1],
     html.match(/["']title["']\s*:\s*["']([^"']+)["']/i)?.[1],
   ].filter(Boolean);
 
+  let identity = null;
   for (const candidate of titleCandidates) {
-    const parsed = parsePrereleaseTitle(candidate);
-    if (parsed) return { ...parsed, prereleaseUrl: url, metadataSource: "html-title" };
+    identity = parsePrereleaseTitle(candidate);
+    if (identity) break;
   }
 
-  throw new Error(`Spotify prerelease metadata could not be resolved. Page title: ${decodeHtml(titleCandidates[0] || "missing")}`);
+  if (!identity) {
+    throw new Error(`Spotify prerelease metadata could not be resolved. Page title: ${decodeHtml(titleCandidates[0] || "missing")}`);
+  }
+
+  const releaseDate = extractReleaseDate(html);
+  const coverUrl = decodeHtml(
+    oembed?.thumbnail_url
+      || extractMetaContent(html, "og:image")
+      || extractMetaContent(html, "twitter:image")
+      || "",
+  ) || null;
+
+  return {
+    ...identity,
+    releaseDate,
+    coverUrl,
+    prereleaseUrl: url,
+    metadataSource: oembed?.title ? "oembed+html" : "html-title",
+  };
 }
 
 async function searchSpotifyAlbum(title, artist, token) {
@@ -195,7 +247,26 @@ async function searchSpotifyAlbum(title, artist, token) {
     if (exact) return getSpotifyAlbum(exact.id, token);
   }
 
-  throw new Error(`No matching Spotify album found for ${artist} — ${title}.`);
+  return null;
+}
+
+function createPrereleaseAlbum(prerelease) {
+  if (!prerelease.releaseDate) {
+    throw new Error(`Spotify prerelease has no resolvable release date for ${prerelease.artist} — ${prerelease.title}.`);
+  }
+
+  return {
+    id: null,
+    name: prerelease.title,
+    album_type: prerelease.kind === "single" ? "single" : prerelease.kind === "ep" ? "ep" : "album",
+    total_tracks: null,
+    release_date: prerelease.releaseDate,
+    release_date_precision: "day",
+    external_urls: {},
+    images: prerelease.coverUrl ? [{ url: prerelease.coverUrl }] : [],
+    artists: [{ name: prerelease.artist, genres: [] }],
+    prereleaseOnly: true,
+  };
 }
 
 async function writeImportLog(logStatus, message, details = {}) {
@@ -217,25 +288,30 @@ async function run() {
   let album = null;
   let prereleaseUrl = input.type === "prerelease" ? input.submittedUrl : null;
   let prereleaseMetadataSource = null;
+  let prereleaseIdentity = null;
 
   if (input.type !== "prerelease") album = await getSpotifyAlbum(input.id, token);
 
   if (!album) {
-    const prerelease = await getPrereleaseIdentity(input.id);
-    prereleaseUrl = input.submittedUrl || prerelease.prereleaseUrl;
-    prereleaseMetadataSource = prerelease.metadataSource || null;
-    album = prerelease.albumId
-      ? await getSpotifyAlbum(prerelease.albumId, token)
-      : await searchSpotifyAlbum(prerelease.title, prerelease.artist, token);
+    prereleaseIdentity = await getPrereleaseIdentity(input.id);
+    prereleaseUrl = input.submittedUrl || prereleaseIdentity.prereleaseUrl;
+    prereleaseMetadataSource = prereleaseIdentity.metadataSource || null;
+    album = prereleaseIdentity.albumId
+      ? await getSpotifyAlbum(prereleaseIdentity.albumId, token)
+      : await searchSpotifyAlbum(prereleaseIdentity.title, prereleaseIdentity.artist, token);
+    if (!album) album = createPrereleaseAlbum(prereleaseIdentity);
   }
 
   if (!album) throw new Error("Spotify release metadata could not be loaded.");
 
+  const prereleaseOnly = Boolean(album.prereleaseOnly);
   const artist = album.artists.map((item) => item.name).join(" & ");
   const title = album.name;
   const releaseDate = normalizeReleaseDate(album.release_date, album.release_date_precision);
-  const futureRelease = isFutureDate(releaseDate);
-  const canonicalAlbumUrl = album.external_urls?.spotify || `https://open.spotify.com/album/${album.id}`;
+  const futureRelease = prereleaseOnly || isFutureDate(releaseDate);
+  const canonicalAlbumUrl = album.id
+    ? album.external_urls?.spotify || `https://open.spotify.com/album/${album.id}`
+    : null;
   const submittedUrl = input.submittedUrl || (prereleaseUrl ?? canonicalAlbumUrl);
   const spotifyUrl = futureRelease ? null : canonicalAlbumUrl;
   const spotifyPreSaveUrl = futureRelease ? submittedUrl : null;
@@ -252,7 +328,7 @@ async function run() {
   if (readError) throw readError;
 
   const duplicate = (existingRows || []).find((row) =>
-    row.spotify_url === canonicalAlbumUrl
+    (canonicalAlbumUrl && row.spotify_url === canonicalAlbumUrl)
     || row.spotify_pre_save_url === submittedUrl
     || (normalize(row.artist) === normalize(artist) && normalize(row.title) === normalize(title)),
   );
@@ -292,7 +368,7 @@ async function run() {
       .select("id,artist,title,release_date,country,kind,track_count,cover_url,spotify_url,spotify_pre_save_url,status")
       .single();
     if (updateError) throw updateError;
-    result = { result: "updated", spotifyId: input.id, futureRelease, prereleaseMetadataSource, release: updated };
+    result = { result: "updated", spotifyId: input.id, futureRelease, prereleaseOnly, prereleaseMetadataSource, release: updated };
   } else {
     const { data: inserted, error: insertError } = await supabase
       .from("releases")
@@ -300,7 +376,7 @@ async function run() {
       .select("id,artist,title,release_date,country,kind,track_count,cover_url,spotify_url,spotify_pre_save_url,status")
       .single();
     if (insertError) throw insertError;
-    result = { result: "created", spotifyId: input.id, futureRelease, prereleaseMetadataSource, release: inserted };
+    result = { result: "created", spotifyId: input.id, futureRelease, prereleaseOnly, prereleaseMetadataSource, release: inserted };
   }
 
   await writeImportLog("success", `${artist} — ${title} imported`, result);
