@@ -30,7 +30,6 @@ on:
   push:
     branches:
       - main
-      - agent/fix-spotify-prerelease-fallback
     paths:
       - "imports/spotify-release-request.json"
   schedule:
