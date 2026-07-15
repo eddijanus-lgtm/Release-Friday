@@ -23,6 +23,10 @@ on:
         options:
           - published
           - draft
+      release_date:
+        description: "Optional prerelease date (YYYY-MM-DD)"
+        required: false
+        type: string
   push:
     branches:
       - main
@@ -62,7 +66,9 @@ jobs:
         run: npm ci
 
       - name: Validate importer syntax
-        run: node --check scripts/import-spotify-release.mjs
+        run: |
+          node --check scripts/import-spotify-release.mjs
+          node --check scripts/import-spotify-prerelease.mjs
 
       - name: Resolve import request
         shell: bash
@@ -70,11 +76,13 @@ jobs:
           DISPATCH_RELEASE: ${{ inputs.spotify_release }}
           DISPATCH_COUNTRY: ${{ inputs.country }}
           DISPATCH_STATUS: ${{ inputs.status }}
+          DISPATCH_RELEASE_DATE: ${{ inputs.release_date }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SPOTIFY_RELEASE=$DISPATCH_RELEASE" >> "$GITHUB_ENV"
             echo "RELEASE_COUNTRY=$DISPATCH_COUNTRY" >> "$GITHUB_ENV"
             echo "RELEASE_STATUS=$DISPATCH_STATUS" >> "$GITHUB_ENV"
+            echo "RELEASE_DATE=$DISPATCH_RELEASE_DATE" >> "$GITHUB_ENV"
           else
             node <<'NODE' >> "$GITHUB_ENV"
           const request = require('./imports/spotify-release-request.json');
@@ -84,6 +92,7 @@ jobs:
           console.log(`SPOTIFY_RELEASE=${request.spotify_release}`);
           console.log(`RELEASE_COUNTRY=${request.country || 'DE'}`);
           console.log(`RELEASE_STATUS=${request.status || 'published'}`);
+          console.log(`RELEASE_DATE=${request.release_date || ''}`);
 
           if (process.env.GITHUB_EVENT_NAME === 'schedule' && ageHours > 6) {
             console.log('SKIP_IMPORT=true');
@@ -93,7 +102,13 @@ jobs:
 
       - name: Import Spotify release into Supabase
         if: env.SKIP_IMPORT != 'true'
-        run: node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
+        shell: bash
+        run: |
+          if [[ "$SPOTIFY_RELEASE" == *"/prerelease/"* ]]; then
+            node scripts/import-spotify-prerelease.mjs "$SPOTIFY_RELEASE"
+          else
+            node scripts/import-spotify-release.mjs "$SPOTIFY_RELEASE"
+          fi
 
       - name: Skip stale scheduled request
         if: env.SKIP_IMPORT == 'true'
