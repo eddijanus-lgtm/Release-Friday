@@ -20,7 +20,8 @@ Release Friday ist ein responsiver Release-Radar für deutsche und US-amerikanis
 - geschützter Admin-Bereich zum Anlegen, Bearbeiten, Veröffentlichen, als Entwurf Speichern und Löschen
 - automatische WebP-Komprimierung hochgeladener Cover vor dem Upload
 - Supabase Auth, Postgres, Row Level Security und Storage
-- automatischer Release-Import über GitHub Actions
+- automatischer Release-Import aus dem wöchentlichen r/GermanRap-Post und Musikplattformen über GitHub Actions
+- harte Cover-Sperre: Automatik-Releases werden nur mit geprüftem, im eigenen Storage gesichertem Cover veröffentlicht
 - statischer Next.js-Export und Deployment über GitHub Pages
 
 ## Architektur in einem Satz
@@ -74,7 +75,8 @@ Bei `DEPLOY_TARGET=github-pages` wird ein statischer Export im Verzeichnis `out/
 1. Veröffentlichte Supabase-Datensätze sind die primäre Quelle.
 2. Manuelle Änderungen in Supabase dürfen vom automatischen Import nicht überschrieben werden.
 3. Die generierte Datei `lib/releases/real-releases.generated.ts` ist ein statischer Fallback.
-4. Cover kommen bevorzugt aus `cover_url`; fehlt ein Bild, wird der Release-Friday-Platzhalter dargestellt.
+4. Der automatische Import veröffentlicht keinen Release ohne echtes Cover. Extern gefundene Cover werden geprüft und in `release-covers` gesichert.
+5. Der Platzhalter bleibt ausschließlich die Darstellung für ältere oder manuell angelegte Datensätze ohne Cover.
 
 ## Sicherheit
 
@@ -86,7 +88,7 @@ Bei `DEPLOY_TARGET=github-pages` wird ein statischer Export im Verzeichnis `out/
 ## Wichtige Workflows
 
 - `.github/workflows/pages.yml` baut und veröffentlicht die Website.
-- `.github/workflows/sync-releases-to-supabase.yml` recherchiert Releases und fügt ausschließlich neue Datensätze in Supabase ein.
+- `.github/workflows/sync-releases-to-supabase.yml` liest die r/GermanRap-Singleliste, löst offizielle Cover in rollenden Spotify-/Apple-Music-Märkten auf und fügt ausschließlich cover-geprüfte neue Datensätze in Supabase ein.
 
 ## Projektstatus
 

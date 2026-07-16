@@ -2,8 +2,17 @@ name: Sync releases to Supabase
 
 on:
   workflow_dispatch:
+    inputs:
+      release_date:
+        description: Optional release date in YYYY-MM-DD format
+        required: false
+        type: string
   schedule:
-    - cron: "15 5 * * 4"
+    # 14:15 CEST: New Zealand has reached Friday and exposes rolling releases.
+    - cron: "15 12 * * 4"
+    # 18:30 CEST: retry after the weekly r/GermanRap post is normally available.
+    - cron: "30 16 * * 4"
+    # Friday recovery run after the German release window has opened.
     - cron: "15 5 * * 5"
   push:
     branches:
@@ -11,6 +20,7 @@ on:
     paths:
       - "scripts/fetch-releases.mjs"
       - "scripts/sync-releases-to-supabase.mjs"
+      - "lib/releases/reddit-source.json"
       - ".github/workflows/sync-releases-to-supabase.yml"
 
 permissions:
@@ -19,8 +29,11 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
+      RELEASE_DATE: ${{ inputs.release_date }}
+      SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 

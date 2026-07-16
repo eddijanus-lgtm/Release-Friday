@@ -75,21 +75,28 @@ Workflow: `.github/workflows/sync-releases-to-supabase.yml`
 
 Auslöser:
 
-- Donnerstag und Freitag nach Zeitplan
+- Donnerstag um 12:15 und 16:30 UTC sowie Freitag um 05:15 UTC
 - manuell über GitHub Actions
 - Änderungen an Importskripten oder Workflow
 
-Benötigtes Secret:
+Benötigte Secrets:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `SPOTIFY_CLIENT_ID`
+- `SPOTIFY_CLIENT_SECRET`
 
 Ablauf:
 
 1. `npm ci`
-2. `node scripts/fetch-releases.mjs`
-3. `node scripts/sync-releases-to-supabase.mjs`
+2. r/GermanRap-RSS lesen und Cover über Spotify NZ/AU beziehungsweise Apple Music NZ/AU auflösen
+3. `node scripts/fetch-releases.mjs`
+4. jedes gefundene Cover herunterladen und als unterstütztes Bild validieren
+5. Cover in `release-covers` speichern
+6. `node scripts/sync-releases-to-supabase.mjs`
 
-Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze.
+Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Eine Single ohne erfolgreich gefundenes und im eigenen Storage gespeichertes Cover wird übersprungen; die fehlenden Cover stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
+
+Für einen gezielten Lauf kann beim manuellen Start `release_date` im Format `YYYY-MM-DD` gesetzt werden. Ohne Eingabe wird der nächste Freitag in der Zeitzone `Europe/Berlin` verwendet.
 
 ## Supabase
 
@@ -143,6 +150,14 @@ Wichtige Tabellen und Buckets:
 2. Storage-Datei und öffentliche URL prüfen.
 3. Bei externen URLs CORS, Referrer-Schutz und Erreichbarkeit prüfen.
 4. Ohne gültiges Cover wird der Release-Friday-Platzhalter angezeigt.
+
+### Reddit-Single wurde nicht automatisch importiert
+
+1. Im Log von **Sync releases to Supabase** die Zeile `Cover lookup` und die abschließende `skipped`-Liste prüfen.
+2. Sicherstellen, dass Interpret und Titel im r/GermanRap-Post korrekt geschrieben sind.
+3. Prüfen, ob der Release in mindestens einer abgefragten Storefront bereits sichtbar ist und dort ein offizielles Cover besitzt.
+4. Den Workflow später erneut ausführen. Sobald ein Cover exakt zugeordnet und gespeichert werden kann, wird der fehlende Datensatz nachgetragen.
+5. Kein Ersatzbild und keine erfundene Cover-URL eintragen.
 
 ## Backup- und Änderungsprinzip
 

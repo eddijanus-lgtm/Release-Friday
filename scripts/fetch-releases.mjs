@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -5,18 +6,25 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT_FILE = path.join(ROOT, "lib/releases/real-releases.generated.ts");
 const CURATED_FILE = path.join(ROOT, "lib/releases/curated-releases.json");
+const REDDIT_SOURCE_FILE = path.join(ROOT, "lib/releases/reddit-source.json");
 const TIME_ZONE = "Europe/Berlin";
 const MUSICBRAINZ_BASE = "https://musicbrainz.org/ws/2/release/";
 const ITUNES_BASE = "https://itunes.apple.com/search";
-const USER_AGENT = "ReleaseFriday/0.4 (https://github.com/eddijanus-lgtm/Release-Friday)";
+const SPOTIFY_API_BASE = "https://api.spotify.com/v1";
+const USER_AGENT = "ReleaseFriday/0.5 (https://github.com/eddijanus-lgtm/Release-Friday)";
 const TAGS = ["hip hop", "rap", "trap", "drill", "german hip hop", "deutschrap"];
 const COUNTRIES = ["DE", "US"];
 const APPLE_TERMS = {
   DE: ["deutschrap", "german rap", "hip hop", "rap", "trap"],
   US: ["hip hop", "rap", "trap", "drill"],
 };
+const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
+const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
+const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
+const DISCOVERY_ENABLED = process.env.SKIP_DISCOVERY !== "1";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+let lastAppleRequestAt = 0;
 
 function datePartsInBerlin(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -29,6 +37,11 @@ function datePartsInBerlin(date = new Date()) {
   return { year: Number(values.year), month: Number(values.month), day: Number(values.day) };
 }
 
+function berlinDate(date = new Date()) {
+  const { year, month, day } = datePartsInBerlin(date);
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 function getUpcomingFriday() {
   const { year, month, day } = datePartsInBerlin();
   const today = new Date(Date.UTC(year, month - 1, day));
@@ -39,22 +52,46 @@ function getUpcomingFriday() {
   return today.toISOString().slice(0, 10);
 }
 
-async function fetchJson(url, attempts = 3) {
+async function fetchResponse(url, options = {}, attempts = 4) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const response = await fetch(url, {
-        headers: { Accept: "application/json", "User-Agent": USER_AGENT },
+        ...options,
+        headers: {
+          "User-Agent": USER_AGENT,
+          ...options.headers,
+        },
       });
-      if (response.status === 404) return null;
+      if (response.status === 404) return response;
+      if (response.status === 429 || response.status >= 500) {
+        const retryAfter = Number(response.headers.get("retry-after") || 0);
+        const waitMs = retryAfter > 0 ? retryAfter * 1000 : attempt * 3000;
+        if (attempt < attempts) {
+          await sleep(waitMs);
+          continue;
+        }
+      }
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return await response.json();
+      return response;
     } catch (error) {
       lastError = error;
-      if (attempt < attempts) await sleep(attempt * 1200);
+      if (attempt < attempts) await sleep(attempt * 2500);
     }
   }
-  throw lastError;
+  throw lastError ?? new Error(`Request failed for ${url}`);
+}
+
+async function fetchJson(url, attempts = 4) {
+  const response = await fetchResponse(url, { headers: { Accept: "application/json" } }, attempts);
+  if (response.status === 404) return null;
+  return response.json();
+}
+
+async function fetchText(url, attempts = 4) {
+  const response = await fetchResponse(url, { headers: { Accept: "application/atom+xml,text/html;q=0.9" } }, attempts);
+  if (response.status === 404) return null;
+  return response.text();
 }
 
 function normalize(value) {
@@ -64,6 +101,56 @@ function normalize(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+}
+
+function compact(value) {
+  return normalize(value).replace(/\s+/g, "");
+}
+
+function releaseKey(release) {
+  return `${normalize(release.artist)}::${normalize(release.title)}::${release.releaseDate}`;
+}
+
+function stripReleaseSuffix(value) {
+  return String(value ?? "")
+    .replace(/\s+-\s+(single|ep|mixtape)$/i, "")
+    .trim();
+}
+
+function splitArtists(value) {
+  return String(value ?? "")
+    .split(/\s*(?:,|&|\bx\b|\bfeat\.?\b|\bft\.?\b)\s*/i)
+    .map((artist) => compact(artist))
+    .filter(Boolean);
+}
+
+function artistMatches(expectedArtist, candidateArtists) {
+  const expected = splitArtists(expectedArtist);
+  const candidates = candidateArtists.flatMap((artist) => splitArtists(artist));
+  return expected.length > 0 && candidates.length > 0 && expected.some((artist) => candidates.includes(artist));
+}
+
+function titleMatches(expectedTitle, ...candidateTitles) {
+  const expected = compact(expectedTitle);
+  return Boolean(expected) && candidateTitles.some((title) => compact(stripReleaseSuffix(title)) === expected);
+}
+
+function dateSupportsCandidate(candidateDate, targetDate) {
+  const candidate = String(candidateDate ?? "").slice(0, 10);
+  if (!candidate) return true;
+  if (candidate < targetDate) return false;
+  const latest = new Date(`${targetDate}T00:00:00Z`);
+  latest.setUTCDate(latest.getUTCDate() + 180);
+  return candidate <= latest.toISOString().slice(0, 10);
+}
+
+function validCoverUrl(value) {
+  try {
+    const url = new URL(String(value ?? ""));
+    return ["http:", "https:"].includes(url.protocol) && !url.pathname.includes("/search/");
+  } catch {
+    return false;
+  }
 }
 
 function serviceSearchUrls(artist, title) {
@@ -160,12 +247,23 @@ async function searchMusicBrainz(targetDate) {
 
 function appleArtwork(url) {
   if (!url) return undefined;
-  return String(url).replace(/\d+x\d+bb/, "600x600bb");
+  return String(url).replace(/\d+x\d+bb/, "1200x1200bb");
+}
+
+async function waitForAppleRateLimit() {
+  const waitMs = Math.max(0, lastAppleRequestAt + APPLE_REQUEST_INTERVAL_MS - Date.now());
+  if (waitMs > 0) await sleep(waitMs);
+  lastAppleRequestAt = Date.now();
+}
+
+async function fetchAppleSearch(url) {
+  await waitForAppleRateLimit();
+  return fetchJson(url);
 }
 
 function appleResultToRelease(result, country, targetDate) {
   const artist = result.artistName;
-  const title = result.collectionName;
+  const title = stripReleaseSuffix(result.collectionName);
   if (!artist || !title) return null;
   const genre = String(result.primaryGenreName ?? "");
   if (!/(hip.?hop|rap|trap|drill)/i.test(genre)) return null;
@@ -200,39 +298,232 @@ async function searchApple(targetDate) {
       url.searchParams.set("media", "music");
       url.searchParams.set("entity", "album");
       url.searchParams.set("limit", "200");
-      const payload = await fetchJson(url);
+      const payload = await fetchAppleSearch(url);
       for (const result of payload?.results ?? []) {
         const release = appleResultToRelease(result, country, targetDate);
-        if (!release) continue;
-        collected.set(`${normalize(release.artist)}::${normalize(release.title)}::${release.releaseDate}`, release);
+        if (!release || !validCoverUrl(release.coverUrl)) continue;
+        collected.set(releaseKey(release), release);
       }
-      await sleep(350);
     }
   }
   return [...collected.values()];
 }
 
-async function enrichCuratedWithApple(curated, targetDate) {
-  const enriched = [];
-  for (const release of curated) {
-    try {
-      const url = new URL(ITUNES_BASE);
-      url.searchParams.set("term", `${release.artist} ${release.title}`);
-      url.searchParams.set("country", release.country);
-      url.searchParams.set("media", "music");
-      url.searchParams.set("entity", "album");
-      url.searchParams.set("limit", "25");
-      const payload = await fetchJson(url);
-      const match = (payload?.results ?? [])
-        .map((result) => appleResultToRelease(result, release.country, targetDate))
-        .find((candidate) => candidate && normalize(candidate.artist) === normalize(release.artist) && normalize(candidate.title) === normalize(release.title));
-      enriched.push(match ? { ...match, ...release, coverUrl: release.coverUrl ?? match.coverUrl, appleMusicUrl: release.appleMusicUrl ?? match.appleMusicUrl, trackCount: release.trackCount ?? match.trackCount, genres: release.genres ?? match.genres } : release);
-    } catch {
-      enriched.push(release);
-    }
-    await sleep(300);
+function decodeEntities(value) {
+  let decoded = String(value ?? "");
+  for (let pass = 0; pass < 2; pass += 1) {
+    decoded = decoded
+      .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+      .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, "\"")
+      .replace(/&apos;|&#39;/g, "'")
+      .replace(/&amp;/g, "&");
   }
-  return enriched;
+  return decoded;
+}
+
+function plainText(value) {
+  return decodeEntities(String(value ?? "").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+}
+
+function targetDateLabel(targetDate) {
+  const [year, month, day] = targetDate.split("-");
+  return `${day}.${month}.${year}`;
+}
+
+function redditRssUrl(postUrl) {
+  const url = new URL(postUrl);
+  url.search = "";
+  url.hash = "";
+  url.pathname = `${url.pathname.replace(/\/?$/, "/")}.rss`;
+  url.searchParams.set("raw_json", "1");
+  return url.toString();
+}
+
+function parseAtomEntries(xml) {
+  return [...String(xml ?? "").matchAll(/<entry>([\s\S]*?)<\/entry>/gi)].map((match) => {
+    const entry = match[1];
+    const title = plainText(entry.match(/<title>([\s\S]*?)<\/title>/i)?.[1]);
+    const content = decodeEntities(entry.match(/<content[^>]*>([\s\S]*?)<\/content>/i)?.[1]);
+    const linkTags = [...entry.matchAll(/<link\b[^>]*>/gi)].map((candidate) => candidate[0]);
+    const alternateTag = linkTags.find((candidate) => /\brel=["']alternate["']/i.test(candidate))
+      ?? linkTags.find((candidate) => /\bhref=["']/i.test(candidate));
+    const alternate = decodeEntities(alternateTag?.match(/\bhref=["']([^"']+)/i)?.[1]);
+    return { title, content, url: alternate };
+  });
+}
+
+function parseRedditSingles(entry, targetDate, configuredSourceUrl) {
+  const marker = entry.content.match(/<p><strong>Singles<\/strong><\/p>/i);
+  if (!marker) return [];
+  const remainder = entry.content.slice((marker.index ?? 0) + marker[0].length);
+  const table = remainder.match(/<table>([\s\S]*?)<\/table>/i)?.[1] ?? "";
+  const body = table.match(/<tbody>([\s\S]*?)<\/tbody>/i)?.[1] ?? table;
+  const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/gi)];
+  const sourceUrl = entry.url || configuredSourceUrl || "https://www.reddit.com/r/GermanRap/";
+
+  return rows.flatMap((row) => {
+    const cells = [...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((cell) => plainText(cell[1]));
+    const [artist, title, info = ""] = cells;
+    if (!artist || !title || /bereits erschienen/i.test(info)) return [];
+    const digest = createHash("sha256").update(`${artist}\n${title}\n${targetDate}`).digest("hex").slice(0, 16);
+    return [{
+      id: `reddit-${digest}`,
+      artist,
+      title,
+      releaseDate: targetDate,
+      country: "DE",
+      kind: "single",
+      sourceUrl,
+      description: `${artist} veröffentlicht die Single „${title}“.`,
+      genres: ["Deutschrap", "Hip-Hop/Rap"],
+      source: "r/GermanRap",
+    }];
+  });
+}
+
+async function loadRedditCandidates(targetDate) {
+  let config;
+  try {
+    config = JSON.parse(await readFile(REDDIT_SOURCE_FILE, "utf8"));
+  } catch {
+    return [];
+  }
+
+  const expectedTitle = `Die Releases am ${targetDateLabel(targetDate)}`;
+  const fallbackMatches = config.fallbackReleaseDate === targetDate && config.fallbackPostUrl;
+  const sourceUrl = fallbackMatches
+    ? redditRssUrl(config.fallbackPostUrl)
+    : `https://www.reddit.com/r/${encodeURIComponent(config.subreddit || "GermanRap")}/new/.rss?limit=25`;
+  const xml = await fetchText(sourceUrl);
+  const entries = parseAtomEntries(xml);
+  const entry = entries.find((candidate) => normalize(candidate.title).includes(normalize(expectedTitle)))
+    ?? (fallbackMatches ? entries[0] : null);
+  if (!entry) throw new Error(`Reddit release post was not found for ${targetDate}.`);
+  const releases = parseRedditSingles(entry, targetDate, fallbackMatches ? config.fallbackPostUrl : null);
+  if (releases.length === 0) throw new Error(`Reddit release post contained no parseable singles for ${targetDate}.`);
+  return releases;
+}
+
+async function getSpotifyToken() {
+  const clientId = String(process.env.SPOTIFY_CLIENT_ID || "").trim();
+  const clientSecret = String(process.env.SPOTIFY_CLIENT_SECRET || "").trim();
+  if (!clientId || !clientSecret) return null;
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  const response = await fetchResponse("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+    },
+    body: "grant_type=client_credentials",
+  });
+  return (await response.json()).access_token;
+}
+
+function spotifyItemMatch(item, release, targetDate) {
+  const artists = item.artists ?? item.album?.artists ?? [];
+  const candidateDate = item.release_date ?? item.album?.release_date;
+  return titleMatches(release.title, item.name)
+    && artistMatches(release.artist, artists.map((artist) => artist.name))
+    && dateSupportsCandidate(candidateDate, targetDate);
+}
+
+async function searchSpotifyForRelease(release, targetDate, accessToken) {
+  if (!accessToken) return null;
+  const primaryArtist = String(release.artist).split(",")[0].trim();
+  const markets = [...ROLLING_RELEASE_MARKETS];
+  if (targetDate <= berlinDate()) markets.push(release.country);
+
+  for (const market of [...new Set(markets)]) {
+    const url = new URL(`${SPOTIFY_API_BASE}/search`);
+    url.searchParams.set("q", `track:${release.title} artist:${primaryArtist}`);
+    url.searchParams.set("type", "track,album");
+    url.searchParams.set("market", market);
+    url.searchParams.set("limit", "10");
+    const response = await fetchResponse(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
+    const payload = await response.json();
+    const track = (payload.tracks?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
+    const album = (payload.albums?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
+    const item = track ?? album;
+    const artwork = track?.album?.images?.[0]?.url ?? album?.images?.[0]?.url;
+    if (!item || !validCoverUrl(artwork)) continue;
+    return {
+      ...release,
+      coverUrl: artwork,
+      spotifyUrl: item.external_urls?.spotify,
+      source: `${release.source} + Spotify ${market}`,
+    };
+  }
+  return null;
+}
+
+async function searchAppleForRelease(release, targetDate) {
+  const storefronts = [...ROLLING_RELEASE_MARKETS];
+  if (targetDate <= berlinDate()) storefronts.push(release.country);
+
+  for (const storefront of [...new Set(storefronts)]) {
+    const url = new URL(ITUNES_BASE);
+    url.searchParams.set("term", `${release.artist} ${release.title}`);
+    url.searchParams.set("country", storefront);
+    url.searchParams.set("media", "music");
+    url.searchParams.set("entity", "song");
+    url.searchParams.set("limit", "25");
+    const payload = await fetchAppleSearch(url);
+    const match = (payload?.results ?? []).find((result) =>
+      titleMatches(release.title, result.trackName, result.collectionName)
+      && artistMatches(release.artist, [result.artistName])
+      && dateSupportsCandidate(result.releaseDate, targetDate)
+      && validCoverUrl(result.artworkUrl100),
+    );
+    if (!match) continue;
+    return {
+      ...release,
+      coverUrl: appleArtwork(match.artworkUrl100),
+      appleMusicUrl: match.trackViewUrl ?? match.collectionViewUrl,
+      trackCount: release.trackCount ?? 1,
+      source: `${release.source} + Apple Music ${storefront}`,
+    };
+  }
+  return null;
+}
+
+async function enrichCandidatesWithCovers(candidates, targetDate) {
+  const accessToken = await getSpotifyToken();
+  const selected = MAX_COVER_CANDIDATES > 0 ? candidates.slice(0, MAX_COVER_CANDIDATES) : candidates;
+  const qualified = [];
+  const missing = [];
+
+  for (const [index, release] of selected.entries()) {
+    if (validCoverUrl(release.coverUrl)) {
+      qualified.push(release);
+      continue;
+    }
+
+    let resolved = null;
+    try {
+      resolved = await searchSpotifyForRelease(release, targetDate, accessToken);
+    } catch (error) {
+      console.warn(`Spotify cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    if (!resolved) {
+      try {
+        resolved = await searchAppleForRelease(release, targetDate);
+      } catch (error) {
+        console.warn(`Apple cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+
+    if (resolved && validCoverUrl(resolved.coverUrl)) qualified.push(resolved);
+    else missing.push(release);
+    console.log(`Cover lookup ${index + 1}/${selected.length}: ${release.artist} — ${release.title} [${resolved ? "found" : "missing"}]`);
+  }
+
+  if (selected.length < candidates.length) missing.push(...candidates.slice(selected.length));
+  return { qualified, missing, spotifyEnabled: Boolean(accessToken) };
 }
 
 async function loadCurated(targetDate) {
@@ -256,9 +547,14 @@ function sortReleases(releases) {
 function mergeReleases(...groups) {
   const merged = new Map();
   for (const release of groups.flat()) {
-    const key = `${normalize(release.artist)}::${normalize(release.title)}::${release.releaseDate}`;
+    const key = releaseKey(release);
     const current = merged.get(key);
-    merged.set(key, current ? { ...current, ...release, coverUrl: release.coverUrl ?? current.coverUrl, trackCount: release.trackCount ?? current.trackCount } : release);
+    merged.set(key, current ? {
+      ...current,
+      ...release,
+      coverUrl: release.coverUrl ?? current.coverUrl,
+      trackCount: release.trackCount ?? current.trackCount,
+    } : release);
   }
   return sortReleases([...merged.values()]);
 }
@@ -270,31 +566,51 @@ function countSources(releases) {
 async function main() {
   const requestedDate = String(process.env.RELEASE_DATE ?? "").trim();
   const targetDate = requestedDate || getUpcomingFriday();
-  const rawCurated = await loadCurated(targetDate);
-  const curated = await enrichCuratedWithApple(rawCurated, targetDate);
   const fetchErrors = [];
+  const rawCurated = await loadCurated(targetDate);
+  let reddit = [];
   let musicBrainz = [];
   let apple = [];
 
-  try { musicBrainz = await searchMusicBrainz(targetDate); }
-  catch (error) { fetchErrors.push(`MusicBrainz: ${error instanceof Error ? error.message : String(error)}`); }
+  try { reddit = await loadRedditCandidates(targetDate); }
+  catch (error) { fetchErrors.push(`Reddit: ${error instanceof Error ? error.message : String(error)}`); }
 
-  try { apple = await searchApple(targetDate); }
-  catch (error) { fetchErrors.push(`Apple Music: ${error instanceof Error ? error.message : String(error)}`); }
+  const candidates = mergeReleases(rawCurated, reddit);
+  const coverResolution = await enrichCandidatesWithCovers(candidates, targetDate);
 
-  const releases = mergeReleases(musicBrainz, apple, curated);
+  if (DISCOVERY_ENABLED) {
+    try { musicBrainz = await searchMusicBrainz(targetDate); }
+    catch (error) { fetchErrors.push(`MusicBrainz: ${error instanceof Error ? error.message : String(error)}`); }
+
+    try { apple = await searchApple(targetDate); }
+    catch (error) { fetchErrors.push(`Apple Music: ${error instanceof Error ? error.message : String(error)}`); }
+  }
+
+  const merged = mergeReleases(musicBrainz, apple, coverResolution.qualified);
+  const releases = merged.filter((release) => validCoverUrl(release.coverUrl));
+  const qualifiedKeys = new Set(releases.map(releaseKey));
+  const missingCovers = candidates
+    .filter((release) => !qualifiedKeys.has(releaseKey(release)))
+    .map((release) => ({ artist: release.artist, title: release.title, sourceUrl: release.sourceUrl ?? null }));
   const generatedAt = new Date().toISOString();
   const metadata = {
     targetDate,
     generatedAt,
+    coverRequired: true,
+    spotifyCoverLookupEnabled: coverResolution.spotifyEnabled,
     fetchedCount: musicBrainz.length + apple.length,
-    curatedCount: curated.length,
+    curatedCount: rawCurated.length,
+    redditSingleCount: reddit.length,
+    candidateCount: candidates.length,
+    coverQualifiedCount: releases.length,
+    skippedMissingCoverCount: missingCovers.length,
+    missingCovers,
     fetchError: fetchErrors.length ? fetchErrors.join(" | ") : null,
     sourceCounts: countSources(releases),
   };
   const content = `// This file is generated by scripts/fetch-releases.mjs.\n// Do not edit it manually.\n\nimport type { MusicRelease } from "@/types/release";\n\nexport const releaseDataMetadata = ${JSON.stringify(metadata, null, 2)} as const;\n\nexport const realReleases: MusicRelease[] = ${JSON.stringify(releases, null, 2)};\n`;
   await writeFile(OUTPUT_FILE, content, "utf8");
-  console.log(`Wrote ${releases.length} releases for ${targetDate}: ${JSON.stringify(metadata.sourceCounts)}.`);
+  console.log(`Wrote ${releases.length} cover-qualified releases for ${targetDate}; skipped ${missingCovers.length} candidate(s) without a verified cover.`);
 }
 
 await main();
