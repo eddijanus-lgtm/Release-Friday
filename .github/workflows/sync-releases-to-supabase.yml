@@ -29,6 +29,7 @@ on:
       - "scripts/fetch-releases.mjs"
       - "scripts/release-sync-policy.mjs"
       - "scripts/sync-releases-to-supabase.mjs"
+      - "lib/releases/curated-releases.json"
       - "lib/releases/reddit-source.json"
       - ".github/workflows/sync-releases-to-supabase.yml"
 
