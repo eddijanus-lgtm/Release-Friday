@@ -46,11 +46,13 @@ Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen 
 
 ### Automatischer Import
 
-1. GitHub Actions startet `scripts/fetch-releases.mjs`.
-2. Die Recherche aktualisiert `lib/releases/real-releases.generated.ts`.
-3. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
-4. Nur neue Datensätze werden eingefügt.
-5. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
+1. GitHub Actions startet `scripts/fetch-releases.mjs` am Donnerstag, sobald Neuseeland den Freitag erreicht hat, sowie in zwei späteren Wiederholungsläufen.
+2. Das Skript liest die Single-Tabelle aus dem konfigurierten r/GermanRap-Post per RSS und löst Cover mit exaktem Interpret-/Titelabgleich zuerst über Spotify, danach über Apple Music auf. NZ und AU dienen als frühe Storefronts; ab Freitag wird zusätzlich der Heimatmarkt geprüft.
+3. Nur Kandidaten mit einer echten Cover-URL gelangen in `lib/releases/real-releases.generated.ts`. Fehlende Cover werden in den Metadaten protokolliert.
+4. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
+5. Vor dem Insert wird jedes externe Cover heruntergeladen, über seine Dateisignatur geprüft und deterministisch im Bucket `release-covers` gespeichert.
+6. Nur neue Datensätze mit bestätigtem `cover_url` und `storage_path` werden als `published` eingefügt und anschließend verifiziert.
+7. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
 
 ## Datenmodell
 
@@ -111,5 +113,6 @@ Explizite Allowlist aus Supabase-User-IDs. Eine erfolgreiche Anmeldung allein ve
 - GitHub Pages bleibt ein statisches Hostingziel.
 - Manuelle Daten haben Vorrang vor automatischer Recherche.
 - Automatisierung überschreibt keine bestehenden Releases blind.
+- Automatisierung veröffentlicht niemals einen Release ohne geprüftes Cover im eigenen Storage.
 - Secrets gehören weder in Commits noch in Browservariablen.
 - Schema- und RLS-Änderungen werden als Migration dokumentiert.

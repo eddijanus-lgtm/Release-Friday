@@ -16,6 +16,7 @@ on:
       - ".github/workflows/refresh-release-data.yml"
       - "scripts/fetch-releases.mjs"
       - "lib/releases/curated-releases.json"
+      - "lib/releases/reddit-source.json"
 
 permissions:
   contents: write
@@ -40,6 +41,8 @@ jobs:
       - name: Fetch upcoming Friday releases
         env:
           RELEASE_DATE: ${{ inputs.release_date }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         run: node scripts/fetch-releases.mjs
 
       - name: Commit refreshed data
