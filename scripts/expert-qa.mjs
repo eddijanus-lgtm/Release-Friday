@@ -59,7 +59,8 @@ report.checkpoints.drop = {
   navigation: await page.locator(".tapeNav button").allInnerTexts(),
 };
 assert(report.checkpoints.drop.wordmark?.includes("RELEASE"), "Midnight Tape wordmark is missing.");
-assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "EUROSPORT 2", "The approved German release is not featured.");
+assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "ENDGAME", "Erabi — Endgame is not featured.");
+assert(report.checkpoints.drop.featuredArtist?.toUpperCase() === "ERABI", "The featured German artist is incorrect.");
 assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The approved navigation labels are not present.");
 
 const germanyButton = page.getByRole("button", { name: "DE", exact: true });
@@ -67,6 +68,7 @@ await germanyButton.click();
 await settle();
 const germanyCover = page.locator(".dropHero .tapeCover img");
 await germanyCover.waitFor({ state: "visible" });
+await germanyCover.evaluate((image) => image.decode());
 await page.screenshot({ path: `${outputDir}/02-filter-de.png`, fullPage: true });
 report.checkpoints.germanyFilter = {
   selected: await germanyButton.getAttribute("aria-pressed"),
@@ -75,28 +77,13 @@ report.checkpoints.germanyFilter = {
   coverSrc: await germanyCover.getAttribute("src"),
   coverLoaded: await germanyCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
 };
+assert(report.checkpoints.germanyFilter.selected === "true", "DE filter is not selected.");
 assert(report.checkpoints.germanyFilter.featuredVisible === 1, "DE filter does not show the German release.");
-assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "EUROSPORT 2", "DE filter shows the wrong release.");
-assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("data:image/webp;base64,"), "The supplied Eurosport 2 cover is not embedded.");
-assert(report.checkpoints.germanyFilter.coverLoaded, "The supplied Eurosport 2 cover does not render.");
+assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "ENDGAME", "DE filter shows the wrong release.");
+assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("https://i.scdn.co/image/"), "Erabi uses the wrong cover source.");
+assert(report.checkpoints.germanyFilter.coverLoaded, "Erabi album cover does not render.");
 
 await page.locator(".dropHero").click();
-await settle();
-const germanySpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
-report.checkpoints.germanyDetail = {
-  heading: await text(".detailBody h1"),
-  spotifyHref: await germanySpotifyLink.getAttribute("href"),
-};
-assert(report.checkpoints.germanyDetail.heading?.toUpperCase() === "EUROSPORT 2", "The German release detail is incorrect.");
-assert(report.checkpoints.germanyDetail.spotifyHref === "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202", "Eurosport 2 points at the wrong Spotify release.");
-await page.locator(".detailToolbar button").first().click();
-await settle();
-
-await germanyButton.click();
-await settle();
-const erabiRow = page.getByRole("button", { name: "Endgame öffnen", exact: true });
-assert(await erabiRow.count() === 1, "Erabi — Endgame is missing from the German releases.");
-await erabiRow.click();
 await settle();
 const erabiCover = page.locator(".detailCover img");
 await erabiCover.waitFor({ state: "visible" });
@@ -116,14 +103,15 @@ assert(report.checkpoints.erabi.artist?.toUpperCase() === "ERABI", "Erabi releas
 assert(report.checkpoints.erabi.meta?.includes("DE · EP · 6 TRACKS"), "Erabi release is missing its DE EP and 6-track metadata.");
 assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save does not use the supplied Spotify album link.");
 assert(report.checkpoints.erabi.spotifyHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi Spotify action does not use the supplied album link.");
-assert(report.checkpoints.erabi.coverLoaded, "Erabi album cover does not render.");
+assert(report.checkpoints.erabi.coverLoaded, "Erabi detail cover does not render.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
 
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
-assert(await count(".dropHero") === 1, "US filter does not restore the release.");
+assert(await count(".dropHero") === 1, "US filter does not show a featured release.");
+assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
 
 const larryJuneRow = page.getByRole("button", { name: "Who Coppin öffnen", exact: true });
 assert(await larryJuneRow.count() === 1, "Larry June — Who Coppin is missing from the US releases.");
@@ -147,14 +135,10 @@ assert(report.checkpoints.larryJune.spotifyHref === "https://open.spotify.com/al
 assert(report.checkpoints.larryJune.coverLoaded, "Larry June album cover does not render.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
-await usaButton.click();
-await settle();
 
-assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
 await page.locator(".dropHero").click();
 await settle();
 await page.screenshot({ path: `${outputDir}/03-release-detail.png`, fullPage: true });
-
 const spotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
 const appleLink = page.getByRole("link", { name: "APPLE MUSIC", exact: true });
 const youtubeLink = page.getByRole("link", { name: "YOUTUBE", exact: true });
@@ -167,6 +151,7 @@ report.checkpoints.detail = {
   youtubeHref: await youtubeLink.getAttribute("href"),
   source: await text(".sourceNote"),
 };
+assert(report.checkpoints.detail.heading?.toUpperCase() === "AALAM OF GOD", "DJ Khaled release detail is incorrect.");
 assert(report.checkpoints.detail.spotifyHref?.startsWith("https://open.spotify.com/"), "Spotify action is not real.");
 assert(report.checkpoints.detail.appleHref?.startsWith("https://music.apple.com/"), "Apple Music action is not real.");
 assert(report.checkpoints.detail.youtubeHref?.startsWith("https://www.youtube.com/"), "YouTube action is not real.");
@@ -214,9 +199,7 @@ assert(report.checkpoints.me.build?.includes("SOURCES CHECKED"), "Editorial data
 
 const adminLink = page.getByRole("link", { name: /RELEASE ANLEGEN/ });
 assert(await adminLink.count() === 1, "The private release editor is not linked from the profile.");
-report.checkpoints.adminEntry = {
-  href: await adminLink.getAttribute("href"),
-};
+report.checkpoints.adminEntry = { href: await adminLink.getAttribute("href") };
 await adminLink.click();
 await page.waitForURL(/\/admin\/?$/);
 await settle();
