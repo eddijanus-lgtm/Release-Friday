@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 import { usePublishedReleases } from "@/hooks/use-published-releases";
+import { useSwipeBack } from "@/hooks/use-swipe-back";
 
 type Tab = "drop" | "find" | "stash" | "me";
 type Region = "ALL" | ReleaseCountry;
@@ -293,9 +294,10 @@ function DetailScreen({ release, saved, onBack, onToggleSaved }: {
   const live = isReleaseLive(release, now);
   const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
   const canPreSave = !live && Boolean(release.spotifyPreSaveUrl);
+  const swipeBackHandlers = useSwipeBack(onBack);
 
   return (
-    <section className="tapeScreen detailScreen">
+    <section className="tapeScreen detailScreen" data-swipe-back="true" {...swipeBackHandlers}>
       <div className="detailToolbar">
         <button type="button" onClick={onBack}>← BACK TO TAPE</button>
         <button type="button" className={saved ? "saved" : undefined} onClick={onToggleSaved}>{saved ? "✓ STASHED" : "+ STASH"}</button>
@@ -451,11 +453,12 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const closeSelectedRelease = useCallback(() => setSelectedRelease(null), []);
   const savedCount = releases.filter((release) => savedIds.has(release.id)).length;
   let content: ReactNode;
 
   if (selectedRelease) {
-    content = <DetailScreen release={selectedRelease} saved={savedIds.has(selectedRelease.id)} onBack={() => setSelectedRelease(null)} onToggleSaved={() => toggleSaved(selectedRelease.id)} />;
+    content = <DetailScreen release={selectedRelease} saved={savedIds.has(selectedRelease.id)} onBack={closeSelectedRelease} onToggleSaved={() => toggleSaved(selectedRelease.id)} />;
   } else if (activeTab === "find") {
     content = <SearchScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   } else if (activeTab === "stash") {

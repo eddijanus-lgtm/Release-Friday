@@ -328,7 +328,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   text-align: center;
 }
 
-.detailScreen { padding-bottom: 116px; }
+.detailScreen {
+  padding-bottom: 116px;
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+}
 .detailToolbar {
   display: flex;
   align-items: center;

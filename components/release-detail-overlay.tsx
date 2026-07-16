@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useSwipeBack } from "@/hooks/use-swipe-back";
 import type { MusicRelease } from "@/types/release";
 
 const kindLabels: Record<MusicRelease["kind"], string> = {
@@ -31,6 +32,8 @@ export function ReleaseDetailOverlay() {
   const [release, setRelease] = useState<MusicRelease | null>(null);
   const [saved, setSaved] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
+  const closeRelease = useCallback(() => setRelease(null), []);
+  const swipeBackHandlers = useSwipeBack(closeRelease);
 
   useEffect(() => {
     const findHost = () => setHost(document.querySelector<HTMLElement>(".prototypePhone"));
@@ -65,9 +68,9 @@ export function ReleaseDetailOverlay() {
   };
 
   return createPortal(
-    <section className="releaseDetailOverlay tapeScreen detailScreen" role="dialog" aria-modal="true" aria-label={`${release.artist} – ${release.title}`}>
+    <section className="releaseDetailOverlay tapeScreen detailScreen" data-swipe-back="true" {...swipeBackHandlers} role="dialog" aria-modal="true" aria-label={`${release.artist} – ${release.title}`}>
       <div className="detailToolbar">
-        <button type="button" onClick={() => setRelease(null)}>← BACK TO TAPE</button>
+        <button type="button" onClick={closeRelease}>← BACK TO TAPE</button>
         <button type="button" className={saved ? "saved" : undefined} onClick={toggleSaved}>{saved ? "✓ STASHED" : "+ STASH"}</button>
       </div>
       <div className="detailCover">
