@@ -5,12 +5,11 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-14T11:23:03.024Z",
+  "generatedAt": "2026-07-16T13:24:49.053Z",
   "fetchedCount": 0,
-  "curatedCount": 6,
+  "curatedCount": 5,
   "fetchError": null,
   "sourceCounts": {
-    "Redaktionell bestätigt · Cover direkt bereitgestellt": 1,
     "Spotify + redaktionelle Prüfung": 1,
     "Republic Records + redaktionelle Prüfung": 1,
     "Apple Music + Spotify + redaktionelle Prüfung": 1,
@@ -19,24 +18,6 @@ export const releaseDataMetadata = {
 } as const;
 
 export const realReleases: MusicRelease[] = [
-  {
-    "id": "curated-azet-dardan-eurosport-2",
-    "title": "Eurosport 2",
-    "artist": "Azet & Dardan",
-    "releaseDate": "2026-07-17",
-    "country": "DE",
-    "kind": "album",
-    "coverUrl": "embedded:azet-dardan-eurosport-2",
-    "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
-    "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
-    "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
-    "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "Redaktionell bestätigt · Cover direkt bereitgestellt"
-  },
   {
     "id": "curated-erabi-endgame",
     "title": "Endgame",
