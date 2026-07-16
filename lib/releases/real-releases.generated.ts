@@ -5,29 +5,24 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-16T16:53:24.300Z",
+  "generatedAt": "2026-07-16T19:52:45.404Z",
   "coverRequired": true,
   "spotifyCoverLookupEnabled": true,
   "spotifyArtistImageFallbackEnabled": true,
   "spotifyArtistImageFallbackCount": 22,
   "fetchedCount": 0,
-  "curatedCount": 5,
+  "curatedCount": 6,
   "redditSingleCount": 59,
   "candidateCount": 64,
-  "coverQualifiedCount": 63,
-  "skippedMissingCoverCount": 1,
-  "missingCovers": [
-    {
-      "artist": "Azo, KG Family",
-      "title": "Palast oder Stacheldraht",
-      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/"
-    }
-  ],
+  "coverQualifiedCount": 64,
+  "skippedMissingCoverCount": 0,
+  "missingCovers": [],
   "fetchError": null,
   "sourceCounts": {
     "Spotify + redaktionelle Prüfung": 1,
     "r/GermanRap + Spotify artist image fallback": 22,
     "r/GermanRap + Spotify NZ": 33,
+    "r/GermanRap": 1,
     "r/GermanRap + Apple Music NZ": 3,
     "Republic Records + redaktionelle Prüfung": 1,
     "Apple Music + Spotify + redaktionelle Prüfung": 1,
@@ -66,7 +61,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "AJÉ veröffentlicht die Single „Azzlacck Syndikat“. Als vorläufiges Bild wird das Spotify-Profilbild von AJE verwendet.",
+    "description": "AJÉ veröffentlicht die Single „Azzlacck Syndikat“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -83,7 +78,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Apsilon, Berq veröffentlicht die Single „Kaputte Diamanten“. Als vorläufiges Bild wird das Spotify-Profilbild von Apsilon verwendet.",
+    "description": "Apsilon, Berq veröffentlicht die Single „Kaputte Diamanten“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -100,7 +95,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Asche veröffentlicht die Single „Cage Fighter“. Als vorläufiges Bild wird das Spotify-Profilbild von Asche verwendet.",
+    "description": "Asche veröffentlicht die Single „Cage Fighter“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -127,6 +122,24 @@ export const realReleases: MusicRelease[] = [
     "spotifyUrl": "https://open.spotify.com/track/0zOt4TUXcJIhveF74Wk6AI"
   },
   {
+    "id": "reddit-56a460e6812d1734",
+    "title": "Palast oder Stacheldraht",
+    "artist": "Azo, KG Family",
+    "releaseDate": "2026-07-17",
+    "country": "DE",
+    "kind": "single",
+    "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab6761610000e5eb6c4cc61abd3fc6c9351ded3e",
+    "spotifyUrl": "https://open.spotify.com/artist/6UJX7tcmt1HUKgOayJmXb5",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
+    "description": "Azo, KG Family veröffentlicht die Single „Palast oder Stacheldraht“.",
+    "trackCount": 1,
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap"
+  },
+  {
     "id": "reddit-797c2852876cdcc5",
     "artist": "benno!",
     "title": "CRUSH DER STADT",
@@ -151,7 +164,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "BLUTHUND, Mittel Alta veröffentlicht die Single „Mittelalter“. Als vorläufiges Bild wird das Spotify-Profilbild von BLUTHUND verwendet.",
+    "description": "BLUTHUND, Mittel Alta veröffentlicht die Single „Mittelalter“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -168,7 +181,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Capital Bra, Samra veröffentlicht die Single „Sonne über Berlin“. Als vorläufiges Bild wird das Spotify-Profilbild von Capital Bra verwendet.",
+    "description": "Capital Bra, Samra veröffentlicht die Single „Sonne über Berlin“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -236,7 +249,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Draco, Attakan veröffentlicht die Single „Immernoch“. Als vorläufiges Bild wird das Spotify-Profilbild von DRACO verwendet.",
+    "description": "Draco, Attakan veröffentlicht die Single „Immernoch“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -270,7 +283,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Farid Bang, Miami Yacine veröffentlicht die Single „We We“. Als vorläufiges Bild wird das Spotify-Profilbild von Farid Bang verwendet.",
+    "description": "Farid Bang, Miami Yacine veröffentlicht die Single „We We“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -321,7 +334,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "HoneyDaBandit veröffentlicht die Single „Jason Bourne“. Als vorläufiges Bild wird das Spotify-Profilbild von HoneyDaBandit verwendet.",
+    "description": "HoneyDaBandit veröffentlicht die Single „Jason Bourne“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -509,7 +522,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Massiv, Beirut veröffentlicht die Single „FREI WIE EIN ADLER“. Als vorläufiges Bild wird das Spotify-Profilbild von Massiv verwendet.",
+    "description": "Massiv, Beirut veröffentlicht die Single „FREI WIE EIN ADLER“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -526,7 +539,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Maxwell, MORGEN veröffentlicht die Single „Topnotch“. Als vorläufiges Bild wird das Spotify-Profilbild von Maxwell verwendet.",
+    "description": "Maxwell, MORGEN veröffentlicht die Single „Topnotch“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -561,7 +574,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "MERO veröffentlicht die Single „Kaybeden“. Als vorläufiges Bild wird das Spotify-Profilbild von MERO verwendet.",
+    "description": "MERO veröffentlicht die Single „Kaybeden“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -647,7 +660,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Nizi19, Karamel19 veröffentlicht die Single „Malibu“. Als vorläufiges Bild wird das Spotify-Profilbild von Nizi19 verwendet.",
+    "description": "Nizi19, Karamel19 veröffentlicht die Single „Malibu“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -681,7 +694,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Olexesh veröffentlicht die Single „Mehr von dir“. Als vorläufiges Bild wird das Spotify-Profilbild von Olexesh verwendet.",
+    "description": "Olexesh veröffentlicht die Single „Mehr von dir“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -691,14 +704,14 @@ export const realReleases: MusicRelease[] = [
     "spotifyUrl": "https://open.spotify.com/artist/2Z9KL8Zmqx5Sg3cd7Fldhl"
   },
   {
-    "id": "reddit-d37ce5230402a5a7",
+    "id": "reddit-ccf42dc4afbcc8bf",
     "artist": "Pashanim",
-    "title": "**********",
+    "title": "Augenblick",
     "releaseDate": "2026-07-17",
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Pashanim veröffentlicht die Single „**********“. Als vorläufiges Bild wird das Spotify-Profilbild von Pashanim verwendet.",
+    "description": "Pashanim veröffentlicht die Single „Augenblick“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -732,14 +745,14 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "pepino veröffentlicht die Single „raus“. Als vorläufiges Bild wird das Spotify-Profilbild von Pepino verwendet.",
+    "description": "pepino veröffentlicht die Single „raus“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebdf56c5e28b49445ce154f452",
-    "spotifyUrl": "https://open.spotify.com/artist/3Htmf3F8r4oGr9yezrDxWw"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf8f7f43293c1f7444c30f617",
+    "spotifyUrl": "https://open.spotify.com/artist/0lE1by0S3JE5W2BrEopkUh"
   },
   {
     "id": "reddit-132b8c6191bc6a9f",
@@ -766,7 +779,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "reezy veröffentlicht die Single „ZAHA HADID / BETTY BOO“. Als vorläufiges Bild wird das Spotify-Profilbild von reezy verwendet.",
+    "description": "reezy veröffentlicht die Single „ZAHA HADID / BETTY BOO“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -834,7 +847,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Satix, SadiQ veröffentlicht die Single „Mille“. Als vorläufiges Bild wird das Spotify-Profilbild von Satix verwendet.",
+    "description": "Satix, SadiQ veröffentlicht die Single „Mille“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -868,7 +881,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Ski Aggu veröffentlicht die Single „GTI Function“. Als vorläufiges Bild wird das Spotify-Profilbild von Ski Aggu verwendet.",
+    "description": "Ski Aggu veröffentlicht die Single „GTI Function“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -936,7 +949,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "THIZZY52 veröffentlicht die Single „BALLON D'OR“. Als vorläufiges Bild wird das Spotify-Profilbild von THIZZY52 verwendet.",
+    "description": "THIZZY52 veröffentlicht die Single „BALLON D'OR“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -953,7 +966,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Tream, SDP veröffentlicht die Single „S.U.L.“. Als vorläufiges Bild wird das Spotify-Profilbild von Tream verwendet.",
+    "description": "Tream, SDP veröffentlicht die Single „S.U.L.“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -970,7 +983,7 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "verifiziert veröffentlicht die Single „FU“. Als vorläufiges Bild wird das Spotify-Profilbild von verifiziert verwendet.",
+    "description": "verifiziert veröffentlicht die Single „FU“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
@@ -1004,14 +1017,14 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-    "description": "Yeko veröffentlicht die Single „Wer bin ich“. Als vorläufiges Bild wird das Spotify-Profilbild von Yeko verwendet.",
+    "description": "Yeko veröffentlicht die Single „Wer bin ich“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb74ead1d74004c957d01d1f2a",
-    "spotifyUrl": "https://open.spotify.com/artist/0linQBYHgexpEbvhuEU1JO"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb67a509367ef676a58465e5ed",
+    "spotifyUrl": "https://open.spotify.com/artist/40WWqXzcwuV71MIXADs7Tp"
   },
   {
     "id": "reddit-78284f3ca5755520",
