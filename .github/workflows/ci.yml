@@ -30,4 +30,20 @@ jobs:
           DEPLOY_TARGET: github-pages
           NEXT_PUBLIC_SUPABASE_URL: "https://otjvkorslczqdpzltjpj.supabase.co"
           NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_D4obxn3HjR_CRpmj-9W1Aw_A9IabI4_"
-        run: npm run build
+        shell: bash
+        run: |
+          set +e
+          npm run build 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          echo "BUILD_EXIT_CODE=$status" >> "$GITHUB_ENV"
+          exit 0
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build-log
+          path: build.log
+          if-no-files-found: error
+      - name: Fail when build failed
+        if: env.BUILD_EXIT_CODE != '0'
+        run: exit 1
