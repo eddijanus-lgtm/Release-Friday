@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
-const { primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
+const { artistFallbackCutoffOpen, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
 const originalFetch = globalThis.fetch;
 
 const release = {
@@ -17,6 +17,9 @@ const release = {
 try {
   assert.equal(primaryArtistName(release.artist), "Apsilon");
   assert.equal(primaryArtistName("Farid Bang feat. Miami Yacine"), "Farid Bang");
+  assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-16T16:29:00Z")), false);
+  assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-16T16:30:00Z")), true);
+  assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-17T00:00:00Z")), true);
 
   globalThis.fetch = async (input, options) => {
     const url = new URL(input);
