@@ -1,24 +1,6 @@
 {
   "releases": [
     {
-      "id": "curated-azet-dardan-eurosport-2",
-      "title": "Eurosport 2",
-      "artist": "Azet & Dardan",
-      "releaseDate": "2026-07-17",
-      "country": "DE",
-      "kind": "album",
-      "coverUrl": "embedded:azet-dardan-eurosport-2",
-      "spotifyUrl": "https://open.spotify.com/search/Azet%20Dardan%20Eurosport%202",
-      "appleMusicUrl": "https://music.apple.com/de/search?term=Azet%20Dardan%20Eurosport%202",
-      "youtubeUrl": "https://www.youtube.com/results?search_query=Azet%20Dardan%20Eurosport%202",
-      "description": "Azet und Dardan setzen ihre gemeinsame Eurosport-Reihe fort. Das Cover wurde für Release Friday direkt bereitgestellt.",
-      "genres": [
-        "Deutschrap",
-        "Hip-Hop/Rap"
-      ],
-      "source": "Redaktionell bestätigt · Cover direkt bereitgestellt"
-    },
-    {
       "id": "curated-erabi-endgame",
       "title": "Endgame",
       "artist": "Erabi",
