@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
+import { isArtistImageFallbackReplacement } from "./release-sync-policy.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GENERATED_FILE = path.join(ROOT, "lib/releases/real-releases.generated.ts");
@@ -11,6 +12,7 @@ const MAX_COVER_BYTES = 8 * 1024 * 1024;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DRY_RUN = process.env.DRY_RUN === "1";
+const REFRESH_ARTIST_IMAGE_COVERS = ["1", "true"].includes(String(process.env.REFRESH_ARTIST_IMAGE_COVERS || "").toLowerCase());
 const USER_AGENT = "ReleaseFriday/0.5 (https://github.com/eddijanus-lgtm/Release-Friday)";
 
 if (!DRY_RUN && !SUPABASE_URL) throw new Error("SUPABASE_URL is missing.");
@@ -182,13 +184,21 @@ if (!createdBy) throw new Error("No release admin is configured in Supabase.");
 const dates = [...new Set(coverQualified.map((release) => release.releaseDate))];
 const { data: existingRows, error: readError } = await supabase
   .from("releases")
-  .select("id,artist,title,release_date")
+  .select("id,artist,title,release_date,source")
   .in("release_date", dates);
 if (readError) throw readError;
 
-const existingKeys = new Set((existingRows ?? []).map(releaseKey));
+const existingByKey = new Map((existingRows ?? []).map((release) => [releaseKey(release), release]));
+const existingKeys = new Set(existingByKey.keys());
 const candidates = coverQualified.filter((release) => !existingKeys.has(releaseKey(release)));
+const replacementCandidates = REFRESH_ARTIST_IMAGE_COVERS
+  ? coverQualified.filter((release) => {
+    const existing = existingByKey.get(releaseKey(release));
+    return existing && isArtistImageFallbackReplacement(existing, release);
+  })
+  : [];
 const newRows = [];
+const replacementRows = [];
 const skipped = rejectedWithoutCover.map((release) => ({ artist: release.artist, title: release.title, reason: "missing cover URL" }));
 
 for (const release of candidates) {
@@ -204,29 +214,75 @@ for (const release of candidates) {
   }
 }
 
-if (newRows.length === 0) {
+for (const release of replacementCandidates) {
+  try {
+    const storedCover = await persistCover(supabase, release);
+    replacementRows.push({
+      id: existingByKey.get(releaseKey(release)).id,
+      release,
+      values: {
+        cover_url: storedCover.coverUrl,
+        storage_path: storedCover.storagePath,
+        spotify_url: release.spotifyUrl ?? null,
+        apple_music_url: release.appleMusicUrl ?? null,
+        description: release.description ?? null,
+        source: release.source,
+      },
+    });
+  } catch (error) {
+    skipped.push({
+      artist: release.artist,
+      title: release.title,
+      reason: `replacement failed: ${error instanceof Error ? error.message : String(error)}`,
+    });
+  }
+}
+
+if (newRows.length === 0 && replacementRows.length === 0) {
   console.log(JSON.stringify({
     synced: 0,
     existing: coverQualified.length - candidates.length,
     skipped,
-    message: "No cover-qualified new releases were available to sync.",
+    replacements: 0,
+    message: "No cover-qualified new releases or artist-image replacements were available to sync.",
   }, null, 2));
   process.exit(0);
 }
 
-const { data: inserted, error: insertError } = await supabase
-  .from("releases")
-  .insert(newRows)
-  .select("id,artist,title,release_date,cover_url,storage_path,status");
-if (insertError) throw insertError;
-if ((inserted ?? []).length !== newRows.length) throw new Error(`Verification failed: expected ${newRows.length} inserts, received ${inserted?.length ?? 0}.`);
-if ((inserted ?? []).some((row) => !row.cover_url || !row.storage_path || row.status !== "published")) {
-  throw new Error("Verification failed: an inserted release is missing its stored cover or published status.");
+let inserted = [];
+if (newRows.length > 0) {
+  const { data, error: insertError } = await supabase
+    .from("releases")
+    .insert(newRows)
+    .select("id,artist,title,release_date,cover_url,storage_path,status");
+  if (insertError) throw insertError;
+  inserted = data ?? [];
+  if (inserted.length !== newRows.length) throw new Error(`Verification failed: expected ${newRows.length} inserts, received ${inserted.length}.`);
+  if (inserted.some((row) => !row.cover_url || !row.storage_path || row.status !== "published")) {
+    throw new Error("Verification failed: an inserted release is missing its stored cover or published status.");
+  }
+}
+
+const replaced = [];
+for (const replacement of replacementRows) {
+  const { data, error } = await supabase
+    .from("releases")
+    .update(replacement.values)
+    .eq("id", replacement.id)
+    .select("id,artist,title,release_date,cover_url,storage_path,source,status")
+    .single();
+  if (error) throw error;
+  if (!data?.cover_url || !data.storage_path || data.status !== "published" || data.source.includes("Spotify artist image fallback")) {
+    throw new Error(`Verification failed for replacement ${replacement.release.artist} — ${replacement.release.title}.`);
+  }
+  replaced.push(data);
 }
 
 console.log(JSON.stringify({
   synced: inserted.length,
+  replacements: replaced.length,
   existing: coverQualified.length - candidates.length,
   skipped,
   releases: inserted,
+  replacedReleases: replaced,
 }, null, 2));

@@ -19,11 +19,15 @@ on:
     - cron: "30 16 * * 4"
     # Friday recovery run after the German release window has opened.
     - cron: "15 5 * * 5"
+    # 00:02 Europe/Berlin cover refresh (two UTC slots handle daylight saving time).
+    - cron: "2 22 * * 4"
+    - cron: "2 23 * * 4"
   push:
     branches:
       - main
     paths:
       - "scripts/fetch-releases.mjs"
+      - "scripts/release-sync-policy.mjs"
       - "scripts/sync-releases-to-supabase.mjs"
       - "lib/releases/reddit-source.json"
       - ".github/workflows/sync-releases-to-supabase.yml"
@@ -38,6 +42,7 @@ jobs:
     env:
       RELEASE_DATE: ${{ inputs.release_date }}
       ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: ${{ inputs.allow_spotify_artist_image_fallback || (github.event_name == 'schedule' && (github.event.schedule == '30 16 * * 4' || github.event.schedule == '15 5 * * 5')) }}
+      REFRESH_ARTIST_IMAGE_COVERS: ${{ github.event_name == 'schedule' && (github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4') }}
       SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
       SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
@@ -47,17 +52,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check Berlin midnight refresh window
+        id: schedule-window
+        shell: bash
+        run: |
+          if [[ "$REFRESH_ARTIST_IMAGE_COVERS" != "true" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$(TZ=Europe/Berlin date +%u-%H)" == "5-00" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Node.js
+        if: steps.schedule-window.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        if: steps.schedule-window.outputs.run == 'true'
         run: npm ci
 
       - name: Fetch upcoming releases
+        if: steps.schedule-window.outputs.run == 'true'
         run: node scripts/fetch-releases.mjs
 
       - name: Sync new releases to Supabase
+        if: steps.schedule-window.outputs.run == 'true'
         run: node scripts/sync-releases-to-supabase.mjs

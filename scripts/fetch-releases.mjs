@@ -73,12 +73,11 @@ function spotifyArtistImageFallbackEnabled(targetDate, date = new Date()) {
   return SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED || artistFallbackCutoffOpen(targetDate, date);
 }
 
-function getUpcomingFriday() {
-  const { year, month, day } = datePartsInBerlin();
+function getCurrentOrUpcomingFriday(date = new Date()) {
+  const { year, month, day } = datePartsInBerlin(date);
   const today = new Date(Date.UTC(year, month - 1, day));
   const weekday = today.getUTCDay();
   let daysUntilFriday = (5 - weekday + 7) % 7;
-  if (daysUntilFriday === 0) daysUntilFriday = 7;
   today.setUTCDate(today.getUTCDate() + daysUntilFriday);
   return today.toISOString().slice(0, 10);
 }
@@ -643,7 +642,7 @@ function countSources(releases) {
 
 async function main() {
   const requestedDate = String(process.env.RELEASE_DATE ?? "").trim();
-  const targetDate = requestedDate || getUpcomingFriday();
+  const targetDate = requestedDate || getCurrentOrUpcomingFriday();
   const fetchErrors = [];
   const rawCurated = await loadCurated(targetDate);
   let reddit = [];
@@ -695,4 +694,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, primaryArtistName, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage };

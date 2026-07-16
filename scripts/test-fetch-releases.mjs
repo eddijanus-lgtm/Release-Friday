@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
-const { artistFallbackCutoffOpen, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
+const { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
+const { isArtistImageFallbackReplacement } = await import("./release-sync-policy.mjs");
 const originalFetch = globalThis.fetch;
 
 const release = {
@@ -20,6 +21,16 @@ try {
   assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-16T16:29:00Z")), false);
   assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-16T16:30:00Z")), true);
   assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-17T00:00:00Z")), true);
+  assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T12:00:00Z")), "2026-07-17");
+  assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
+  assert.equal(isArtistImageFallbackReplacement(
+    { source: "r/GermanRap + Spotify artist image fallback" },
+    { source: "r/GermanRap + Spotify DE" },
+  ), true);
+  assert.equal(isArtistImageFallbackReplacement(
+    { source: "Manual" },
+    { source: "r/GermanRap + Spotify DE" },
+  ), false);
 
   globalThis.fetch = async (input, options) => {
     const url = new URL(input);
