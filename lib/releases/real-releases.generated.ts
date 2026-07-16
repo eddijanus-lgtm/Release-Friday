@@ -5,9 +5,11 @@ import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
   "targetDate": "2026-07-17",
-  "generatedAt": "2026-07-16T15:42:03.712Z",
+  "generatedAt": "2026-07-16T16:14:37.130Z",
   "coverRequired": true,
   "spotifyCoverLookupEnabled": true,
+  "spotifyArtistImageFallbackEnabled": false,
+  "spotifyArtistImageFallbackCount": 0,
   "fetchedCount": 0,
   "curatedCount": 5,
   "redditSingleCount": 59,
