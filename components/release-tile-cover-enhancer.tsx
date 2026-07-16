@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { azetDardanEurosport2Cover } from "@/lib/covers/azet-dardan-eurosport-2";
 import { getPublishedReleases } from "@/lib/releases/supabase-releases";
 
 function normalize(value: string) {
@@ -43,7 +42,6 @@ export function ReleaseTileCoverEnhancer() {
     let active = true;
     const covers = new Map<string, string>();
     const kinds = new Map<string, string>();
-    covers.set(identity("Azet & Dardan", "Eurosport 2"), azetDardanEurosport2Cover);
 
     const decorateRows = () => {
       document.querySelectorAll<HTMLElement>(".tapeRowMain").forEach((row) => {
