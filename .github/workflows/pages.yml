@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -26,22 +26,34 @@ jobs:
       NEXT_PUBLIC_SUPABASE_URL: "https://otjvkorslczqdpzltjpj.supabase.co"
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_D4obxn3HjR_CRpmj-9W1Aw_A9IabI4_"
     steps:
-      - name: Checkout
+      - name: Checkout exact deployment commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Build static export
         run: npm run build
+
+      - name: Reject stale Eurosport 2 output
+        shell: bash
+        run: |
+          if grep -R -E -i "Eurosport 2|curated-azet-dardan-eurosport-2|azet-dardan-eurosport-2" out; then
+            echo "Stale Eurosport 2 data was found in the generated site. Deployment stopped."
+            exit 1
+          fi
+          echo "Verified: Eurosport 2 is absent from the generated site."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
