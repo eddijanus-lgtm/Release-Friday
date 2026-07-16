@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { MusicRelease } from "@/types/release";
 import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";
-import { mergeManualReleases } from "@/lib/releases/merge-manual-releases";
 import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
 
 type FeaturedScope = "ALL" | "DE" | "US";
@@ -46,9 +45,16 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
     setReleases(newestIssue(initialReleases));
 
     void fetchPublishedManualReleases(undefined, controller.signal)
-      .then((manual) => setReleases(newestIssue(mergeManualReleases(initialReleases, manual))))
+      .then((published) => {
+        // Supabase is the source of truth whenever it answers successfully.
+        // The generated list is only an outage/offline fallback, so a release
+        // deleted in the admin area cannot be reintroduced by local build data.
+        setReleases(newestIssue(published));
+      })
       .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === "AbortError")) setReleases(newestIssue(initialReleases));
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          setReleases(newestIssue(initialReleases));
+        }
       });
 
     return () => controller.abort();
@@ -66,7 +72,10 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
 
   useEffect(() => {
     const issueDate = releases[0]?.releaseDate;
-    if (!issueDate) return;
+    if (!issueDate) {
+      setFeatured({});
+      return;
+    }
     const controller = new AbortController();
     void fetchFeatured(issueDate, controller.signal).then(setFeatured).catch(() => setFeatured({}));
     return () => controller.abort();
