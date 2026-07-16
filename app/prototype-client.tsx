@@ -195,13 +195,14 @@ function ReleaseListRow({ release, number, saved, onOpen, onToggleSaved }: {
   );
 }
 
-function HomeScreen({ releases, savedIds, onOpen, onToggleSaved }: {
+function HomeScreen({ releases, savedIds, region, onRegionChange, onOpen, onToggleSaved }: {
   releases: MusicRelease[];
   savedIds: Set<string>;
+  region: Region;
+  onRegionChange: (region: Region) => void;
   onOpen: (release: MusicRelease) => void;
   onToggleSaved: (id: string) => void;
 }) {
-  const [region, setRegion] = useState<Region>("ALL");
   const filtered = releases.filter((release) => region === "ALL" || release.country === region);
   const featured = filtered[0];
   const rest = filtered.slice(1);
@@ -213,7 +214,7 @@ function HomeScreen({ releases, savedIds, onOpen, onToggleSaved }: {
       <BrandHeader date={featured ? formatShortDate(featured.releaseDate) : undefined} />
       <TapeStrip />
       <div className="screenInner">
-        <RegionSwitch value={region} onChange={setRegion} />
+        <RegionSwitch value={region} onChange={onRegionChange} />
         {featured ? (
           <>
             <button type="button" className="dropHero" onClick={() => onOpen(featured)}>
@@ -418,6 +419,7 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
   const releases = usePublishedReleases(initialReleases, metadata?.targetDate);
   const [activeTab, setActiveTab] = useState<Tab>("drop");
   const [selectedRelease, setSelectedRelease] = useState<MusicRelease | null>(null);
+  const [region, setRegion] = useState<Region>("ALL");
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
   const [hydrated, setHydrated] = useState(false);
 
@@ -461,7 +463,7 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
   } else if (activeTab === "me") {
     content = <ProfileScreen releases={releases} savedCount={savedCount} metadata={metadata} />;
   } else {
-    content = <HomeScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
+    content = <HomeScreen releases={releases} savedIds={savedIds} region={region} onRegionChange={setRegion} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   }
 
   return <PrototypeShell active={activeTab} onTabChange={changeTab}>{content}</PrototypeShell>;
