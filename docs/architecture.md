@@ -48,11 +48,12 @@ Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen 
 
 1. GitHub Actions startet `scripts/fetch-releases.mjs` am Donnerstag, sobald Neuseeland den Freitag erreicht hat, sowie in zwei späteren Wiederholungsläufen.
 2. Das Skript liest die Single-Tabelle aus dem konfigurierten r/GermanRap-Post per RSS und löst Cover mit exaktem Interpret-/Titelabgleich zuerst über Spotify, danach über Apple Music auf. NZ und AU dienen als frühe Storefronts; ab Freitag wird zusätzlich der Heimatmarkt geprüft.
-3. Nur Kandidaten mit einer echten Cover-URL gelangen in `lib/releases/real-releases.generated.ts`. Fehlende Cover werden in den Metadaten protokolliert.
-4. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
-5. Vor dem Insert wird jedes externe Cover heruntergeladen, über seine Dateisignatur geprüft und deterministisch im Bucket `release-covers` gespeichert.
-6. Nur neue Datensätze mit bestätigtem `cover_url` und `storage_path` werden als `published` eingefügt und anschließend verifiziert.
-7. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
+3. Der frühe Donnerstagslauf akzeptiert ausschließlich Release-Cover. Ab dem 18:30-Uhr-Lauf darf für weiterhin ungelöste r/GermanRap-Singles das Spotify-Profilbild des zuerst genannten Artists dienen. Der Artist muss exakt passen, ein echtes Bild und ein Spotify-Profil besitzen; Quelle, Beschreibung und Spotify-Link kennzeichnen den Fallback.
+4. Nur Kandidaten mit einer gültigen Bild-URL gelangen in `lib/releases/real-releases.generated.ts`. Fehlende Bilder werden in den Metadaten protokolliert.
+5. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
+6. Vor dem Insert wird jedes externe Bild heruntergeladen, über seine Dateisignatur geprüft und deterministisch im Bucket `release-covers` gespeichert.
+7. Nur neue Datensätze mit bestätigtem `cover_url` und `storage_path` werden als `published` eingefügt und anschließend verifiziert.
+8. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
 
 ## Datenmodell
 
@@ -113,6 +114,6 @@ Explizite Allowlist aus Supabase-User-IDs. Eine erfolgreiche Anmeldung allein ve
 - GitHub Pages bleibt ein statisches Hostingziel.
 - Manuelle Daten haben Vorrang vor automatischer Recherche.
 - Automatisierung überschreibt keine bestehenden Releases blind.
-- Automatisierung veröffentlicht niemals einen Release ohne geprüftes Cover im eigenen Storage.
+- Automatisierung veröffentlicht niemals einen Release ohne geprüftes Release- oder freigegebenes Spotify-Artist-Bild im eigenen Storage.
 - Secrets gehören weder in Commits noch in Browservariablen.
 - Schema- und RLS-Änderungen werden als Migration dokumentiert.

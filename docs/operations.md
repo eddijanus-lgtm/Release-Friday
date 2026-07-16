@@ -89,14 +89,15 @@ Ablauf:
 
 1. `npm ci`
 2. r/GermanRap-RSS lesen und Cover über Spotify NZ/AU beziehungsweise Apple Music NZ/AU auflösen
-3. `node scripts/fetch-releases.mjs`
-4. jedes gefundene Cover herunterladen und als unterstütztes Bild validieren
-5. Cover in `release-covers` speichern
-6. `node scripts/sync-releases-to-supabase.mjs`
+3. ab Donnerstag 18:30 Uhr bei weiterhin fehlendem Release-Cover das exakt passende Spotify-Profilbild des zuerst genannten Artists verwenden
+4. `node scripts/fetch-releases.mjs`
+5. jedes gefundene Bild herunterladen und als unterstütztes Bild validieren
+6. Bild in `release-covers` speichern
+7. `node scripts/sync-releases-to-supabase.mjs`
 
-Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Eine Single ohne erfolgreich gefundenes und im eigenen Storage gespeichertes Cover wird übersprungen; die fehlenden Cover stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
+Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Der Artist-Image-Fallback ist beim ersten Donnerstagslauf deaktiviert und beim Lauf um 18:30 Uhr sowie beim Freitagslauf aktiviert. Das Spotify-Profil muss exakt zum ersten genannten Artist passen; Profilbild und Profil-Link werden gemeinsam gespeichert und die Quelle enthält `Spotify artist image fallback`. Fehlt auch dieses Bild, wird die Single übersprungen. Fehlende Bilder stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
 
-Für einen gezielten Lauf kann beim manuellen Start `release_date` im Format `YYYY-MM-DD` gesetzt werden. Ohne Eingabe wird der nächste Freitag in der Zeitzone `Europe/Berlin` verwendet.
+Für einen gezielten Lauf kann beim manuellen Start `release_date` im Format `YYYY-MM-DD` gesetzt werden. `allow_spotify_artist_image_fallback` schaltet den Fallback bei einem manuellen Lauf ausdrücklich frei. Ohne Datum wird der nächste Freitag in der Zeitzone `Europe/Berlin` verwendet.
 
 ## Supabase
 

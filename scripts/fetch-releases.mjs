@@ -3,7 +3,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const SCRIPT_FILE = fileURLToPath(import.meta.url);
+const ROOT = path.resolve(path.dirname(SCRIPT_FILE), "..");
 const OUTPUT_FILE = path.join(ROOT, "lib/releases/real-releases.generated.ts");
 const CURATED_FILE = path.join(ROOT, "lib/releases/curated-releases.json");
 const REDDIT_SOURCE_FILE = path.join(ROOT, "lib/releases/reddit-source.json");
@@ -22,6 +23,10 @@ const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
 const DISCOVERY_ENABLED = process.env.SKIP_DISCOVERY !== "1";
+const SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED = ["1", "true"].includes(
+  String(process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK || "").toLowerCase(),
+);
+const SPOTIFY_ARTIST_IMAGE_SOURCE = "Spotify artist image fallback";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 let lastAppleRequestAt = 0;
@@ -122,6 +127,12 @@ function splitArtists(value) {
     .split(/\s*(?:,|&|\bx\b|\bfeat\.?\b|\bft\.?\b)\s*/i)
     .map((artist) => compact(artist))
     .filter(Boolean);
+}
+
+function primaryArtistName(value) {
+  return String(value ?? "")
+    .split(/\s*(?:,|&|\bx\b|\bfeat\.?\b|\bft\.?\b)\s*/i)[0]
+    ?.trim() ?? "";
 }
 
 function artistMatches(expectedArtist, candidateArtists) {
@@ -434,7 +445,7 @@ function spotifyItemMatch(item, release, targetDate) {
 
 async function searchSpotifyForRelease(release, targetDate, accessToken) {
   if (!accessToken) return null;
-  const primaryArtist = String(release.artist).split(",")[0].trim();
+  const primaryArtist = primaryArtistName(release.artist);
   const markets = [...ROLLING_RELEASE_MARKETS];
   if (targetDate <= berlinDate()) markets.push(release.country);
 
@@ -459,6 +470,36 @@ async function searchSpotifyForRelease(release, targetDate, accessToken) {
     };
   }
   return null;
+}
+
+async function searchSpotifyArtistImage(release, accessToken) {
+  if (!SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED || !accessToken) return null;
+  if (release.kind !== "single" || release.source !== "r/GermanRap") return null;
+
+  const primaryArtist = primaryArtistName(release.artist);
+  if (!primaryArtist) return null;
+  const url = new URL(`${SPOTIFY_API_BASE}/search`);
+  url.searchParams.set("q", `artist:${primaryArtist}`);
+  url.searchParams.set("type", "artist");
+  url.searchParams.set("limit", "10");
+  const response = await fetchResponse(url, {
+    headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+  });
+  const payload = await response.json();
+  const artist = (payload.artists?.items ?? []).find((candidate) =>
+    compact(candidate.name) === compact(primaryArtist)
+    && validCoverUrl(candidate.images?.[0]?.url)
+    && validCoverUrl(candidate.external_urls?.spotify),
+  );
+  if (!artist) return null;
+
+  return {
+    ...release,
+    coverUrl: artist.images[0].url,
+    spotifyUrl: artist.external_urls.spotify,
+    description: `${release.description} Als vorläufiges Bild wird das Spotify-Profilbild von ${artist.name} verwendet.`,
+    source: `${release.source} + ${SPOTIFY_ARTIST_IMAGE_SOURCE}`,
+  };
 }
 
 async function searchAppleForRelease(release, targetDate) {
@@ -516,10 +557,20 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
         console.warn(`Apple cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
+    if (!resolved) {
+      try {
+        resolved = await searchSpotifyArtistImage(release, accessToken);
+      } catch (error) {
+        console.warn(`Spotify artist image lookup failed for ${release.artist}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
 
     if (resolved && validCoverUrl(resolved.coverUrl)) qualified.push(resolved);
     else missing.push(release);
-    console.log(`Cover lookup ${index + 1}/${selected.length}: ${release.artist} — ${release.title} [${resolved ? "found" : "missing"}]`);
+    const resolution = !resolved
+      ? "missing"
+      : resolved.source.includes(SPOTIFY_ARTIST_IMAGE_SOURCE) ? "artist-image" : "release-cover";
+    console.log(`Cover lookup ${index + 1}/${selected.length}: ${release.artist} — ${release.title} [${resolution}]`);
   }
 
   if (selected.length < candidates.length) missing.push(...candidates.slice(selected.length));
@@ -598,6 +649,8 @@ async function main() {
     generatedAt,
     coverRequired: true,
     spotifyCoverLookupEnabled: coverResolution.spotifyEnabled,
+    spotifyArtistImageFallbackEnabled: SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED,
+    spotifyArtistImageFallbackCount: releases.filter((release) => release.source.includes(SPOTIFY_ARTIST_IMAGE_SOURCE)).length,
     fetchedCount: musicBrainz.length + apple.length,
     curatedCount: rawCurated.length,
     redditSingleCount: reddit.length,
@@ -613,4 +666,6 @@ async function main() {
   console.log(`Wrote ${releases.length} cover-qualified releases for ${targetDate}; skipped ${missingCovers.length} candidate(s) without a verified cover.`);
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
+
+export { primaryArtistName, searchSpotifyArtistImage };
