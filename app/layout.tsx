@@ -31,9 +31,72 @@ export const viewport: Viewport = {
   themeColor: "#050805",
 };
 
+const legacyCacheCleanup = String.raw`
+(() => {
+  const marker = "release-friday:legacy-cache-cleanup:v2";
+  try {
+    if (window.sessionStorage.getItem(marker)) return;
+    window.sessionStorage.setItem(marker, "done");
+
+    const appPath = "/Release-Friday/";
+    let changed = false;
+    const tasks = [];
+
+    if ("serviceWorker" in navigator) {
+      tasks.push(
+        navigator.serviceWorker.getRegistrations().then((registrations) =>
+          Promise.all(
+            registrations
+              .filter((registration) => {
+                const scriptUrl =
+                  registration.active?.scriptURL ??
+                  registration.waiting?.scriptURL ??
+                  registration.installing?.scriptURL ??
+                  "";
+                return registration.scope.includes(appPath) || scriptUrl.includes(appPath);
+              })
+              .map((registration) =>
+                registration.unregister().then((removed) => {
+                  changed = changed || removed;
+                }),
+              ),
+          ),
+        ),
+      );
+    }
+
+    if ("caches" in window) {
+      tasks.push(
+        window.caches.keys().then((names) =>
+          Promise.all(
+            names
+              .filter((name) => /release[-_ ]?friday|next-pwa|workbox/i.test(name))
+              .map((name) =>
+                window.caches.delete(name).then((removed) => {
+                  changed = changed || removed;
+                }),
+              ),
+          ),
+        ),
+      );
+    }
+
+    Promise.all(tasks).finally(() => {
+      const controllerUrl = navigator.serviceWorker?.controller?.scriptURL ?? "";
+      if (changed || controllerUrl.includes(appPath)) window.location.reload();
+    });
+  } catch {
+    // Cache cleanup is best-effort and must never block the application.
+  }
+})();
+`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="de">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: legacyCacheCleanup }} />
+      </head>
       <body>
         {children}
         <ReleaseTileCoverEnhancer />
