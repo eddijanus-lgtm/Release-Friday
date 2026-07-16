@@ -23,7 +23,7 @@ const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
 const DISCOVERY_ENABLED = process.env.SKIP_DISCOVERY !== "1";
-const SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED = ["1", "true"].includes(
+const SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED = ["1", "true"].includes(
   String(process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK || "").toLowerCase(),
 );
 const SPOTIFY_ARTIST_IMAGE_SOURCE = "Spotify artist image fallback";
@@ -45,6 +45,32 @@ function datePartsInBerlin(date = new Date()) {
 function berlinDate(date = new Date()) {
   const { year, month, day } = datePartsInBerlin(date);
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function artistFallbackCutoffOpen(targetDate, date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const currentDate = `${values.year}-${values.month}-${values.day}`;
+  const cutoff = new Date(`${targetDate}T00:00:00Z`);
+  cutoff.setUTCDate(cutoff.getUTCDate() - 1);
+  const cutoffDate = cutoff.toISOString().slice(0, 10);
+
+  if (currentDate > cutoffDate) return true;
+  if (currentDate < cutoffDate) return false;
+  const minutes = Number(values.hour) * 60 + Number(values.minute);
+  return minutes >= 18 * 60 + 30;
+}
+
+function spotifyArtistImageFallbackEnabled(targetDate, date = new Date()) {
+  return SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED || artistFallbackCutoffOpen(targetDate, date);
 }
 
 function getUpcomingFriday() {
@@ -472,8 +498,8 @@ async function searchSpotifyForRelease(release, targetDate, accessToken) {
   return null;
 }
 
-async function searchSpotifyArtistImage(release, accessToken) {
-  if (!SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED || !accessToken) return null;
+async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED) {
+  if (!fallbackEnabled || !accessToken) return null;
   if (release.kind !== "single" || release.source !== "r/GermanRap") return null;
 
   const primaryArtist = primaryArtistName(release.artist);
@@ -534,6 +560,7 @@ async function searchAppleForRelease(release, targetDate) {
 
 async function enrichCandidatesWithCovers(candidates, targetDate) {
   const accessToken = await getSpotifyToken();
+  const artistImageFallbackEnabled = spotifyArtistImageFallbackEnabled(targetDate);
   const selected = MAX_COVER_CANDIDATES > 0 ? candidates.slice(0, MAX_COVER_CANDIDATES) : candidates;
   const qualified = [];
   const missing = [];
@@ -559,7 +586,7 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
     }
     if (!resolved) {
       try {
-        resolved = await searchSpotifyArtistImage(release, accessToken);
+        resolved = await searchSpotifyArtistImage(release, accessToken, artistImageFallbackEnabled);
       } catch (error) {
         console.warn(`Spotify artist image lookup failed for ${release.artist}: ${error instanceof Error ? error.message : String(error)}`);
       }
@@ -574,7 +601,7 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
   }
 
   if (selected.length < candidates.length) missing.push(...candidates.slice(selected.length));
-  return { qualified, missing, spotifyEnabled: Boolean(accessToken) };
+  return { qualified, missing, spotifyEnabled: Boolean(accessToken), artistImageFallbackEnabled };
 }
 
 async function loadCurated(targetDate) {
@@ -649,7 +676,7 @@ async function main() {
     generatedAt,
     coverRequired: true,
     spotifyCoverLookupEnabled: coverResolution.spotifyEnabled,
-    spotifyArtistImageFallbackEnabled: SPOTIFY_ARTIST_IMAGE_FALLBACK_ENABLED,
+    spotifyArtistImageFallbackEnabled: coverResolution.artistImageFallbackEnabled,
     spotifyArtistImageFallbackCount: releases.filter((release) => release.source.includes(SPOTIFY_ARTIST_IMAGE_SOURCE)).length,
     fetchedCount: musicBrainz.length + apple.length,
     curatedCount: rawCurated.length,
@@ -668,4 +695,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { primaryArtistName, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, primaryArtistName, searchSpotifyArtistImage };

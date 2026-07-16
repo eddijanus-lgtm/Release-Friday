@@ -95,7 +95,7 @@ Ablauf:
 6. Bild in `release-covers` speichern
 7. `node scripts/sync-releases-to-supabase.mjs`
 
-Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Der Artist-Image-Fallback ist beim ersten Donnerstagslauf deaktiviert und beim Lauf um 18:30 Uhr sowie beim Freitagslauf aktiviert. Das Spotify-Profil muss exakt zum ersten genannten Artist passen; Profilbild und Profil-Link werden gemeinsam gespeichert und die Quelle enthält `Spotify artist image fallback`. Fehlt auch dieses Bild, wird die Single übersprungen. Fehlende Bilder stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
+Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Der Artist-Image-Fallback ist beim ersten Donnerstagslauf deaktiviert und ab Donnerstag 18:30 Uhr deutscher Zeit aktiviert. Die Berliner Uhrzeit dient zusätzlich zum Cron-Auslöser als Freigabe, damit eine GitHub-Schedule-Verzögerung den Fallback nicht blockiert. Das Spotify-Profil muss exakt zum ersten genannten Artist passen; Profilbild und Profil-Link werden gemeinsam gespeichert und die Quelle enthält `Spotify artist image fallback`. Fehlt auch dieses Bild, wird die Single übersprungen. Fehlende Bilder stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
 
 Für einen gezielten Lauf kann beim manuellen Start `release_date` im Format `YYYY-MM-DD` gesetzt werden. `allow_spotify_artist_image_fallback` schaltet den Fallback bei einem manuellen Lauf ausdrücklich frei. Ohne Datum wird der nächste Freitag in der Zeitzone `Europe/Berlin` verwendet.
 
