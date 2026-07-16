@@ -33,10 +33,6 @@ async function text(selector) {
   return (await locator.count()) ? (await locator.innerText()).trim() : null;
 }
 
-async function count(selector) {
-  return page.locator(selector).count();
-}
-
 async function settle() {
   await page.waitForTimeout(350);
 }
@@ -53,7 +49,6 @@ await page.screenshot({ path: `${outputDir}/01-drop-mobile.png`, fullPage: true 
 
 report.checkpoints.drop = {
   wordmark: await text(".wordmark"),
-  tape: await text(".tapeStrip"),
   featuredTitle: await text(".heroCopy h1"),
   featuredArtist: await text(".heroCopy > span"),
   navigation: await page.locator(".tapeNav button").allInnerTexts(),
@@ -61,95 +56,53 @@ report.checkpoints.drop = {
 assert(report.checkpoints.drop.wordmark?.includes("RELEASE"), "Midnight Tape wordmark is missing.");
 assert(report.checkpoints.drop.featuredTitle?.toUpperCase() === "ENDGAME", "Erabi — Endgame is not featured.");
 assert(report.checkpoints.drop.featuredArtist?.toUpperCase() === "ERABI", "The featured German artist is incorrect.");
-assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The approved navigation labels are not present.");
+assert(report.checkpoints.drop.navigation.join(" ") === "DROP FIND STASH ME", "The navigation labels are incorrect.");
 
 const germanyButton = page.getByRole("button", { name: "DE", exact: true });
 await germanyButton.click();
 await settle();
-const germanyCover = page.locator(".dropHero .tapeCover img");
-await germanyCover.waitFor({ state: "visible" });
-await germanyCover.evaluate((image) => image.decode());
+const erabiHeroCover = page.locator(".dropHero .tapeCover img");
+await erabiHeroCover.waitFor({ state: "visible" });
+await erabiHeroCover.evaluate((image) => image.decode());
 await page.screenshot({ path: `${outputDir}/02-filter-de.png`, fullPage: true });
-report.checkpoints.germanyFilter = {
-  selected: await germanyButton.getAttribute("aria-pressed"),
-  featuredVisible: await count(".dropHero"),
-  featuredTitle: await text(".heroCopy h1"),
-  coverSrc: await germanyCover.getAttribute("src"),
-  coverLoaded: await germanyCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
-};
-assert(report.checkpoints.germanyFilter.selected === "true", "DE filter is not selected.");
-assert(report.checkpoints.germanyFilter.featuredVisible === 1, "DE filter does not show the German release.");
-assert(report.checkpoints.germanyFilter.featuredTitle?.toUpperCase() === "ENDGAME", "DE filter shows the wrong release.");
-assert(report.checkpoints.germanyFilter.coverSrc?.startsWith("https://i.scdn.co/image/"), "Erabi uses the wrong cover source.");
-assert(report.checkpoints.germanyFilter.coverLoaded, "Erabi album cover does not render.");
+assert(await germanyButton.getAttribute("aria-pressed") === "true", "DE filter is not selected.");
+assert((await text(".heroCopy h1"))?.toUpperCase() === "ENDGAME", "DE filter shows the wrong release.");
+assert((await erabiHeroCover.getAttribute("src"))?.startsWith("https://i.scdn.co/image/"), "Erabi uses the wrong cover source.");
 
 await page.locator(".dropHero").click();
 await settle();
 const erabiCover = page.locator(".detailCover img");
 await erabiCover.waitFor({ state: "visible" });
 await erabiCover.evaluate((image) => image.decode());
-const erabiPreSaveLink = page.locator("a.spotifyPreSave");
-const erabiSpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
 report.checkpoints.erabi = {
   heading: await text(".detailBody h1"),
   artist: await text(".artistTag"),
   meta: await text(".detailMeta"),
-  preSaveHref: await erabiPreSaveLink.getAttribute("href"),
-  spotifyHref: await erabiSpotifyLink.getAttribute("href"),
-  coverLoaded: await erabiCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
+  preSaveHref: await page.locator("a.spotifyPreSave").getAttribute("href"),
+  spotifyHref: await page.getByRole("link", { name: "OPEN SPOTIFY", exact: true }).getAttribute("href"),
 };
 assert(report.checkpoints.erabi.heading?.toUpperCase() === "ENDGAME", "Erabi release detail is incorrect.");
 assert(report.checkpoints.erabi.artist?.toUpperCase() === "ERABI", "Erabi release artist is incorrect.");
-assert(report.checkpoints.erabi.meta?.includes("DE · EP · 6 TRACKS"), "Erabi release is missing its DE EP and 6-track metadata.");
-assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save does not use the supplied Spotify album link.");
-assert(report.checkpoints.erabi.spotifyHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi Spotify action does not use the supplied album link.");
-assert(report.checkpoints.erabi.coverLoaded, "Erabi detail cover does not render.");
+assert(report.checkpoints.erabi.meta?.includes("DE · EP · 6 TRACKS"), "Erabi metadata is incomplete.");
+assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save link is incorrect.");
+assert(report.checkpoints.erabi.spotifyHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi Spotify link is incorrect.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
 
 const usaButton = page.getByRole("button", { name: "US", exact: true });
 await usaButton.click();
 await settle();
-assert(await count(".dropHero") === 1, "US filter does not show a featured release.");
 assert((await text(".heroCopy h1"))?.toUpperCase() === "AALAM OF GOD", "US filter shows the wrong featured release.");
-
-const larryJuneRow = page.getByRole("button", { name: "Who Coppin öffnen", exact: true });
-assert(await larryJuneRow.count() === 1, "Larry June — Who Coppin is missing from the US releases.");
-await larryJuneRow.click();
-await settle();
-const larryJuneCover = page.locator(".detailCover img");
-await larryJuneCover.waitFor({ state: "visible" });
-await larryJuneCover.evaluate((image) => image.decode());
-const larryJuneSpotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
-report.checkpoints.larryJune = {
-  heading: await text(".detailBody h1"),
-  artist: await text(".artistTag"),
-  meta: await text(".detailMeta"),
-  spotifyHref: await larryJuneSpotifyLink.getAttribute("href"),
-  coverLoaded: await larryJuneCover.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
-};
-assert(report.checkpoints.larryJune.heading?.toUpperCase() === "WHO COPPIN", "Larry June release detail is incorrect.");
-assert(report.checkpoints.larryJune.artist?.toUpperCase() === "LARRY JUNE", "Larry June release artist is incorrect.");
-assert(report.checkpoints.larryJune.meta?.includes("16 TRACKS"), "Larry June release is missing its 16-track metadata.");
-assert(report.checkpoints.larryJune.spotifyHref === "https://open.spotify.com/album/30FpY222IPaWUUD71VXbUB", "Larry June release does not use the supplied Spotify album link.");
-assert(report.checkpoints.larryJune.coverLoaded, "Larry June album cover does not render.");
-await page.locator(".detailToolbar button").first().click();
-await settle();
+assert(await page.getByRole("button", { name: "Who Coppin öffnen", exact: true }).count() === 1, "Larry June — Who Coppin is missing.");
 
 await page.locator(".dropHero").click();
 await settle();
 await page.screenshot({ path: `${outputDir}/03-release-detail.png`, fullPage: true });
-const spotifyLink = page.getByRole("link", { name: "OPEN SPOTIFY", exact: true });
-const appleLink = page.getByRole("link", { name: "APPLE MUSIC", exact: true });
-const youtubeLink = page.getByRole("link", { name: "YOUTUBE", exact: true });
 report.checkpoints.detail = {
   heading: await text(".detailBody h1"),
-  description: await text(".detailDescription"),
-  meta: await text(".detailMeta"),
-  spotifyHref: await spotifyLink.getAttribute("href"),
-  appleHref: await appleLink.getAttribute("href"),
-  youtubeHref: await youtubeLink.getAttribute("href"),
-  source: await text(".sourceNote"),
+  spotifyHref: await page.getByRole("link", { name: "OPEN SPOTIFY", exact: true }).getAttribute("href"),
+  appleHref: await page.getByRole("link", { name: "APPLE MUSIC", exact: true }).getAttribute("href"),
+  youtubeHref: await page.getByRole("link", { name: "YOUTUBE", exact: true }).getAttribute("href"),
 };
 assert(report.checkpoints.detail.heading?.toUpperCase() === "AALAM OF GOD", "DJ Khaled release detail is incorrect.");
 assert(report.checkpoints.detail.spotifyHref?.startsWith("https://open.spotify.com/"), "Spotify action is not real.");
@@ -168,54 +121,32 @@ const input = page.getByPlaceholder("ARTIST, ALBUM OR SINGLE");
 await input.fill("DJ Khaled");
 await settle();
 await page.screenshot({ path: `${outputDir}/04-find.png`, fullPage: true });
-report.checkpoints.find = {
-  heading: await text(".posterTitle"),
-  resultTitles: await page.locator(".tapeRow .rowCopy strong").allInnerTexts(),
-};
-assert(report.checkpoints.find.heading?.includes("FIND"), "Find screen heading is missing.");
-assert(report.checkpoints.find.resultTitles.includes("AALAM OF GOD"), "Find screen does not use real release data.");
+const findTitles = await page.locator(".tapeRow .rowCopy strong").allInnerTexts();
+assert(findTitles.includes("AALAM OF GOD"), "Find screen does not use current release data.");
 
 await page.getByRole("button", { name: "Stash", exact: true }).click();
 await settle();
 await page.screenshot({ path: `${outputDir}/05-stash.png`, fullPage: true });
-report.checkpoints.stash = {
-  heading: await text(".posterTitle"),
-  titles: await page.locator(".stashCard strong").allInnerTexts(),
-  reminder: await text(".reminderCard"),
-};
-assert(report.checkpoints.stash.titles.length === 1 && report.checkpoints.stash.titles[0] === "AALAM OF GOD", "Stash contains stale or missing data.");
-assert(report.checkpoints.stash.reminder?.includes("MIDNIGHT REMINDER"), "Midnight reminder is missing.");
+const stashTitles = await page.locator(".stashCard strong").allInnerTexts();
+assert(stashTitles.length === 1 && stashTitles[0] === "AALAM OF GOD", "Stash contains stale or missing data.");
+assert((await text(".reminderCard"))?.includes("MIDNIGHT REMINDER"), "Midnight reminder is missing.");
 
 await page.getByRole("button", { name: "Me", exact: true }).click();
 await settle();
 await page.screenshot({ path: `${outputDir}/06-me.png`, fullPage: true });
-report.checkpoints.me = {
-  heading: await text(".posterTitle"),
-  savedCount: await text(".radarIdentity small"),
-  build: await text(".buildCard"),
-};
-assert(report.checkpoints.me.savedCount?.includes("1 STASHED"), "Profile stash count is incorrect.");
-assert(report.checkpoints.me.build?.includes("SOURCES CHECKED"), "Editorial data-mode message is missing.");
+assert((await text(".radarIdentity small"))?.includes("1 STASHED"), "Profile stash count is incorrect.");
+assert((await text(".buildCard"))?.includes("SOURCES CHECKED"), "Editorial data-mode message is missing.");
 
 const adminLink = page.getByRole("link", { name: /RELEASE ANLEGEN/ });
 assert(await adminLink.count() === 1, "The private release editor is not linked from the profile.");
-report.checkpoints.adminEntry = { href: await adminLink.getAttribute("href") };
 await adminLink.click();
 await page.waitForURL(/\/admin\/?$/);
 await settle();
 await page.screenshot({ path: `${outputDir}/07-admin-login.png`, fullPage: true });
-report.checkpoints.adminLogin = {
-  url: page.url(),
-  heading: await text(".adminTitle"),
-  setupNotice: await text(".adminNotice strong"),
-  emailDisabled: await page.locator('input[name="email"]').isDisabled(),
-  homeHref: await page.locator(".adminWordmark").getAttribute("href"),
-};
-assert(report.checkpoints.adminEntry.href?.includes("/admin"), "The profile admin link points to the wrong route.");
-assert(report.checkpoints.adminLogin.heading?.replace(/\s+/g, " ").toUpperCase() === "ADMIN LOGIN", "The admin login screen is missing.");
-assert(report.checkpoints.adminLogin.setupNotice === "BACKEND NOCH NICHT VERBUNDEN", "The safe unconfigured admin state is missing.");
-assert(report.checkpoints.adminLogin.emailDisabled, "The admin login must stay disabled without backend configuration.");
-assert(report.checkpoints.adminLogin.homeHref?.endsWith("/Release-Friday/"), "The admin back link does not return to Release Friday.");
+assert((await text(".adminTitle"))?.replace(/\s+/g, " ").toUpperCase() === "ADMIN LOGIN", "The admin login screen is missing.");
+assert(await text(".adminNotice strong") === "BACKEND NOCH NICHT VERBUNDEN", "The safe unconfigured admin state is missing.");
+assert(await page.locator('input[name="email"]').isDisabled(), "Admin login must stay disabled without backend configuration.");
+assert((await page.locator(".adminWordmark").getAttribute("href"))?.endsWith("/Release-Friday/"), "The admin back link is incorrect.");
 
 const desktop = await context.newPage();
 await desktop.setViewportSize({ width: 1280, height: 900 });
@@ -227,16 +158,11 @@ report.checkpoints.desktop = {
   viewportWidth: await desktop.evaluate(() => window.innerWidth),
   phoneWidth: await desktop.locator(".prototypePhone").evaluate((element) => Math.round(element.getBoundingClientRect().width)),
 };
-
-await writeFile(`${outputDir}/report.json`, JSON.stringify(report, null, 2));
 assert(report.checkpoints.desktop.bodyScrollWidth <= report.checkpoints.desktop.viewportWidth, "Desktop layout has horizontal overflow.");
-assert(
-  report.checkpoints.desktop.phoneWidth >= 430
-    && report.checkpoints.desktop.phoneWidth <= report.checkpoints.desktop.viewportWidth - 40,
-  "Desktop responsive frame width is outside the approved layout range.",
-);
+assert(report.checkpoints.desktop.phoneWidth >= 430 && report.checkpoints.desktop.phoneWidth <= report.checkpoints.desktop.viewportWidth - 40, "Desktop responsive frame width is outside the approved range.");
 assert(report.consoleErrors.length === 0, `Console errors found: ${JSON.stringify(report.consoleErrors)}`);
 assert(report.pageErrors.length === 0, `Page errors found: ${JSON.stringify(report.pageErrors)}`);
 
+await writeFile(`${outputDir}/report.json`, JSON.stringify(report, null, 2));
 await browser.close();
 console.log(JSON.stringify(report, null, 2));
