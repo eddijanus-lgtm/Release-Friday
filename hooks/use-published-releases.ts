@@ -44,6 +44,11 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
     const controller = new AbortController();
     setReleases(newestIssue(initialReleases));
 
+    // Without browser-safe Supabase configuration, keep the generated list.
+    // This covers local QA/offline builds without treating a missing backend as
+    // an authoritative empty release issue.
+    if (!isSupabaseConfigured()) return () => controller.abort();
+
     void fetchPublishedManualReleases(undefined, controller.signal)
       .then((published) => {
         // Supabase is the source of truth whenever it answers successfully.
