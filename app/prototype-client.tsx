@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 import { usePublishedReleases } from "@/hooks/use-published-releases";
 import { useSwipeBack } from "@/hooks/use-swipe-back";
@@ -424,6 +424,8 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
   const [region, setRegion] = useState<Region>("ALL");
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
   const [hydrated, setHydrated] = useState(false);
+  const previousScrollPosition = useRef(0);
+  const shouldRestoreScroll = useRef(false);
 
   useEffect(() => {
     setSavedIds(loadSavedIds(releases));
@@ -434,6 +436,12 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
     if (hydrated) window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
   }, [savedIds, hydrated]);
 
+  useEffect(() => {
+    if (selectedRelease || !shouldRestoreScroll.current) return;
+    shouldRestoreScroll.current = false;
+    window.scrollTo({ top: previousScrollPosition.current, behavior: "auto" });
+  }, [selectedRelease]);
+
   const toggleSaved = (id: string) => {
     setSavedIds((current) => {
       const next = new Set(current);
@@ -443,17 +451,23 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
   };
 
   const openRelease = (release: MusicRelease) => {
+    previousScrollPosition.current = window.scrollY;
+    shouldRestoreScroll.current = false;
     setSelectedRelease(release);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const changeTab = (tab: Tab) => {
+    shouldRestoreScroll.current = false;
     setActiveTab(tab);
     setSelectedRelease(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const closeSelectedRelease = useCallback(() => setSelectedRelease(null), []);
+  const closeSelectedRelease = useCallback(() => {
+    shouldRestoreScroll.current = true;
+    setSelectedRelease(null);
+  }, []);
   const savedCount = releases.filter((release) => savedIds.has(release.id)).length;
   let content: ReactNode;
 

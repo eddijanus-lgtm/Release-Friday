@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSwipeBack } from "@/hooks/use-swipe-back";
 import type { MusicRelease } from "@/types/release";
@@ -32,7 +32,12 @@ export function ReleaseDetailOverlay() {
   const [release, setRelease] = useState<MusicRelease | null>(null);
   const [saved, setSaved] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
-  const closeRelease = useCallback(() => setRelease(null), []);
+  const previousScrollPosition = useRef(0);
+  const shouldRestoreScroll = useRef(false);
+  const closeRelease = useCallback(() => {
+    shouldRestoreScroll.current = true;
+    setRelease(null);
+  }, []);
   const swipeBackHandlers = useSwipeBack(closeRelease);
 
   useEffect(() => {
@@ -47,6 +52,8 @@ export function ReleaseDetailOverlay() {
     const open = (event: Event) => {
       const next = (event as CustomEvent<MusicRelease>).detail;
       if (!next) return;
+      previousScrollPosition.current = window.scrollY;
+      shouldRestoreScroll.current = false;
       setRelease(next);
       setSaved(readSaved().has(next.id));
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -54,6 +61,12 @@ export function ReleaseDetailOverlay() {
     window.addEventListener("release-friday:open-release", open);
     return () => window.removeEventListener("release-friday:open-release", open);
   }, []);
+
+  useEffect(() => {
+    if (release || !shouldRestoreScroll.current) return;
+    shouldRestoreScroll.current = false;
+    window.scrollTo({ top: previousScrollPosition.current, behavior: "auto" });
+  }, [release]);
 
   if (!host || !release) return null;
 
