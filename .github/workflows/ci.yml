@@ -25,6 +25,8 @@ jobs:
         run: npm ci
       - name: Validate Spotify importer syntax
         run: node --check scripts/import-spotify-release.mjs
+      - name: Test release cover fallback
+        run: node scripts/test-fetch-releases.mjs
       - name: Build
         env:
           DEPLOY_TARGET: github-pages

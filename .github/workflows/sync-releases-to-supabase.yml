@@ -7,6 +7,11 @@ on:
         description: Optional release date in YYYY-MM-DD format
         required: false
         type: string
+      allow_spotify_artist_image_fallback:
+        description: Use an exact Spotify artist image when no release cover is available
+        required: false
+        default: false
+        type: boolean
   schedule:
     # 14:15 CEST: New Zealand has reached Friday and exposes rolling releases.
     - cron: "15 12 * * 4"
@@ -32,6 +37,7 @@ jobs:
     timeout-minutes: 45
     env:
       RELEASE_DATE: ${{ inputs.release_date }}
+      ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: ${{ inputs.allow_spotify_artist_image_fallback || (github.event_name == 'schedule' && (github.event.schedule == '30 16 * * 4' || github.event.schedule == '15 5 * * 5')) }}
       SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
       SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
