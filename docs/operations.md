@@ -75,7 +75,7 @@ Workflow: `.github/workflows/sync-releases-to-supabase.yml`
 
 Auslöser:
 
-- Donnerstag um 12:15 und 16:30 UTC sowie Freitag um 05:15 UTC
+- Donnerstag um 12:15 und 16:30 UTC, Freitag um 00:02 Uhr deutscher Zeit sowie Freitag um 05:15 UTC
 - manuell über GitHub Actions
 - Änderungen an Importskripten oder Workflow
 
@@ -94,6 +94,8 @@ Ablauf:
 5. jedes gefundene Bild herunterladen und als unterstütztes Bild validieren
 6. Bild in `release-covers` speichern
 7. `node scripts/sync-releases-to-supabase.mjs`
+
+Der 00:02-Uhr-Lauf prüft die Singles mit einem als `Spotify artist image fallback` markierten Bild erneut. Sobald Spotify oder Apple Music ein exakt passendes Release-Cover liefert, speichert der Workflow das neue Bild im eigenen Storage und ersetzt das Artist-Bild im bestehenden Datensatz. Manuelle Releases und alle anderen bestehenden Datensätze werden nicht verändert. Zwei UTC-Cron-Termine mit einer Prüfung der Zeitzone `Europe/Berlin` stellen sicher, dass 00:02 Uhr sowohl in Sommer- als auch Winterzeit korrekt getroffen wird.
 
 Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze. Der Artist-Image-Fallback ist beim ersten Donnerstagslauf deaktiviert und ab Donnerstag 18:30 Uhr deutscher Zeit aktiviert. Die Berliner Uhrzeit dient zusätzlich zum Cron-Auslöser als Freigabe, damit eine GitHub-Schedule-Verzögerung den Fallback nicht blockiert. Das Spotify-Profil muss exakt zum ersten genannten Artist passen; Profilbild und Profil-Link werden gemeinsam gespeichert und die Quelle enthält `Spotify artist image fallback`. Fehlt auch dieses Bild, wird die Single übersprungen. Fehlende Bilder stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
 

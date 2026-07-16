@@ -46,14 +46,15 @@ Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen 
 
 ### Automatischer Import
 
-1. GitHub Actions startet `scripts/fetch-releases.mjs` am Donnerstag, sobald Neuseeland den Freitag erreicht hat, sowie in zwei späteren Wiederholungsläufen.
+1. GitHub Actions startet `scripts/fetch-releases.mjs` am Donnerstag, sobald Neuseeland den Freitag erreicht hat, um 00:02 Uhr deutscher Zeit zur Cover-Aktualisierung sowie am Freitagmorgen als Sicherheitslauf.
 2. Das Skript liest die Single-Tabelle aus dem konfigurierten r/GermanRap-Post per RSS und löst Cover mit exaktem Interpret-/Titelabgleich zuerst über Spotify, danach über Apple Music auf. NZ und AU dienen als frühe Storefronts; ab Freitag wird zusätzlich der Heimatmarkt geprüft.
 3. Der frühe Donnerstagslauf akzeptiert ausschließlich Release-Cover. Ab dem 18:30-Uhr-Lauf darf für weiterhin ungelöste r/GermanRap-Singles das Spotify-Profilbild des zuerst genannten Artists dienen. Der Artist muss exakt passen, ein echtes Bild und ein Spotify-Profil besitzen; Quelle, Beschreibung und Spotify-Link kennzeichnen den Fallback.
 4. Nur Kandidaten mit einer gültigen Bild-URL gelangen in `lib/releases/real-releases.generated.ts`. Fehlende Bilder werden in den Metadaten protokolliert.
 5. `scripts/sync-releases-to-supabase.mjs` vergleicht Interpret, Titel und Release-Datum mit Supabase.
 6. Vor dem Insert wird jedes externe Bild heruntergeladen, über seine Dateisignatur geprüft und deterministisch im Bucket `release-covers` gespeichert.
 7. Nur neue Datensätze mit bestätigtem `cover_url` und `storage_path` werden als `published` eingefügt und anschließend verifiziert.
-8. Bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
+8. Beim 00:02-Uhr-Lauf werden ausschließlich automatisch als `Spotify artist image fallback` markierte Datensätze aktualisiert, wenn inzwischen ein eindeutiges Release-Cover verfügbar ist. Cover, Storage-Pfad, Plattformlink, Beschreibung und Quellenmarkierung werden anschließend verifiziert.
+9. Andere bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
 
 ## Datenmodell
 
