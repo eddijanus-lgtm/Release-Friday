@@ -17,6 +17,7 @@ import "./archive-interactions.css";
 import "./account.css";
 import "./spotify-countdown.css";
 import "./home-cleanup.css";
+import "./desktop-fluid.css";
 
 export const metadata: Metadata = {
   title: "Release Friday — Midnight Tape",
