@@ -60,7 +60,7 @@ try {
   assert.equal(resolved.coverUrl, "https://i.scdn.co/image/exact");
   assert.equal(resolved.spotifyUrl, "https://open.spotify.com/artist/exact");
   assert.match(resolved.source, /Spotify artist image fallback/);
-  assert.match(resolved.description, /Spotify-Profilbild von Apsilon/);
+  assert.equal(resolved.description, release.description);
 
   globalThis.fetch = async () => new Response(JSON.stringify({
     artists: {

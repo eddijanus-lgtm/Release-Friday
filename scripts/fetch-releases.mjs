@@ -522,7 +522,7 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
     ...release,
     coverUrl: artist.images[0].url,
     spotifyUrl: artist.external_urls.spotify,
-    description: `${release.description} Als vorläufiges Bild wird das Spotify-Profilbild von ${artist.name} verwendet.`,
+    description: release.description,
     source: `${release.source} + ${SPOTIFY_ARTIST_IMAGE_SOURCE}`,
   };
 }
