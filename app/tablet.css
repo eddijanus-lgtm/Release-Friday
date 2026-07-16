@@ -1,5 +1,5 @@
-/* Tablet and iPad layout enhancements */
-@media (min-width: 768px) and (max-width: 1366px) {
+/* Tablet, iPad and desktop layout enhancements */
+@media (min-width: 768px) {
   .prototypePage,
   .adminPage {
     padding: 24px;
@@ -299,7 +299,7 @@
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+@media (min-width: 1024px) and (orientation: landscape) {
   .prototypePhone,
   .adminPhone {
     width: min(100%, 1180px);
@@ -316,5 +316,57 @@
 
   .tapeNav {
     width: min(calc(100% - 48px), 1120px);
+  }
+}
+
+@media (min-width: 1440px) {
+  .prototypePage,
+  .adminPage {
+    padding: 32px;
+  }
+
+  .prototypePhone,
+  .adminPhone {
+    width: min(100%, 1320px);
+    min-height: calc(100svh - 64px);
+  }
+
+  .tapeScreen {
+    min-height: calc(100svh - 64px);
+  }
+
+  .tapeHeader,
+  .adminHeader {
+    padding-right: 38px;
+    padding-left: 38px;
+  }
+
+  .tapeStrip,
+  .adminTape {
+    margin-right: 38px;
+    margin-left: 38px;
+  }
+
+  .screenInner {
+    padding-right: 38px;
+    padding-left: 38px;
+  }
+
+  .dropHero {
+    grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr);
+    gap: 42px;
+    padding: 24px;
+  }
+
+  .tapeNav {
+    bottom: 32px;
+    width: min(calc(100% - 64px), 1240px);
+  }
+
+  .adminLoginBody,
+  .releaseEditorBody,
+  .adminDenied {
+    padding-right: 38px;
+    padding-left: 38px;
   }
 }
