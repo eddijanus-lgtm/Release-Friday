@@ -56,7 +56,9 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
       .then((published) => {
         const byId = new Map(initialReleases.map((release) => [release.id, release]));
         published.forEach((release) => byId.set(release.id, release));
-        setReleases(newestIssue([...byId.values()]));
+        const all = [...byId.values()];
+        const issue = _targetDate ? all.filter((release) => release.releaseDate === _targetDate) : all;
+        setReleases(issue.length ? issue : newestIssue(all));
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
