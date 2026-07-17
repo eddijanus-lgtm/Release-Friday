@@ -128,7 +128,7 @@ function getCurrentOrUpcomingFriday(date = new Date()) {
 function releaseLookupMarkets(targetDate, country, currentBerlinDate = berlinDate()) {
   const rollingMarkets = [...ROLLING_RELEASE_MARKETS];
   return targetDate <= currentBerlinDate
-    ? [...new Set([country, ...rollingMarkets])]
+    ? [country]
     : rollingMarkets;
 }
 
