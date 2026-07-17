@@ -24,7 +24,7 @@ on:
     - cron: "30 16 * * 4"
     # Friday recovery run after the German release window has opened.
     - cron: "15 5 * * 5"
-    # 20:15 CEST / 19:15 CET: late release-day recovery after long Spotify quota cooldowns.
+    # 20:15 CEST / 19:15 CET: late release-day cover recovery after long Spotify quota cooldowns.
     - cron: "15 18 * * 5"
     # 00:02 Europe/Berlin cover refresh (two UTC slots handle daylight saving time).
     - cron: "2 22 * * 4"
