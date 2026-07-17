@@ -8,8 +8,9 @@ on:
         required: false
         type: string
   schedule:
-    # Sunday 12:15 CEST / 11:15 CET. The script resolves the previous Friday in Europe/Berlin.
-    - cron: "15 10 * * 0"
+    # Sunday 00:01 Europe/Berlin (two UTC slots cover summer and winter time).
+    - cron: "1 22 * * 6"
+    - cron: "1 23 * * 6"
 
 permissions:
   contents: read
@@ -29,12 +30,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Check Berlin archive window
+        id: schedule-window
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" != "schedule" || "$(TZ=Europe/Berlin date +%u-%H-%M)" == "7-00-01" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Set up Node.js
+        if: steps.schedule-window.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - name: Install dependencies
+        if: steps.schedule-window.outputs.run == 'true'
         run: npm ci
       - name: Archive the previous Friday
+        if: steps.schedule-window.outputs.run == 'true'
         run: node scripts/archive-friday-releases.mjs
