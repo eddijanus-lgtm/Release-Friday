@@ -5,6 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 import { ReleaseForm } from "@/components/admin/release-form";
+import { MagazineEditor, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
@@ -31,6 +32,16 @@ type ReleaseRow = {
   source: string;
   status: ReleaseWriteStatus;
 };
+
+type MagazineRow = {
+  id: string; title: string; slug: string; scope: MagazinePost["scope"]; excerpt: string; body: string;
+  cover_url: string | null; source_url: string | null; author_name: string | null;
+  status: MagazinePost["status"]; published_at: string | null;
+};
+
+function mapMagazinePost(row: MagazineRow): MagazinePost {
+  return { id: row.id, title: row.title, slug: row.slug, scope: row.scope, excerpt: row.excerpt, body: row.body, coverUrl: row.cover_url ?? undefined, sourceUrl: row.source_url ?? undefined, authorName: row.author_name ?? undefined, status: row.status, publishedAt: row.published_at ?? undefined };
+}
 
 function safeFileExtension(file: File) {
   const extension = file.name.split(".").pop()?.toLocaleLowerCase("en-US");
@@ -74,6 +85,8 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
   const [busy, setBusy] = useState(false);
   const [loginError, setLoginError] = useState<string>();
   const [releases, setReleases] = useState<EditableRelease[]>([]);
+  const [magazinePosts, setMagazinePosts] = useState<MagazinePost[]>([]);
+  const [editor, setEditor] = useState<"releases" | "magazine">("releases");
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -94,6 +107,7 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
     if (!session) {
       setAccess("signed-out");
       setReleases([]);
+      setMagazinePosts([]);
       return;
     }
 
@@ -117,6 +131,11 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
           .order("release_date", { ascending: false })
           .order("created_at", { ascending: false });
         if (active) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
+        const { data: magazineRows } = await client
+          .from("magazine_posts")
+          .select("id,title,slug,scope,excerpt,body,cover_url,source_url,author_name,status,published_at")
+          .order("created_at", { ascending: false });
+        if (active) setMagazinePosts(((magazineRows ?? []) as MagazineRow[]).map(mapMagazinePost));
       });
     return () => { active = false; };
   }, [session]);
@@ -222,6 +241,34 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
     }
   }
 
+  async function saveMagazinePost(values: MagazinePostValues, existing?: MagazinePost) {
+    const client = getSupabaseBrowserClient();
+    if (!client || !session) throw new Error("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
+    setBusy(true);
+    try {
+      const payload = { title: values.title, slug: values.slug, scope: values.scope, excerpt: values.excerpt, body: values.body, cover_url: nullable(values.coverUrl), source_url: nullable(values.sourceUrl), author_name: nullable(values.authorName), status: values.status };
+      const query = existing ? client.from("magazine_posts").update(payload).eq("id", existing.id) : client.from("magazine_posts").insert({ ...payload, created_by: session.user.id });
+      const { data, error } = await query.select("id,title,slug,scope,excerpt,body,cover_url,source_url,author_name,status,published_at").single();
+      if (error || !data) {
+        if (error?.code === "23505") throw new Error("Dieser URL-Slug existiert bereits. Bitte passe ihn an.");
+        throw new Error("Der Magazinbeitrag konnte nicht gespeichert werden.");
+      }
+      const mapped = mapMagazinePost(data as MagazineRow);
+      setMagazinePosts((current) => existing ? current.map((post) => post.id === mapped.id ? mapped : post) : [mapped, ...current]);
+    } finally { setBusy(false); }
+  }
+
+  async function deleteMagazinePost(post: MagazinePost) {
+    const client = getSupabaseBrowserClient();
+    if (!client || !session) throw new Error("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
+    setBusy(true);
+    try {
+      const { error } = await client.from("magazine_posts").delete().eq("id", post.id);
+      if (error) throw new Error("Der Magazinbeitrag konnte nicht gelöscht werden.");
+      setMagazinePosts((current) => current.filter((item) => item.id !== post.id));
+    } finally { setBusy(false); }
+  }
+
   const configured = isSupabaseConfigured();
   const showLogin = access === "signed-out" || access === "unconfigured";
 
@@ -239,7 +286,13 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
             <button className="adminSecondaryButton" type="button" onClick={() => void logout()} disabled={busy}>ABMELDEN</button>
           </div>
         ) : null}
-        {access === "admin" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : null}
+        {access === "admin" ? <>
+          <nav className="adminEditorTabs" aria-label="Admin-Bereich">
+            <button type="button" className={editor === "releases" ? "active" : ""} onClick={() => setEditor("releases")}>RELEASES</button>
+            <button type="button" className={editor === "magazine" ? "active" : ""} onClick={() => setEditor("magazine")}>MAGAZIN</button>
+          </nav>
+          {editor === "releases" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : <MagazineEditor busy={busy} posts={magazinePosts} onSave={saveMagazinePost} onDelete={deleteMagazinePost} />}
+        </> : null}
       </section>
     </main>
   );
