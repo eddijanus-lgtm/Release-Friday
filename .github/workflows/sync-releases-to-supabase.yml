@@ -52,9 +52,10 @@ jobs:
     env:
       RELEASE_DATE: ${{ inputs.release_date }}
       ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: ${{ inputs.allow_spotify_artist_image_fallback || (github.event_name == 'schedule' && (github.event.schedule == '30 16 * * 4' || github.event.schedule == '15 5 * * 5')) }}
-      REFRESH_ARTIST_IMAGE_COVERS: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
-      SKIP_DISCOVERY: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
+      REFRESH_ARTIST_IMAGE_COVERS: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
+      SKIP_DISCOVERY: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
       GITHUB_TRIGGER_EVENT: ${{ github.event_name }}
+      GITHUB_TRIGGER_SCHEDULE: ${{ github.event.schedule }}
       SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
       SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
@@ -68,7 +69,7 @@ jobs:
         id: schedule-window
         shell: bash
         run: |
-          if [[ "$REFRESH_ARTIST_IMAGE_COVERS" != "true" || "$GITHUB_TRIGGER_EVENT" != "schedule" ]]; then
+          if [[ "$GITHUB_TRIGGER_EVENT" != "schedule" || ("$GITHUB_TRIGGER_SCHEDULE" != "2 22 * * 4" && "$GITHUB_TRIGGER_SCHEDULE" != "2 23 * * 4") ]]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           elif [[ "$(TZ=Europe/Berlin date +%u-%H)" == "5-00" ]]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
