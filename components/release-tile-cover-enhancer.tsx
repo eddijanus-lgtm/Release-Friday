@@ -72,7 +72,7 @@ export function ReleaseTileCoverEnhancer() {
         const image = document.createElement("img");
         image.src = coverUrl;
         image.alt = "";
-        image.loading = "lazy";
+        image.loading = "eager";\n        image.decoding = "async";
         image.referrerPolicy = "no-referrer";
         image.addEventListener("load", () => {
           if (!active) return;
