@@ -6,6 +6,7 @@ const {
   artistFallbackCutoffOpen,
   candidatesNeedingCoverLookup,
   getCurrentOrUpcomingFriday,
+  loadStoredReleases,
   primaryArtistName,
   releaseLookupMarkets,
   searchSpotifyArtistImage,
@@ -37,6 +38,7 @@ try {
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-16"), ["NZ", "AU"]);
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE", "NZ", "AU"]);
+  assert.equal(await loadStoredReleases("2026-07-17"), null);
   assert.deepEqual(candidatesNeedingCoverLookup([
     release,
     { ...release, artist: "Olexesh", title: "Mehr von dir" },
