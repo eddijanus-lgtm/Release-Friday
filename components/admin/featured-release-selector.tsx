@@ -16,6 +16,7 @@ export function FeaturedReleaseSelector() {
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [releases, setReleases] = useState<ReleaseOption[]>([]);
+  const [issueDate, setIssueDate] = useState<string>();
   const [selection, setSelection] = useState<Selection>({});
   const [saving, setSaving] = useState<Scope | null>(null);
   const [message, setMessage] = useState("");
@@ -61,23 +62,29 @@ export function FeaturedReleaseSelector() {
         .order("release_date", { ascending: false })
         .order("created_at", { ascending: true });
       const options = (rows ?? []) as ReleaseOption[];
-      const issueDate = options[0]?.release_date;
-      const issueReleases = issueDate ? options.filter((release) => release.release_date === issueDate) : [];
-      setReleases(issueReleases);
-      if (!issueDate) return;
-      const { data: featuredRows } = await client.from("featured_releases").select("scope,release_id").eq("issue_date", issueDate);
-      if (!active) return;
-      setSelection(Object.fromEntries((featuredRows ?? []).map((row) => [row.scope, row.release_id])) as Selection);
+      setReleases(options);
+      setIssueDate((current) => current && options.some((release) => release.release_date === current) ? current : options[0]?.release_date);
     })();
     return () => { active = false; };
   }, [host, session]);
 
-  const issueDate = releases[0]?.release_date;
+  const issueDates = useMemo(() => [...new Set(releases.map((release) => release.release_date))], [releases]);
+  const issueReleases = useMemo(() => releases.filter((release) => release.release_date === issueDate), [releases, issueDate]);
   const optionsByScope = useMemo(() => ({
-    ALL: releases,
-    DE: releases.filter((release) => release.country === "DE"),
-    US: releases.filter((release) => release.country === "US"),
-  }), [releases]);
+    ALL: issueReleases,
+    DE: issueReleases.filter((release) => release.country === "DE"),
+    US: issueReleases.filter((release) => release.country === "US"),
+  }), [issueReleases]);
+
+  useEffect(() => {
+    const client = getSupabaseBrowserClient();
+    if (!client || !session || !issueDate) return;
+    let active = true;
+    void client.from("featured_releases").select("scope,release_id").eq("issue_date", issueDate).then(({ data }) => {
+      if (active) setSelection(Object.fromEntries((data ?? []).map((row) => [row.scope, row.release_id])) as Selection);
+    });
+    return () => { active = false; };
+  }, [issueDate, session]);
 
   async function save(scope: Scope) {
     const client = getSupabaseBrowserClient();
@@ -100,9 +107,10 @@ export function FeaturedReleaseSelector() {
 
   return createPortal(
     <section style={{ border: "1px solid #33402f", background: "#0d120c", padding: 16, margin: "18px 0" }}>
-      <p className="adminSectionLabel">STARTSEITEN-AUSWAHL · {issueDate}</p>
+      <p className="adminSectionLabel">STARTSEITEN-AUSWAHL</p>
       <h2 style={{ margin: "8px 0 6px", fontSize: 24, lineHeight: 1 }}>FEATURED<br />RELEASES</h2>
-      <p className="adminIntro" style={{ marginBottom: 16 }}>Lege getrennt fest, welches Cover bei ALL, DE und US groß auf der Startseite erscheint.</p>
+      <p className="adminIntro" style={{ marginBottom: 10 }}>Lege getrennt fest, welches Cover bei ALL, DE und US groß auf der Startseite erscheint.</p>
+      <label className="adminField" style={{ marginBottom: 16 }}><span>AUSGABE</span><select value={issueDate} onChange={(event) => setIssueDate(event.target.value)}>{issueDates.map((date) => <option key={date} value={date}>{date}</option>)}</select></label>
       <div style={{ display: "grid", gap: 12 }}>
         {scopes.map((scope) => (
           <div key={scope} style={{ display: "grid", gridTemplateColumns: "64px 1fr auto", gap: 8, alignItems: "center" }}>
