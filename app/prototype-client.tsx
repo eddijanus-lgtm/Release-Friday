@@ -60,6 +60,10 @@ function pluralize(count: number, singular: string, plural: string) {
   return `${count} ${count === 1 ? singular : plural}`;
 }
 
+function spotifySearchUrl(release: MusicRelease) {
+  return `https://open.spotify.com/search/${encodeURIComponent(`${release.artist} ${release.title}`)}`;
+}
+
 function useClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -297,6 +301,7 @@ function DetailScreen({ release, saved, onBack, onToggleSaved }: {
   const live = isReleaseLive(release, now);
   const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
   const canPreSave = !live && Boolean(release.spotifyPreSaveUrl);
+  const spotifyUrl = release.spotifyUrl ?? spotifySearchUrl(release);
   const swipeBackHandlers = useSwipeBack(onBack);
 
   return (
@@ -324,7 +329,7 @@ function DetailScreen({ release, saved, onBack, onToggleSaved }: {
               </span>
             )
           ) : null}
-          {release.spotifyUrl ? <a className="primary" href={release.spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a> : <span className="disabled">SPOTIFY UNAVAILABLE</span>}
+          <a className="primary" href={spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a>
           {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE MUSIC</a> : <span className="disabled">APPLE MUSIC</span>}
           {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : <span className="disabled">YOUTUBE</span>}
         </div>
@@ -443,7 +448,7 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
     setHydrated(true);
   }, [releases]);
 
-  useEffect(() => {
+  useEfect(() => {
     if (hydrated) window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
   }, [savedIds, hydrated]);
 
