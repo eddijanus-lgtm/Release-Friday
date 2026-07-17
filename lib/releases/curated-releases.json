@@ -1,23 +1,6 @@
 {
   "releases": [
     {
-      "id": "curated-azo-palast-oder-stacheldraht",
-      "title": "Palast oder Stacheldraht",
-      "artist": "Azo, KG Family",
-      "releaseDate": "2026-07-17",
-      "country": "DE",
-      "kind": "single",
-      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab6761610000e5eb6c4cc61abd3fc6c9351ded3e",
-      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
-      "description": "Azo, KG Family veröffentlicht die Single „Palast oder Stacheldraht“.",
-      "trackCount": 1,
-      "genres": [
-        "Deutschrap",
-        "Hip-Hop/Rap"
-      ],
-      "source": "r/GermanRap + Spotify artist image fallback"
-    },
-    {
       "id": "curated-erabi-endgame",
       "title": "Endgame",
       "artist": "Erabi",

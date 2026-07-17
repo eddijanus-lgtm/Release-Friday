@@ -101,6 +101,8 @@ Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein
 
 Beim manuellen Start ersetzt `refresh_artist_image_covers` vorhandene Artist-Bilder, sobald ein echtes Release-Cover gefunden wird. Änderungen an den Importskripten lösen denselben eng begrenzten Nachlauf nach dem Merge automatisch aus. Die Prüfung des Berliner 00:02-Uhr-Fensters gilt nur für geplante Cron-Läufe; ein ausdrücklich gestarteter manueller oder Push-Nachlauf wird nicht blockiert.
 
+Ein Cover-Nachlauf überspringt die allgemeine MusicBrainz-/Apple-Discovery und konzentriert sich auf die Reddit-Kandidaten. Meldet Spotify ein langes Rate-Limit, wartet der Lauf nicht bis zum GitHub-Timeout, sondern nutzt Apple Music für die verbleibenden Release-Cover. Der separate Workflow **Refresh real release data** läuft nur geplant oder manuell; ein Importskript-Push startet dadurch keine zweite parallele Vollrecherche.
+
 Für einen gezielten Lauf kann beim manuellen Start `release_date` im Format `YYYY-MM-DD` gesetzt werden. `allow_spotify_artist_image_fallback` schaltet den Fallback bei einem manuellen Lauf ausdrücklich frei. Ohne Datum wird der nächste Freitag in der Zeitzone `Europe/Berlin` verwendet.
 
 ## Supabase
