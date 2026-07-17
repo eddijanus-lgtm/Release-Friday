@@ -23,9 +23,10 @@ const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
 const DISCOVERY_ENABLED = !["1", "true"].includes(String(process.env.SKIP_DISCOVERY || "").toLowerCase());
-const FAST_FAIL_RATE_LIMITS = ["1", "true"].includes(
+const REFRESH_ARTIST_IMAGE_COVERS = ["1", "true"].includes(
   String(process.env.REFRESH_ARTIST_IMAGE_COVERS || "").toLowerCase(),
 );
+const FAST_FAIL_RATE_LIMITS = REFRESH_ARTIST_IMAGE_COVERS;
 const MAX_RETRY_WAIT_MS = Number(process.env.MAX_RETRY_WAIT_MS || 15000);
 const SUPABASE_URL = String(process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
 const SUPABASE_SERVICE_ROLE_KEY = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
@@ -788,4 +789,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, loadStoredReleases, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
