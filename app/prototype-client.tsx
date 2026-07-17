@@ -189,6 +189,21 @@ function ReleaseListRow({ release, number, saved, onOpen, onToggleSaved }: {
     <article className="tapeRow">
       <button type="button" className="tapeRowMain" onClick={onOpen} aria-label={`${release.title} öffnen`}>
         <span className="rowNumber">{String(number).padStart(2, "0")}</span>
+        {release.coverUrl ? (
+          <span className="rowCoverThumb">
+            <img
+              src={release.coverUrl}
+              alt=""
+              loading={number <= 4 ? "eager" : "lazy"}
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+          </span>
+        ) : (
+          <span className="rowCoverThumb isFallback" aria-hidden="true">
+            <span>RELEASE</span><span>FRIDAY</span>
+          </span>
+        )}
         <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist}</span></div>
         <span className="rowArrow">→</span>
       </button>
