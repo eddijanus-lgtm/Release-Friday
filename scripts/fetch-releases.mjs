@@ -42,9 +42,13 @@ let lastAppleRequestAt = 0;
 let lastSpotifyRequestAt = 0;
 
 function responseError(response) {
-  const error = new Error(`${response.status} ${response.statusText}`);
+  const retryAfterSeconds = Number(response.headers.get("retry-after") || 0);
+  const retryDetails = response.status === 429
+    ? ` (Retry-After: ${retryAfterSeconds > 0 ? `${retryAfterSeconds}s` : "missing"})`
+    : "";
+  const error = new Error(`${response.status} ${response.statusText}${retryDetails}`);
   error.status = response.status;
-  error.retryAfterSeconds = Number(response.headers.get("retry-after") || 0);
+  error.retryAfterSeconds = retryAfterSeconds;
   return error;
 }
 
