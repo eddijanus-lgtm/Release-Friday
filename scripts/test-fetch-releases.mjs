@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
 process.env.REFRESH_ARTIST_IMAGE_COVERS = "1";
+process.env.SPOTIFY_REQUEST_INTERVAL_MS = "0";
 const {
   artistFallbackCutoffOpen,
   candidatesNeedingCoverLookup,
@@ -10,6 +11,7 @@ const {
   primaryArtistName,
   releaseLookupMarkets,
   searchSpotifyArtistImage,
+  spotifyRateLimitWaitMs,
 } = await import("./fetch-releases.mjs?artist-image-test");
 const {
   hasInvalidArtistProfileReleaseUrl,
@@ -38,6 +40,8 @@ try {
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-16"), ["NZ", "AU"]);
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE", "NZ", "AU"]);
+  assert.equal(spotifyRateLimitWaitMs({ retryAfterSeconds: 30 }), 30000);
+  assert.equal(spotifyRateLimitWaitMs({ retryAfterSeconds: 3600 }), 0);
   assert.equal(await loadStoredReleases("2026-07-17"), null);
   assert.deepEqual(candidatesNeedingCoverLookup([
     release,
