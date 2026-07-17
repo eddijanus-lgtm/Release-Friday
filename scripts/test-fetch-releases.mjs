@@ -4,6 +4,7 @@ process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
 process.env.REFRESH_ARTIST_IMAGE_COVERS = "1";
 const {
   artistFallbackCutoffOpen,
+  candidatesNeedingCoverLookup,
   getCurrentOrUpcomingFriday,
   primaryArtistName,
   releaseLookupMarkets,
@@ -36,6 +37,17 @@ try {
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-16"), ["NZ", "AU"]);
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE", "NZ", "AU"]);
+  assert.deepEqual(candidatesNeedingCoverLookup([
+    release,
+    { ...release, artist: "Olexesh", title: "Mehr von dir" },
+    { ...release, artist: "Pashanim", title: "Augenblick" },
+  ], [
+    { ...release, coverUrl: "https://example.com/release.jpg", source: "r/GermanRap + Spotify DE" },
+    { ...release, artist: "Olexesh", title: "Mehr von dir", coverUrl: "https://example.com/artist.jpg", source: "r/GermanRap + Spotify artist image fallback" },
+  ]).map(({ artist, title }) => `${artist} — ${title}`), [
+    "Olexesh — Mehr von dir",
+    "Pashanim — Augenblick",
+  ]);
   assert.equal(isArtistImageFallbackReplacement(
     { source: "r/GermanRap + Spotify artist image fallback" },
     { source: "r/GermanRap + Spotify DE" },
