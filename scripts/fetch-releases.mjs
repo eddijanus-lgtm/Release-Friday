@@ -93,6 +93,13 @@ function getCurrentOrUpcomingFriday(date = new Date()) {
   return today.toISOString().slice(0, 10);
 }
 
+function releaseLookupMarkets(targetDate, country, currentBerlinDate = berlinDate()) {
+  const rollingMarkets = [...ROLLING_RELEASE_MARKETS];
+  return targetDate <= currentBerlinDate
+    ? [...new Set([country, ...rollingMarkets])]
+    : rollingMarkets;
+}
+
 async function fetchResponse(url, options = {}, attempts = 4) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -485,10 +492,9 @@ function spotifyItemMatch(item, release, targetDate) {
 async function searchSpotifyForRelease(release, targetDate, accessToken) {
   if (!accessToken) return null;
   const primaryArtist = primaryArtistName(release.artist);
-  const markets = [...ROLLING_RELEASE_MARKETS];
-  if (targetDate <= berlinDate()) markets.push(release.country);
+  const markets = releaseLookupMarkets(targetDate, release.country);
 
-  for (const market of [...new Set(markets)]) {
+  for (const market of markets) {
     const url = new URL(`${SPOTIFY_API_BASE}/search`);
     url.searchParams.set("q", `track:${release.title} artist:${primaryArtist}`);
     url.searchParams.set("type", "track,album");
@@ -544,10 +550,9 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
 }
 
 async function searchAppleForRelease(release, targetDate) {
-  const storefronts = [...ROLLING_RELEASE_MARKETS];
-  if (targetDate <= berlinDate()) storefronts.push(release.country);
+  const storefronts = releaseLookupMarkets(targetDate, release.country);
 
-  for (const storefront of [...new Set(storefronts)]) {
+  for (const storefront of storefronts) {
     const url = new URL(ITUNES_BASE);
     url.searchParams.set("term", `${release.artist} ${release.title}`);
     url.searchParams.set("country", storefront);
@@ -726,4 +731,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
