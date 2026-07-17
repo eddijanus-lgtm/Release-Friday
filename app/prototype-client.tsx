@@ -189,7 +189,9 @@ function ReleaseListRow({ release, number, saved, onOpen, onToggleSaved }: {
   return (
     <article className="tapeRow">
       <button type="button" className="tapeRowMain" onClick={onOpen} aria-label={`${release.title} öffnen`}>
-        <span className="rowNumber">{String(number).padStart(2, "0")}</span>\n        <ReleaseRowCover release={release} />\n        <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · <em className="rowKindBadge">{kindLabels[release.kind]}</em></span></div>
+        <span className="rowNumber">{String(number).padStart(2, "0")}</span>
+        <ReleaseRowCover release={release} />
+        <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · <em className="rowKindBadge">{kindLabels[release.kind]}</em></span></div>
         <span className="rowArrow">→</span>
       </button>
       <button type="button" className={`rowSave ${saved ? "saved" : ""}`} onClick={onToggleSaved} aria-pressed={saved} aria-label={saved ? "Aus Stash entfernen" : "In Stash speichern"}>+</button>
