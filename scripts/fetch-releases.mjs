@@ -316,13 +316,22 @@ function artistQueryVariants(artist) {
 function releaseQueryVariants(release) {
   const artists = artistQueryVariants(release.artist);
   const titles = titleVariants(release.title);
-  return uniqueValues(artists.flatMap((artist) =>
-    titles.flatMap((title) => [
-      `track:${title} artist:${artist}`,
-      `${artist} ${title}`,
-      `${title} ${artist}`,
+  const primaryArtist = artists[0];
+  const exactTitle = titles[0];
+  return uniqueValues([
+    `track:${exactTitle} artist:${primaryArtist}`,
+    `${primaryArtist} ${exactTitle}`,
+    `${exactTitle} ${primaryArtist}`,
+    ...titles.slice(1).flatMap((title) => [
+      `track:${title} artist:${primaryArtist}`,
+      `${primaryArtist} ${title}`,
+      `${title} ${primaryArtist}`,
     ]),
-  ));
+    ...artists.slice(1).flatMap((artist) => [
+      `track:${exactTitle} artist:${artist}`,
+      `${artist} ${exactTitle}`,
+    ]),
+  ]);
 }
 
 function dateSupportsCandidate(candidateDate, targetDate) {
@@ -625,7 +634,7 @@ function spotifyItemMatch(item, release, targetDate) {
 async function searchSpotifyForRelease(release, targetDate, accessToken) {
   if (!accessToken) return null;
   const markets = releaseLookupMarkets(targetDate, release.country);
-  const queries = releaseQueryVariants(release).slice(0, 8);
+  const queries = releaseQueryVariants(release).slice(0, 5);
 
   for (const market of markets) {
     for (const query of queries) {
@@ -686,7 +695,7 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
 
 async function searchAppleForRelease(release, targetDate) {
   const storefronts = releaseLookupMarkets(targetDate, release.country);
-  const queries = releaseQueryVariants(release).filter((query) => !query.includes(":")).slice(0, 4);
+  const queries = releaseQueryVariants(release).filter((query) => !query.includes(":")).slice(0, 3);
 
   for (const storefront of storefronts) {
     for (const query of queries) {
