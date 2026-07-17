@@ -2,7 +2,13 @@ import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
 process.env.REFRESH_ARTIST_IMAGE_COVERS = "1";
-const { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
+const {
+  artistFallbackCutoffOpen,
+  getCurrentOrUpcomingFriday,
+  primaryArtistName,
+  releaseLookupMarkets,
+  searchSpotifyArtistImage,
+} = await import("./fetch-releases.mjs?artist-image-test");
 const {
   hasInvalidArtistProfileReleaseUrl,
   isArtistImageFallbackReplacement,
@@ -28,6 +34,8 @@ try {
   assert.equal(artistFallbackCutoffOpen("2026-07-17", new Date("2026-07-17T00:00:00Z")), true);
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T12:00:00Z")), "2026-07-17");
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
+  assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-16"), ["NZ", "AU"]);
+  assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE", "NZ", "AU"]);
   assert.equal(isArtistImageFallbackReplacement(
     { source: "r/GermanRap + Spotify artist image fallback" },
     { source: "r/GermanRap + Spotify DE" },
