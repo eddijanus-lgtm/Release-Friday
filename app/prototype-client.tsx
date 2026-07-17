@@ -448,7 +448,7 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
     setHydrated(true);
   }, [releases]);
 
-  useEfect(() => {
+  useEffect(() => {
     if (hydrated) window.localStorage.setItem("release-friday:saved", JSON.stringify([...savedIds]));
   }, [savedIds, hydrated]);
 
