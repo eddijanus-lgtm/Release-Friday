@@ -39,7 +39,7 @@ try {
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T12:00:00Z")), "2026-07-17");
   assert.equal(getCurrentOrUpcomingFriday(new Date("2026-07-16T22:02:00Z")), "2026-07-17");
   assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-16"), ["NZ", "AU"]);
-  assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE", "NZ", "AU"]);
+  assert.deepEqual(releaseLookupMarkets("2026-07-17", "DE", "2026-07-17"), ["DE"]);
   assert.equal(spotifyRateLimitWaitMs({ retryAfterSeconds: 0 }), 30000);
   assert.equal(spotifyRateLimitWaitMs({ retryAfterSeconds: 30 }), 30000);
   assert.equal(spotifyRateLimitWaitMs({ retryAfterSeconds: 3600 }), 0);

@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       refresh_artist_image_covers:
-        description: Replace stored fallback covers with Apple Music release covers when available
+        description: Replace stored fallback covers with public release covers when available
         required: false
         default: false
         type: boolean
@@ -19,7 +19,7 @@ on:
     - cron: "30 16 * * 4"
     # Friday recovery run after the German release window has opened.
     - cron: "15 5 * * 5"
-    # 20:15 CEST / 19:15 CET: late release-day Apple Music cover recovery.
+    # 20:15 CEST / 19:15 CET: late release-day public cover recovery.
     - cron: "15 18 * * 5"
     # 00:02 Europe/Berlin cover refresh (two UTC slots handle daylight saving time).
     - cron: "2 22 * * 4"
@@ -29,6 +29,7 @@ on:
       - main
     paths:
       - "scripts/fetch-releases.mjs"
+      - "scripts/recover-public-release-covers.mjs"
       - "scripts/release-sync-policy.mjs"
       - "scripts/sync-releases-to-supabase.mjs"
       - "lib/releases/curated-releases.json"
@@ -91,3 +92,7 @@ jobs:
       - name: Sync new releases to Supabase
         if: steps.schedule-window.outputs.run == 'true'
         run: node scripts/sync-releases-to-supabase.mjs
+
+      - name: Recover public release covers
+        if: steps.schedule-window.outputs.run == 'true'
+        run: node scripts/recover-public-release-covers.mjs
