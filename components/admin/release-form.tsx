@@ -223,7 +223,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         {error ? <p className="adminError" role="alert">{error}</p> : null}
         {success ? (
           <div className="adminSuccess" role="status">
-            <strong>{success.action === "deleted" ? "RELEASE GELÖSCHT" : success.action === "updated" ? "ÄNDERUNGEN GESPEICHERT" : success.status === "published" ? "RELEASE IST VERÖFFENTLICHT" : "ENTWURF GESPEICHERT"}</strong>
+            <strong>{success.action === "deleted" ? "RELEASE GELÖSCHT" : success.action === "updated" ? "ÄNDERUNGEN GESPEICHERT" : success.status === "published" ? "RELEASE FREIGEGEBEN" : "ENTWURF GESPEICHERT"}</strong>
             <span>{success.action === "deleted" ? "Der Eintrag wurde aus Supabase entfernt." : `Gespeichert für den ${success.releaseDate}.`}</span>
             {success.status === "published" && success.action !== "deleted" ? <Link href="/">ÖFFENTLICHEN FEED ÖFFNEN →</Link> : null}
           </div>
@@ -232,7 +232,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         <div className="adminActions">
           {editing ? <button type="button" className="adminSecondaryButton" onClick={() => void handleDelete(editing)} disabled={disabled}>LÖSCHEN</button> : null}
           <button type="submit" name="intent" value="draft" className="adminSecondaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : "ALS ENTWURF"}</button>
-          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "JETZT VERÖFFENTLICHEN →"}</button>
+          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "FÜR DROP FREIGEBEN →"}</button>
         </div>
       </form>
 

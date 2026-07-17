@@ -18,6 +18,7 @@ type ManualReleaseRow = {
   track_count: number | null;
   genres: string[] | null;
   source: string;
+  archived_at: string | null;
 };
 
 const releaseColumns = [
@@ -37,6 +38,7 @@ const releaseColumns = [
   "track_count",
   "genres",
   "source",
+  "archived_at",
 ].join(",");
 
 function toMusicRelease(row: ManualReleaseRow): MusicRelease {
@@ -57,6 +59,7 @@ function toMusicRelease(row: ManualReleaseRow): MusicRelease {
     trackCount: row.track_count ?? undefined,
     genres: row.genres?.length ? row.genres : undefined,
     source: row.source,
+    archivedAt: row.archived_at ?? undefined,
   };
 }
 
