@@ -24,6 +24,7 @@ function currentOrUpcomingFriday(date = new Date()) {
 const RELEASE_DATE = String(process.env.RELEASE_DATE || "").trim() || currentOrUpcomingFriday();
 const ITUNES_SEARCH = "https://itunes.apple.com/search";
 const REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 1200);
+const CATALOG_ENTITIES = ["song", "album"];
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
@@ -71,6 +72,18 @@ function titleMatches(expected, ...candidates) {
   return expectedVariants.some((expectedTitle) => candidateVariants.includes(expectedTitle));
 }
 
+function catalogDateMatches(candidateDate, targetDate) {
+  const candidate = String(candidateDate || "").slice(0, 10);
+  if (!candidate || !targetDate) return false;
+  if (candidate === targetDate) return true;
+
+  // Catalogs frequently expose a Friday release as Thursday in UTC while the
+  // editorial release date is Friday in Europe/Berlin.
+  const previousUtcDay = new Date(`${targetDate}T00:00:00Z`);
+  previousUtcDay.setUTCDate(previousUtcDay.getUTCDate() - 1);
+  return candidate === previousUtcDay.toISOString().slice(0, 10);
+}
+
 function artworkUrl(value) {
   if (!value) return null;
   return String(value).replace(/\d+x\d+bb/, "1200x1200bb");
@@ -112,25 +125,26 @@ async function searchItunes(release) {
     .filter((country) => country === "DE" || country === "US");
 
   for (const country of storefronts) {
-    for (const term of terms) {
-      const url = new URL(ITUNES_SEARCH);
-      url.searchParams.set("term", term);
-      url.searchParams.set("country", country);
-      url.searchParams.set("media", "music");
-      url.searchParams.set("entity", "song");
-      url.searchParams.set("limit", "200");
-      const response = await fetch(url, { headers: { Accept: "application/json" } });
-      if (!response.ok) throw new Error(`iTunes ${response.status} for ${term}`);
-      const payload = await response.json();
-      const match = (payload.results || []).find((item) => {
-        const date = String(item.releaseDate || "").slice(0, 10);
-        return titleMatches(release.title, item.trackName, item.collectionName)
+    for (const entity of CATALOG_ENTITIES) {
+      for (const term of terms) {
+        const url = new URL(ITUNES_SEARCH);
+        url.searchParams.set("term", term);
+        url.searchParams.set("country", country);
+        url.searchParams.set("media", "music");
+        url.searchParams.set("entity", entity);
+        url.searchParams.set("limit", "200");
+        const response = await fetch(url, { headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error(`iTunes ${response.status} for ${term}`);
+        const payload = await response.json();
+        const match = (payload.results || []).find((item) => (
+          titleMatches(release.title, item.trackName, item.collectionName)
           && artistMatches(release.artist, item.artistName)
-          && date === release.release_date
-          && artworkUrl(item.artworkUrl100);
-      });
-      if (match) return { match, country };
-      await sleep(REQUEST_INTERVAL_MS);
+          && catalogDateMatches(item.releaseDate, release.release_date)
+          && artworkUrl(item.artworkUrl100)
+        ));
+        if (match) return { match, country, entity };
+        await sleep(REQUEST_INTERVAL_MS);
+      }
     }
   }
   return null;
@@ -165,7 +179,7 @@ for (const [index, release] of candidates.entries()) {
     }
     await updateRelease(release, result);
     recovered += 1;
-    console.log(`[${index + 1}/${candidates.length}] recovered: ${release.artist} — ${release.title}`);
+    console.log(`[${index + 1}/${candidates.length}] recovered (${result.entity}): ${release.artist} — ${release.title}`);
   } catch (error) {
     missing.push(`${release.artist} — ${release.title}`);
     console.warn(`[${index + 1}/${candidates.length}] failed: ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
