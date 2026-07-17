@@ -280,8 +280,49 @@ function artistMatches(expectedArtist, candidateArtists) {
 }
 
 function titleMatches(expectedTitle, ...candidateTitles) {
-  const expected = compact(expectedTitle);
-  return Boolean(expected) && candidateTitles.some((title) => compact(stripReleaseSuffix(title)) === expected);
+  const expected = titleVariants(expectedTitle).map(compact).filter(Boolean);
+  const candidates = candidateTitles.flatMap((title) => titleVariants(stripReleaseSuffix(title))).map(compact).filter(Boolean);
+  return expected.length > 0 && candidates.some((candidate) =>
+    expected.some((expectedTitleVariant) => candidate === expectedTitleVariant),
+  );
+}
+
+function uniqueValues(values) {
+  return [...new Set(values.map((value) => String(value ?? "").trim()).filter(Boolean))];
+}
+
+function titleVariants(value) {
+  const title = stripReleaseSuffix(value);
+  const withoutParentheses = title.replace(/\s*[\[(][^\])]+[\])]\s*/g, " ").replace(/\s+/g, " ").trim();
+  const withoutFeaturing = withoutParentheses
+    .replace(/\s+(?:feat\.?|ft\.?|featuring)\s+.+$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const slashParts = title.split(/\s*\/\s*/).filter(Boolean);
+  return uniqueValues([
+    title,
+    withoutParentheses,
+    withoutFeaturing,
+    ...slashParts,
+    ...slashParts.map((part) => part.replace(/\s*[\[(][^\])]+[\])]\s*/g, " ").trim()),
+  ]);
+}
+
+function artistQueryVariants(artist) {
+  const primary = primaryArtistName(artist);
+  return uniqueValues([primary, artist]);
+}
+
+function releaseQueryVariants(release) {
+  const artists = artistQueryVariants(release.artist);
+  const titles = titleVariants(release.title);
+  return uniqueValues(artists.flatMap((artist) =>
+    titles.flatMap((title) => [
+      `track:${title} artist:${artist}`,
+      `${artist} ${title}`,
+      `${title} ${artist}`,
+    ]),
+  ));
 }
 
 function dateSupportsCandidate(candidateDate, targetDate) {
@@ -583,28 +624,30 @@ function spotifyItemMatch(item, release, targetDate) {
 
 async function searchSpotifyForRelease(release, targetDate, accessToken) {
   if (!accessToken) return null;
-  const primaryArtist = primaryArtistName(release.artist);
   const markets = releaseLookupMarkets(targetDate, release.country);
+  const queries = releaseQueryVariants(release).slice(0, 8);
 
   for (const market of markets) {
-    const url = new URL(`${SPOTIFY_API_BASE}/search`);
-    url.searchParams.set("q", `track:${release.title} artist:${primaryArtist}`);
-    url.searchParams.set("type", "track,album");
-    url.searchParams.set("market", market);
-    url.searchParams.set("limit", "10");
-    const response = await fetchResponse(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
-    const payload = await response.json();
-    const track = (payload.tracks?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
-    const album = (payload.albums?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
-    const item = track ?? album;
-    const artwork = track?.album?.images?.[0]?.url ?? album?.images?.[0]?.url;
-    if (!item || !validCoverUrl(artwork)) continue;
-    return {
-      ...release,
-      coverUrl: artwork,
-      spotifyUrl: item.external_urls?.spotify,
-      source: `${release.source} + Spotify ${market}`,
-    };
+    for (const query of queries) {
+      const url = new URL(`${SPOTIFY_API_BASE}/search`);
+      url.searchParams.set("q", query);
+      url.searchParams.set("type", "track,album");
+      url.searchParams.set("market", market);
+      url.searchParams.set("limit", "20");
+      const response = await fetchResponse(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
+      const payload = await response.json();
+      const track = (payload.tracks?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
+      const album = (payload.albums?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
+      const item = track ?? album;
+      const artwork = track?.album?.images?.[0]?.url ?? album?.images?.[0]?.url;
+      if (!item || !validCoverUrl(artwork)) continue;
+      return {
+        ...release,
+        coverUrl: artwork,
+        spotifyUrl: item.external_urls?.spotify,
+        source: `${release.source} + Spotify ${market}`,
+      };
+    }
   }
   return null;
 }
@@ -643,29 +686,32 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
 
 async function searchAppleForRelease(release, targetDate) {
   const storefronts = releaseLookupMarkets(targetDate, release.country);
+  const queries = releaseQueryVariants(release).filter((query) => !query.includes(":")).slice(0, 4);
 
   for (const storefront of storefronts) {
-    const url = new URL(ITUNES_BASE);
-    url.searchParams.set("term", `${release.artist} ${release.title}`);
-    url.searchParams.set("country", storefront);
-    url.searchParams.set("media", "music");
-    url.searchParams.set("entity", "song");
-    url.searchParams.set("limit", "25");
-    const payload = await fetchAppleSearch(url);
-    const match = (payload?.results ?? []).find((result) =>
-      titleMatches(release.title, result.trackName, result.collectionName)
-      && artistMatches(release.artist, [result.artistName])
-      && dateSupportsCandidate(result.releaseDate, targetDate)
-      && validCoverUrl(result.artworkUrl100),
-    );
-    if (!match) continue;
-    return {
-      ...release,
-      coverUrl: appleArtwork(match.artworkUrl100),
-      appleMusicUrl: match.trackViewUrl ?? match.collectionViewUrl,
-      trackCount: release.trackCount ?? 1,
-      source: `${release.source} + Apple Music ${storefront}`,
-    };
+    for (const query of queries) {
+      const url = new URL(ITUNES_BASE);
+      url.searchParams.set("term", query);
+      url.searchParams.set("country", storefront);
+      url.searchParams.set("media", "music");
+      url.searchParams.set("entity", "song");
+      url.searchParams.set("limit", "50");
+      const payload = await fetchAppleSearch(url);
+      const match = (payload?.results ?? []).find((result) =>
+        titleMatches(release.title, result.trackName, result.collectionName)
+        && artistMatches(release.artist, [result.artistName])
+        && dateSupportsCandidate(result.releaseDate, targetDate)
+        && validCoverUrl(result.artworkUrl100),
+      );
+      if (!match) continue;
+      return {
+        ...release,
+        coverUrl: appleArtwork(match.artworkUrl100),
+        appleMusicUrl: match.trackViewUrl ?? match.collectionViewUrl,
+        trackCount: release.trackCount ?? 1,
+        source: `${release.source} + Apple Music ${storefront}`,
+      };
+    }
   }
   return null;
 }
