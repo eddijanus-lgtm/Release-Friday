@@ -43,7 +43,8 @@ permissions:
 
 concurrency:
   group: "supabase-release-sync"
-  cancel-in-progress: false
+  # A pushed resolver fix supersedes any older refresh; schedules still queue safely.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   sync:
