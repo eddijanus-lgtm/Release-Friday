@@ -139,7 +139,7 @@ export function DropArchiveSwitch() {
                     <button type="button" className="tapeRowMain" onClick={() => openRelease(release)} aria-label={`${release.artist} – ${release.title} öffnen`}>
                       <span className="rowNumber">{String(index + 1).padStart(2, "0")}</span>
                       <ReleaseRowCover release={release} />
-                      <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · {kindLabels[release.kind]}</span></div>
+                      <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · <em className="rowKindBadge">{kindLabels[release.kind]}</em></span></div>
                       <span className="rowArrow">→</span>
                     </button>
                     <button type="button" className={`rowSave ${savedIds.has(release.id) ? "saved" : ""}`} onClick={() => toggleSaved(release.id)} aria-pressed={savedIds.has(release.id)} aria-label={savedIds.has(release.id) ? "Aus Stash entfernen" : "In Stash speichern"}>+</button>
