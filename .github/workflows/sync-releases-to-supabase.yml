@@ -7,13 +7,8 @@ on:
         description: Optional release date in YYYY-MM-DD format
         required: false
         type: string
-      allow_spotify_artist_image_fallback:
-        description: Use an exact Spotify artist image when no release cover is available
-        required: false
-        default: false
-        type: boolean
       refresh_artist_image_covers:
-        description: Replace stored artist images with release covers when available
+        description: Replace stored fallback covers with Apple Music release covers when available
         required: false
         default: false
         type: boolean
@@ -24,7 +19,7 @@ on:
     - cron: "30 16 * * 4"
     # Friday recovery run after the German release window has opened.
     - cron: "15 5 * * 5"
-    # 20:15 CEST / 19:15 CET: late release-day cover recovery after long Spotify quota cooldowns.
+    # 20:15 CEST / 19:15 CET: late release-day Apple Music cover recovery.
     - cron: "15 18 * * 5"
     # 00:02 Europe/Berlin cover refresh (two UTC slots handle daylight saving time).
     - cron: "2 22 * * 4"
@@ -54,14 +49,11 @@ jobs:
     timeout-minutes: 45
     env:
       RELEASE_DATE: ${{ inputs.release_date }}
-      ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: ${{ inputs.allow_spotify_artist_image_fallback || (github.event_name == 'schedule' && (github.event.schedule == '30 16 * * 4' || github.event.schedule == '15 5 * * 5')) }}
+      ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: false
       REFRESH_ARTIST_IMAGE_COVERS: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '15 18 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
       SKIP_DISCOVERY: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '15 18 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
-      SPOTIFY_RATE_LIMIT_MAX_WAIT_MS: 15000
       GITHUB_TRIGGER_EVENT: ${{ github.event_name }}
       GITHUB_TRIGGER_SCHEDULE: ${{ github.event.schedule }}
-      SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-      SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
       SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
