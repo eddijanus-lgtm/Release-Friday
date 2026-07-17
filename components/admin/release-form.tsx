@@ -1,202 +1,3 @@
-"use client";
-
-import Link from "next/link";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { compressCover } from "@/lib/images/compress-cover";
-import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
-import type { ReleaseCountry, ReleaseKind } from "@/types/release";
-
-const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
-const maxCoverBytes = 8 * 1024 * 1024;
-
-type ReleaseFormProps = {
-  targetDate: string;
-  busy: boolean;
-  releases: EditableRelease[];
-  onSave: (values: ReleaseFormValues, cover: File | null, status: ReleaseWriteStatus, existing?: EditableRelease) => Promise<ReleaseCreateResult>;
-  onDelete: (release: EditableRelease) => Promise<void>;
-  onLogout: () => Promise<void>;
-};
-
-function optionalString(form: FormData, key: string) {
-  const value = String(form.get(key) ?? "").trim();
-  return value || undefined;
-}
-
-function parseGenres(value?: string) {
-  if (!value) return [];
-  return [...new Set(value.split(",").map((genre) => genre.trim()).filter(Boolean))].slice(0, 12);
-}
-
-export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLogout }: ReleaseFormProps) {
-  const [editing, setEditing] = useState<EditableRelease>();
-  const [formKey, setFormKey] = useState(0);
-  const [cover, setCover] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string>();
-  const [compressing, setCompressing] = useState(false);
-  const [originalCoverBytes, setOriginalCoverBytes] = useState<number>();
-  const [error, setError] = useState<string>();
-  const [success, setSuccess] = useState<ReleaseCreateResult>();
-  const disabled = busy || compressing;
-
-  useEffect(() => {
-    if (!cover) {
-      setCoverPreview(editing?.coverUrl);
-      return;
-    }
-    const preview = URL.createObjectURL(cover);
-    setCoverPreview(preview);
-    return () => URL.revokeObjectURL(preview);
-  }, [cover, editing]);
-
-  function startNew() {
-    setEditing(undefined);
-    setCover(null);
-    setOriginalCoverBytes(undefined);
-    setError(undefined);
-    setSuccess(undefined);
-    setFormKey((value) => value + 1);
-  }
-
-  function startEditing(release: EditableRelease) {
-    setEditing(release);
-    setCover(null);
-    setOriginalCoverBytes(undefined);
-    setError(undefined);
-    setSuccess(undefined);
-    setFormKey((value) => value + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function handleCoverChange(event: ChangeEvent<HTMLInputElement>) {
-    const input = event.currentTarget;
-    const file = input.files?.[0] ?? null;
-    setError(undefined);
-    setSuccess(undefined);
-    if (!file) {
-      setCover(null);
-      setOriginalCoverBytes(undefined);
-      return;
-    }
-    if (!allowedImageTypes.has(file.type)) {
-      input.value = "";
-      setCover(null);
-      setError("Bitte JPG, PNG, WebP oder AVIF als Cover verwenden.");
-      return;
-    }
-    if (file.size > maxCoverBytes) {
-      input.value = "";
-      setCover(null);
-      setError("Das Original-Cover darf höchstens 8 MB groß sein.");
-      return;
-    }
-
-    setCompressing(true);
-    setOriginalCoverBytes(file.size);
-    try {
-      setCover(await compressCover(file));
-    } catch (compressionError) {
-      input.value = "";
-      setCover(null);
-      setOriginalCoverBytes(undefined);
-      setError(compressionError instanceof Error ? compressionError.message : "Das Cover konnte nicht komprimiert werden.");
-    } finally {
-      setCompressing(false);
-    }
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(undefined);
-    setSuccess(undefined);
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    const status: ReleaseWriteStatus = submitter?.value === "draft" ? "draft" : "published";
-    if (status === "published" && !cover && !editing?.coverUrl) {
-      setError("Zum direkten Veröffentlichen wird ein Cover benötigt. Alternativ kannst du den Release als Entwurf speichern.");
-      return;
-    }
-
-    const formElement = event.currentTarget;
-    const form = new FormData(formElement);
-    const trackCountRaw = optionalString(form, "trackCount");
-    const values: ReleaseFormValues = {
-      artist: String(form.get("artist") ?? "").trim(),
-      title: String(form.get("title") ?? "").trim(),
-      releaseDate: String(form.get("releaseDate") ?? ""),
-      country: String(form.get("country") ?? "DE") as ReleaseCountry,
-      kind: String(form.get("kind") ?? "album") as ReleaseKind,
-      trackCount: trackCountRaw ? Number(trackCountRaw) : undefined,
-      description: optionalString(form, "description"),
-      genres: parseGenres(optionalString(form, "genres")),
-      spotifyUrl: optionalString(form, "spotifyUrl"),
-      spotifyPreSaveUrl: optionalString(form, "spotifyPreSaveUrl"),
-      appleMusicUrl: optionalString(form, "appleMusicUrl"),
-      youtubeUrl: optionalString(form, "youtubeUrl"),
-      sourceUrl: optionalString(form, "sourceUrl"),
-    };
-
-    try {
-      const result = await onSave(values, cover, status, editing);
-      setSuccess(result);
-      if (!editing) {
-        formElement.reset();
-        setCover(null);
-        setOriginalCoverBytes(undefined);
-        setFormKey((value) => value + 1);
-      } else {
-        setEditing((current) => current ? { ...current, ...values, status, coverUrl: coverPreview ?? current.coverUrl } : current);
-        setCover(null);
-        setOriginalCoverBytes(undefined);
-      }
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Der Release konnte nicht gespeichert werden.");
-    }
-  }
-
-  async function handleDelete(release: EditableRelease) {
-    if (!window.confirm(`„${release.title}“ von ${release.artist} wirklich löschen?`)) return;
-    setError(undefined);
-    setSuccess(undefined);
-    try {
-      await onDelete(release);
-      if (editing?.id === release.id) startNew();
-      setSuccess({ id: release.id, status: release.status, releaseDate: release.releaseDate, action: "deleted" });
-    } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Der Release konnte nicht gelöscht werden.");
-    }
-  }
-
-  return (
-    <div className="releaseEditorBody">
-      <div className="adminEditorHeading">
-        <div>
-          <p className="adminSectionLabel">{editing ? "EDIT ENTRY" : "NEW ENTRY"}</p>
-          <h1 className="adminTitle">RELEASE<br />{editing ? "BEARBEITEN" : "ANLEGEN"}</h1>
-        </div>
-        <button type="button" className="adminTextButton" onClick={() => void onLogout()} disabled={disabled}>ABMELDEN</button>
-      </div>
-      <p className="adminIntro">Alle Releases liegen zentral in Supabase. Du kannst Einträge erstellen, nachträglich bearbeiten, als Entwurf speichern oder löschen.</p>
-
-      {editing ? (
-        <div className="adminSuccess">
-          <strong>BEARBEITUNGSMODUS</strong>
-          <span>{editing.artist} — {editing.title}</span>
-          <button type="button" className="adminTextButton" onClick={startNew} disabled={disabled}>+ NEUEN RELEASE ANLEGEN</button>
-        </div>
-      ) : null}
-
-      <form key={`${editing?.id ?? "new"}-${formKey}`} className="releaseForm" onSubmit={handleSubmit}>
-        <section className="adminFormSection">
-          <div className="adminFormSectionTitle"><span>01</span><strong>COVER</strong></div>
-          <label className={`coverUpload ${coverPreview ? "hasPreview" : ""}`}>
-            {coverPreview ? <img src={coverPreview} alt="Vorschau des ausgewählten Covers" /> : <div><strong>{compressing ? "COVER WIRD KOMPRIMIERT …" : "+ COVER AUSWÄHLEN"}</strong><span>JPG, PNG, WEBP ODER AVIF · AUTOMATISCH WEBP · MAX. 1600 PX</span></div>}
-            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(event) => void handleCoverChange(event)} disabled={disabled} />
-          </label>
-          {compressing ? <p className="coverFileName">Bild wird auf dem Gerät optimiert …</p> : cover ? <p className="coverFileName">{cover.name} · {(cover.size / 1024).toFixed(0)} KB{originalCoverBytes ? ` · vorher ${(originalCoverBytes / 1024).toFixed(0)} KB` : ""}</p> : editing?.coverUrl ? <p className="coverFileName">Vorhandenes Cover bleibt erhalten, solange du kein neues auswählst.</p> : null}
-        </section>
-
-        <section className="adminFormSection">
-          <div className="adminFormSectionTitle"><span>02</span><strong>BASISDATEN</strong></div>
           <div className="adminFieldGrid">
             <label className="adminField adminFieldWide"><span>KÜNSTLER *</span><input name="artist" required maxLength={200} disabled={disabled} defaultValue={editing?.artist} placeholder="z. B. Erabi" /></label>
             <label className="adminField adminFieldWide"><span>ALBUM / SINGLE / EP TITEL *</span><input name="title" required maxLength={240} disabled={disabled} defaultValue={editing?.title} placeholder="z. B. Endgame" /></label>
@@ -223,7 +24,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         {error ? <p className="adminError" role="alert">{error}</p> : null}
         {success ? (
           <div className="adminSuccess" role="status">
-            <strong>{success.action === "deleted" ? "RELEASE GELÖSCHT" : success.action === "updated" ? "ÄNDERUNGEN GESPEICHERT" : success.status === "published" ? "RELEASE IST VERÖFFENTLICHT" : "ENTWURF GESPEICHERT"}</strong>
+            <strong>{success.action === "deleted" ? "RELEASE GELÖSCHT" : success.action === "updated" ? "ÄNDERUNGEN GESPEICHERT" : success.status === "published" ? "RELEASE FREIGEGEBEN" : "ENTWURF GESPEICHERT"}</strong>
             <span>{success.action === "deleted" ? "Der Eintrag wurde aus Supabase entfernt." : `Gespeichert für den ${success.releaseDate}.`}</span>
             {success.status === "published" && success.action !== "deleted" ? <Link href="/">ÖFFENTLICHEN FEED ÖFFNEN →</Link> : null}
           </div>
@@ -232,7 +33,7 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
         <div className="adminActions">
           {editing ? <button type="button" className="adminSecondaryButton" onClick={() => void handleDelete(editing)} disabled={disabled}>LÖSCHEN</button> : null}
           <button type="submit" name="intent" value="draft" className="adminSecondaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : "ALS ENTWURF"}</button>
-          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "JETZT VERÖFFENTLICHEN →"}</button>
+          <button type="submit" name="intent" value="published" className="adminPrimaryButton" disabled={disabled}>{compressing ? "KOMPRIMIERT …" : busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "FÜR DROP FREIGEBEN →"}</button>
         </div>
       </form>
 
@@ -248,6 +49,3 @@ export function ReleaseForm({ targetDate, busy, releases, onSave, onDelete, onLo
           ))}
         </div>
       </section>
-    </div>
-  );
-}

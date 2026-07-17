@@ -36,18 +36,21 @@ async function fetchFeatured(issueDate: string, signal: AbortSignal): Promise<Fe
 }
 
 export function usePublishedReleases(initialReleases: MusicRelease[], _targetDate?: string) {
-  const [releases, setReleases] = useState(() => newestIssue(initialReleases));
+  // The generated list is only a fallback. With Supabase configured, wait for
+  // the RLS-filtered response so staged releases can never flash publicly.
+  const [releases, setReleases] = useState(() => isSupabaseConfigured() ? [] : newestIssue(initialReleases));
   const [scope, setScope] = useState<FeaturedScope>("ALL");
   const [featured, setFeatured] = useState<FeaturedMap>({});
 
   useEffect(() => {
     const controller = new AbortController();
-    setReleases(newestIssue(initialReleases));
-
     // Without browser-safe Supabase configuration, keep the generated list.
     // This covers local QA/offline builds without treating a missing backend as
     // an authoritative empty release issue.
-    if (!isSupabaseConfigured()) return () => controller.abort();
+    if (!isSupabaseConfigured()) {
+      setReleases(newestIssue(initialReleases));
+      return () => controller.abort();
+    }
 
     void fetchPublishedManualReleases(undefined, controller.signal)
       .then((published) => {
