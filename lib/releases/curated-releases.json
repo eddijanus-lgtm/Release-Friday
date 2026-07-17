@@ -22,6 +22,24 @@
       "source": "Spotify + redaktionelle Prüfung"
     },
     {
+      "id": "curated-olexesh-mehr-von-dir",
+      "title": "Mehr von dir",
+      "artist": "Olexesh",
+      "releaseDate": "2026-07-17",
+      "country": "DE",
+      "kind": "single",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e36cd0cb977323de5ada21aa",
+      "spotifyUrl": "https://open.spotify.com/track/17ZblMsrWp57rGqsQqSR75",
+      "sourceUrl": "https://open.spotify.com/album/5nuHMfgnZTWNDPAV8zsbEr",
+      "description": "Olexesh veröffentlicht die Single „Mehr von dir“.",
+      "trackCount": 1,
+      "genres": [
+        "Deutschrap",
+        "Hip-Hop/Rap"
+      ],
+      "source": "Spotify Web + redaktionelle Prüfung"
+    },
+    {
       "id": "curated-dj-khaled-aalam-of-god",
       "title": "Aalam of God",
       "artist": "DJ Khaled",
