@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";\nimport { ReleaseRowCover } from "@/components/release-row-cover";
+import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";
+import { ReleaseRowCover } from "@/components/release-row-cover";
 import type { MusicRelease } from "@/types/release";
 
 const kindLabels: Record<MusicRelease["kind"], string> = {
@@ -137,6 +138,7 @@ export function DropArchiveSwitch() {
                   <article className="tapeRow" key={release.id}>
                     <button type="button" className="tapeRowMain" onClick={() => openRelease(release)} aria-label={`${release.artist} – ${release.title} öffnen`}>
                       <span className="rowNumber">{String(index + 1).padStart(2, "0")}</span>
+                      <ReleaseRowCover release={release} />
                       <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · {kindLabels[release.kind]}</span></div>
                       <span className="rowArrow">→</span>
                     </button>
