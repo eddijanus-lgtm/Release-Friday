@@ -74,17 +74,23 @@ await settle();
 const erabiCover = page.locator(".detailCover img");
 await erabiCover.waitFor({ state: "visible" });
 await erabiCover.evaluate((image) => image.decode());
+const erabiPreSave = page.locator("a.spotifyPreSave");
 report.checkpoints.erabi = {
   heading: await text(".detailBody h1"),
   artist: await text(".artistTag"),
   meta: await text(".detailMeta"),
-  preSaveHref: await page.locator("a.spotifyPreSave").getAttribute("href"),
+  status: await text(".confirmedLabel"),
+  preSaveHref: (await erabiPreSave.count()) ? await erabiPreSave.getAttribute("href") : null,
   spotifyHref: await page.getByRole("link", { name: "OPEN SPOTIFY", exact: true }).getAttribute("href"),
 };
 assert(report.checkpoints.erabi.heading?.toUpperCase() === "ENDGAME", "Erabi release detail is incorrect.");
 assert(report.checkpoints.erabi.artist?.toUpperCase() === "ERABI", "Erabi release artist is incorrect.");
 assert(report.checkpoints.erabi.meta?.includes("DE · EP · 6 TRACKS"), "Erabi metadata is incomplete.");
-assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save link is incorrect.");
+if (report.checkpoints.erabi.status === "LIVE NOW") {
+  assert(report.checkpoints.erabi.preSaveHref === null, "A live release still shows a pre-save link.");
+} else {
+  assert(report.checkpoints.erabi.preSaveHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi pre-save link is incorrect.");
+}
 assert(report.checkpoints.erabi.spotifyHref === "https://open.spotify.com/album/0Smo8Rf3BFzK1mQVEIwO4s", "Erabi Spotify link is incorrect.");
 await page.locator(".detailToolbar button").first().click();
 await settle();
