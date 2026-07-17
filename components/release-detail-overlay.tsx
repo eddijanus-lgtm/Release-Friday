@@ -21,6 +21,10 @@ function formatDate(value: string) {
   }).format(new Date(`${value}T00:00:00`)).toUpperCase();
 }
 
+function spotifySearchUrl(release: MusicRelease) {
+  return `https://open.spotify.com/search/${encodeURIComponent(`${release.artist} ${release.title}`)}`;
+}
+
 function readSaved() {
   try {
     return new Set<string>(JSON.parse(window.localStorage.getItem("release-friday:saved") ?? "[]"));
@@ -68,6 +72,7 @@ export function ReleaseDetailOverlay() {
 
   const live = Date.now() >= new Date(`${release.releaseDate}T00:00:00`).getTime();
   const trackText = release.trackCount ? ` · ${release.trackCount} ${release.trackCount === 1 ? "TRACK" : "TRACKS"}` : "";
+  const spotifyUrl = release.spotifyUrl ?? spotifySearchUrl(release);
 
   const toggleSaved = () => {
     const ids = readSaved();
@@ -95,7 +100,7 @@ export function ReleaseDetailOverlay() {
         <p className="detailDescription">{release.description ?? `${release.artist} mit ${release.title} im Release-Friday-Archiv.`}</p>
         <div className="streamGrid">
           {!live && release.spotifyPreSaveUrl ? <a className="spotifyPreSave" href={release.spotifyPreSaveUrl} target="_blank" rel="noreferrer"><strong>PRE-SAVE ON SPOTIFY</strong><small>OFFICIAL COUNTDOWN</small></a> : null}
-          {release.spotifyUrl ? <a className="primary" href={release.spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a> : <span className="disabled">SPOTIFY UNAVAILABLE</span>}
+          <a className="primary" href={spotifyUrl} target="_blank" rel="noreferrer">OPEN SPOTIFY</a>
           {release.appleMusicUrl ? <a href={release.appleMusicUrl} target="_blank" rel="noreferrer">APPLE MUSIC</a> : <span className="disabled">APPLE MUSIC</span>}
           {release.youtubeUrl ? <a href={release.youtubeUrl} target="_blank" rel="noreferrer">YOUTUBE</a> : <span className="disabled">YOUTUBE</span>}
         </div>
