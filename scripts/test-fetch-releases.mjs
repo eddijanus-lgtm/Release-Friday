@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
 const { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
-const { isArtistImageFallbackReplacement } = await import("./release-sync-policy.mjs");
+const {
+  hasInvalidArtistProfileReleaseUrl,
+  isArtistImageFallbackReplacement,
+  spotifyReleaseUrlForStorage,
+} = await import("./release-sync-policy.mjs");
 const originalFetch = globalThis.fetch;
 
 const release = {
@@ -31,6 +35,18 @@ try {
     { source: "Manual" },
     { source: "r/GermanRap + Spotify DE" },
   ), false);
+  assert.equal(spotifyReleaseUrlForStorage({
+    source: "r/GermanRap + Spotify artist image fallback",
+    spotifyUrl: "https://open.spotify.com/artist/exact",
+  }), null);
+  assert.equal(spotifyReleaseUrlForStorage({
+    source: "r/GermanRap + Spotify DE",
+    spotifyUrl: "https://open.spotify.com/album/exact",
+  }), "https://open.spotify.com/album/exact");
+  assert.equal(hasInvalidArtistProfileReleaseUrl({
+    source: "r/GermanRap + Spotify artist image fallback",
+    spotify_url: "https://open.spotify.com/artist/exact",
+  }), true);
 
   globalThis.fetch = async (input, options) => {
     const url = new URL(input);
@@ -58,7 +74,7 @@ try {
 
   const resolved = await searchSpotifyArtistImage(release, "test-token");
   assert.equal(resolved.coverUrl, "https://i.scdn.co/image/exact");
-  assert.equal(resolved.spotifyUrl, "https://open.spotify.com/artist/exact");
+  assert.equal(resolved.spotifyUrl, undefined);
   assert.match(resolved.source, /Spotify artist image fallback/);
   assert.equal(resolved.description, release.description);
 

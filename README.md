@@ -76,7 +76,7 @@ Bei `DEPLOY_TARGET=github-pages` wird ein statischer Export im Verzeichnis `out/
 2. Manuelle Änderungen in Supabase dürfen vom automatischen Import nicht überschrieben werden.
 3. Die generierte Datei `lib/releases/real-releases.generated.ts` ist ein statischer Fallback.
 4. Bis zum Donnerstagabend veröffentlicht der automatische Import keinen Release ohne echtes Release-Cover.
-5. Ab dem 18:30-Uhr-Lauf darf bei r/GermanRap-Singles ersatzweise das exakt zugeordnete Spotify-Profilbild des zuerst genannten Artists verwendet werden. Die Quelle wird eindeutig als Artist-Image-Fallback markiert.
+5. Ab dem 18:30-Uhr-Lauf darf bei r/GermanRap-Singles ersatzweise das exakt zugeordnete Spotify-Profilbild des zuerst genannten Artists verwendet werden. Die Quelle wird eindeutig als Artist-Image-Fallback markiert; die Künstlerseite wird nicht als Spotify-Release-Link gespeichert.
 6. Jedes externe Bild wird geprüft und in `release-covers` gesichert. Fehlt auch das Artist-Bild, erfolgt kein Upload.
 7. Der Platzhalter bleibt ausschließlich die Darstellung für ältere oder manuell angelegte Datensätze ohne Bild.
 

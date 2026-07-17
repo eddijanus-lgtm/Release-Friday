@@ -67,8 +67,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb011cab2f3bf6ada34c1f01f8",
-    "spotifyUrl": "https://open.spotify.com/artist/1C6rax3ggPHc9xFvkTpASu"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb011cab2f3bf6ada34c1f01f8"
   },
   {
     "id": "reddit-103c0fb178ad955d",
@@ -84,8 +83,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb182e84e0ffd51f7e86a99b4d",
-    "spotifyUrl": "https://open.spotify.com/artist/6JqtADDgBVPjLBRFwqjuFm"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb182e84e0ffd51f7e86a99b4d"
   },
   {
     "id": "reddit-0d61641c57ef15ef",
@@ -101,8 +99,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebdcfcdc74c461cd0e166dfd32",
-    "spotifyUrl": "https://open.spotify.com/artist/4422XPmmt7lJGKjYbYSI6B"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebdcfcdc74c461cd0e166dfd32"
   },
   {
     "id": "reddit-f198abb6932fe0bd",
@@ -129,7 +126,6 @@ export const realReleases: MusicRelease[] = [
     "country": "DE",
     "kind": "single",
     "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab6761610000e5eb6c4cc61abd3fc6c9351ded3e",
-    "spotifyUrl": "https://open.spotify.com/artist/6UJX7tcmt1HUKgOayJmXb5",
     "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1uy1idl/die_releases_am_17072026/",
     "description": "Azo, KG Family veröffentlicht die Single „Palast oder Stacheldraht“.",
     "trackCount": 1,
@@ -170,8 +166,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebebc3090be377f1ae2289e2ad",
-    "spotifyUrl": "https://open.spotify.com/artist/6GTlPOFGjXUOE9fg8tNNdf"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebebc3090be377f1ae2289e2ad"
   },
   {
     "id": "reddit-8fe86ce69a98a833",
@@ -187,8 +182,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebfc9cbf00210113b93a91efd1",
-    "spotifyUrl": "https://open.spotify.com/artist/4WZGDpNwrC0vNQyl9QzF7d"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebfc9cbf00210113b93a91efd1"
   },
   {
     "id": "reddit-6e8de0067f7e5442",
@@ -255,8 +249,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27373af27f80a7aa6dea41928a3",
-    "spotifyUrl": "https://open.spotify.com/artist/0Gl6rorTJyT0PCE78weUJd"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27373af27f80a7aa6dea41928a3"
   },
   {
     "id": "reddit-cda634fff57fcebe",
@@ -289,8 +282,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb6f1a12bd97241f7bc0de422d",
-    "spotifyUrl": "https://open.spotify.com/artist/2JwyRtuXf2l6sTnSnGVIa1"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb6f1a12bd97241f7bc0de422d"
   },
   {
     "id": "reddit-cba7ddc37d0d6bae",
@@ -340,8 +332,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb7f6400e509382059ec8c9fe3",
-    "spotifyUrl": "https://open.spotify.com/artist/4vFkUWPhwm7TMnG0Wrc2a9"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb7f6400e509382059ec8c9fe3"
   },
   {
     "id": "reddit-8d4960e38ceffb6a",
@@ -528,8 +519,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebe7187f4a196db1b8b05145b5",
-    "spotifyUrl": "https://open.spotify.com/artist/33Dtwad3snCG92mhmi17WM"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebe7187f4a196db1b8b05145b5"
   },
   {
     "id": "reddit-1a6b9deda5935eda",
@@ -545,8 +535,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eba6b28a2be29e7f400f8e8aa2",
-    "spotifyUrl": "https://open.spotify.com/artist/2AOt5htsbtyaHd5Eq3kl3j"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eba6b28a2be29e7f400f8e8aa2"
   },
   {
     "id": "reddit-0abb01788ad76e10",
@@ -580,8 +569,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb1cf0499490df321722ac1691",
-    "spotifyUrl": "https://open.spotify.com/artist/5wyWp867LWGjFmYZXVSFnZ"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb1cf0499490df321722ac1691"
   },
   {
     "id": "reddit-3c9d251e7f908ee8",
@@ -666,8 +654,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb075ddc365abe99a2c1ef62d5",
-    "spotifyUrl": "https://open.spotify.com/artist/2IVvZIe3P9BMuCI6h48Bjg"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb075ddc365abe99a2c1ef62d5"
   },
   {
     "id": "reddit-2551f216d52bbdf5",
@@ -700,8 +687,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb740c43b584f7ccc36e621915",
-    "spotifyUrl": "https://open.spotify.com/artist/2Z9KL8Zmqx5Sg3cd7Fldhl"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb740c43b584f7ccc36e621915"
   },
   {
     "id": "reddit-ccf42dc4afbcc8bf",
@@ -717,8 +703,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb9dbe8c1b85ba8e82795076e9",
-    "spotifyUrl": "https://open.spotify.com/artist/34LetYSjEuG2fBb4Z8PwPg"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb9dbe8c1b85ba8e82795076e9"
   },
   {
     "id": "reddit-0fce45881b94746f",
@@ -751,8 +736,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf8f7f43293c1f7444c30f617",
-    "spotifyUrl": "https://open.spotify.com/artist/0lE1by0S3JE5W2BrEopkUh"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf8f7f43293c1f7444c30f617"
   },
   {
     "id": "reddit-132b8c6191bc6a9f",
@@ -785,8 +769,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebbcd5c0ba5c153e1a4e8b0b2a",
-    "spotifyUrl": "https://open.spotify.com/artist/1ul8iLt2WnFe2UIyovjg7q"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebbcd5c0ba5c153e1a4e8b0b2a"
   },
   {
     "id": "reddit-2554397fd610aea3",
@@ -853,8 +836,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb4b027954d23a5fa3fdc52617",
-    "spotifyUrl": "https://open.spotify.com/artist/0It7IzlkEG2NdfBWm5bTnN"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb4b027954d23a5fa3fdc52617"
   },
   {
     "id": "reddit-398a18d5894833f3",
@@ -887,8 +869,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb3c6b8978574b78ec606b04d7",
-    "spotifyUrl": "https://open.spotify.com/artist/6CP5wWvO8oIxedESJNCN4H"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb3c6b8978574b78ec606b04d7"
   },
   {
     "id": "reddit-c99d8fbbbc9cb658",
@@ -955,8 +936,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebeded76dc65dc9a69986b1f90",
-    "spotifyUrl": "https://open.spotify.com/artist/1dVKBw8iMPpS1almxwIVI3"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebeded76dc65dc9a69986b1f90"
   },
   {
     "id": "reddit-13d9a97325528497",
@@ -972,8 +952,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebab96d76ff8000d4bafb6bff9",
-    "spotifyUrl": "https://open.spotify.com/artist/6vNAKgK5d74N1I0zTxRPDp"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebab96d76ff8000d4bafb6bff9"
   },
   {
     "id": "reddit-5fa37b9701257474",
@@ -989,8 +968,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf898fb8510da1c57bc2f2baf",
-    "spotifyUrl": "https://open.spotify.com/artist/1SF4jakSq8kI38MYjFdaJG"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf898fb8510da1c57bc2f2baf"
   },
   {
     "id": "reddit-dbb66e639866835b",
@@ -1023,8 +1001,7 @@ export const realReleases: MusicRelease[] = [
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb67a509367ef676a58465e5ed",
-    "spotifyUrl": "https://open.spotify.com/artist/40WWqXzcwuV71MIXADs7Tp"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb67a509367ef676a58465e5ed"
   },
   {
     "id": "reddit-78284f3ca5755520",

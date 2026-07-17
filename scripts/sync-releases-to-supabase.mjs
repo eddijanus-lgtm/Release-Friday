@@ -3,7 +3,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
-import { isArtistImageFallbackReplacement } from "./release-sync-policy.mjs";
+import {
+  hasInvalidArtistProfileReleaseUrl,
+  isArtistImageFallbackRelease,
+  isArtistImageFallbackReplacement,
+  SPOTIFY_ARTIST_IMAGE_SOURCE,
+  spotifyReleaseUrlForStorage,
+} from "./release-sync-policy.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GENERATED_FILE = path.join(ROOT, "lib/releases/real-releases.generated.ts");
@@ -130,7 +136,7 @@ function toRow(release, storedCover, createdBy) {
     kind: release.kind,
     cover_url: storedCover.coverUrl,
     storage_path: storedCover.storagePath,
-    spotify_url: release.spotifyUrl ?? null,
+    spotify_url: spotifyReleaseUrlForStorage(release),
     spotify_pre_save_url: release.spotifyPreSaveUrl ?? null,
     apple_music_url: release.appleMusicUrl ?? null,
     youtube_url: release.youtubeUrl ?? null,
@@ -184,9 +190,16 @@ if (!createdBy) throw new Error("No release admin is configured in Supabase.");
 const dates = [...new Set(coverQualified.map((release) => release.releaseDate))];
 const { data: existingRows, error: readError } = await supabase
   .from("releases")
-  .select("id,artist,title,release_date,source")
+  .select("id,artist,title,release_date,source,spotify_url")
   .in("release_date", dates);
 if (readError) throw readError;
+
+const { data: storedArtistFallbackRows, error: fallbackReadError } = await supabase
+  .from("releases")
+  .select("id,artist,title,release_date,source,spotify_url")
+  .ilike("source", `%${SPOTIFY_ARTIST_IMAGE_SOURCE}%`)
+  .not("spotify_url", "is", null);
+if (fallbackReadError) throw fallbackReadError;
 
 const existingByKey = new Map((existingRows ?? []).map((release) => [releaseKey(release), release]));
 const existingKeys = new Set(existingByKey.keys());
@@ -223,7 +236,7 @@ for (const release of replacementCandidates) {
       values: {
         cover_url: storedCover.coverUrl,
         storage_path: storedCover.storagePath,
-        spotify_url: release.spotifyUrl ?? null,
+        spotify_url: spotifyReleaseUrlForStorage(release),
         apple_music_url: release.appleMusicUrl ?? null,
         description: release.description ?? null,
         source: release.source,
@@ -238,15 +251,36 @@ for (const release of replacementCandidates) {
   }
 }
 
-if (newRows.length === 0 && replacementRows.length === 0) {
+const replacementIds = new Set(replacementRows.map((replacement) => replacement.id));
+const artistProfileCleanupRows = (storedArtistFallbackRows ?? []).filter((release) =>
+  hasInvalidArtistProfileReleaseUrl(release) && !replacementIds.has(release.id),
+);
+
+if (newRows.length === 0 && replacementRows.length === 0 && artistProfileCleanupRows.length === 0) {
   console.log(JSON.stringify({
     synced: 0,
     existing: coverQualified.length - candidates.length,
     skipped,
     replacements: 0,
+    clearedArtistProfileLinks: 0,
     message: "No cover-qualified new releases or artist-image replacements were available to sync.",
   }, null, 2));
   process.exit(0);
+}
+
+const clearedArtistProfileLinks = [];
+for (const release of artistProfileCleanupRows) {
+  const { data, error } = await supabase
+    .from("releases")
+    .update({ spotify_url: null })
+    .eq("id", release.id)
+    .select("id,artist,title,release_date,spotify_url,source")
+    .single();
+  if (error) throw error;
+  if (!data || data.spotify_url !== null || !isArtistImageFallbackRelease(data)) {
+    throw new Error(`Verification failed while clearing artist profile URL for ${release.artist} — ${release.title}.`);
+  }
+  clearedArtistProfileLinks.push(data);
 }
 
 let inserted = [];
@@ -254,12 +288,15 @@ if (newRows.length > 0) {
   const { data, error: insertError } = await supabase
     .from("releases")
     .insert(newRows)
-    .select("id,artist,title,release_date,cover_url,storage_path,status");
+    .select("id,artist,title,release_date,cover_url,storage_path,spotify_url,source,status");
   if (insertError) throw insertError;
   inserted = data ?? [];
   if (inserted.length !== newRows.length) throw new Error(`Verification failed: expected ${newRows.length} inserts, received ${inserted.length}.`);
   if (inserted.some((row) => !row.cover_url || !row.storage_path || row.status !== "published")) {
     throw new Error("Verification failed: an inserted release is missing its stored cover or published status.");
+  }
+  if (inserted.some(hasInvalidArtistProfileReleaseUrl)) {
+    throw new Error("Verification failed: an artist profile was stored as a Spotify release URL.");
   }
 }
 
@@ -269,10 +306,10 @@ for (const replacement of replacementRows) {
     .from("releases")
     .update(replacement.values)
     .eq("id", replacement.id)
-    .select("id,artist,title,release_date,cover_url,storage_path,source,status")
+    .select("id,artist,title,release_date,cover_url,storage_path,spotify_url,source,status")
     .single();
   if (error) throw error;
-  if (!data?.cover_url || !data.storage_path || data.status !== "published" || data.source.includes("Spotify artist image fallback")) {
+  if (!data?.cover_url || !data.storage_path || data.status !== "published" || isArtistImageFallbackRelease(data) || hasInvalidArtistProfileReleaseUrl(data)) {
     throw new Error(`Verification failed for replacement ${replacement.release.artist} — ${replacement.release.title}.`);
   }
   replaced.push(data);
@@ -281,6 +318,7 @@ for (const replacement of replacementRows) {
 console.log(JSON.stringify({
   synced: inserted.length,
   replacements: replaced.length,
+  clearedArtistProfileLinks: clearedArtistProfileLinks.length,
   existing: coverQualified.length - candidates.length,
   skipped,
   releases: inserted,

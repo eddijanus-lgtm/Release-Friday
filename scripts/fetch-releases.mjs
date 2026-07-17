@@ -521,7 +521,9 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
   return {
     ...release,
     coverUrl: artist.images[0].url,
-    spotifyUrl: artist.external_urls.spotify,
+    // The artist URL verifies the matched profile, but it is not a release URL.
+    // Keep spotifyUrl empty so the UI can use its normal release-search fallback.
+    spotifyUrl: undefined,
     description: release.description,
     source: `${release.source} + ${SPOTIFY_ARTIST_IMAGE_SOURCE}`,
   };
