@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";
+import { fetchPublishedManualReleases } from "@/lib/releases/manual-releases";\nimport { ReleaseRowCover } from "@/components/release-row-cover";
 import type { MusicRelease } from "@/types/release";
 
 const kindLabels: Record<MusicRelease["kind"], string> = {
