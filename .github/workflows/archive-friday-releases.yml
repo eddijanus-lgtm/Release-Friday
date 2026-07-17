@@ -1,0 +1,40 @@
+name: Archive Friday releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_date:
+        description: Optional Friday to archive (YYYY-MM-DD)
+        required: false
+        type: string
+  schedule:
+    # Sunday 12:15 CEST / 11:15 CET. The script resolves the previous Friday in Europe/Berlin.
+    - cron: "15 10 * * 0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "archive-friday-releases"
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RELEASE_DATE: ${{ inputs.release_date }}
+      SUPABASE_URL: https://otjvkorslczqdpzltjpj.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Archive the previous Friday
+        run: node scripts/archive-friday-releases.mjs

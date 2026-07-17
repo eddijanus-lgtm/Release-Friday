@@ -18,6 +18,7 @@ export interface MusicRelease {
   trackCount?: number;
   genres?: string[];
   source: string;
+  archivedAt?: string;
 }
 
 export interface ReleaseDataMetadata {
