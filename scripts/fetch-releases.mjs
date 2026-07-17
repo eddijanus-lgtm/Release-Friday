@@ -21,6 +21,8 @@ const APPLE_TERMS = {
 };
 const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
+const SPOTIFY_REQUEST_INTERVAL_MS = Number(process.env.SPOTIFY_REQUEST_INTERVAL_MS || 6000);
+const SPOTIFY_RATE_LIMIT_MAX_WAIT_MS = Number(process.env.SPOTIFY_RATE_LIMIT_MAX_WAIT_MS || 120000);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
 const DISCOVERY_ENABLED = !["1", "true"].includes(String(process.env.SKIP_DISCOVERY || "").toLowerCase());
 const REFRESH_ARTIST_IMAGE_COVERS = ["1", "true"].includes(
@@ -37,12 +39,34 @@ const SPOTIFY_ARTIST_IMAGE_SOURCE = "Spotify artist image fallback";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 let lastAppleRequestAt = 0;
+let lastSpotifyRequestAt = 0;
 
 function responseError(response) {
   const error = new Error(`${response.status} ${response.statusText}`);
   error.status = response.status;
   error.retryAfterSeconds = Number(response.headers.get("retry-after") || 0);
   return error;
+}
+
+function isSpotifyApiUrl(value) {
+  try {
+    return new URL(String(value)).hostname === "api.spotify.com";
+  } catch {
+    return false;
+  }
+}
+
+function spotifyRateLimitWaitMs(error) {
+  const waitMs = Number(error?.retryAfterSeconds || 0) * 1000;
+  return waitMs > 0 && waitMs <= SPOTIFY_RATE_LIMIT_MAX_WAIT_MS ? waitMs : 0;
+}
+
+async function waitForSpotifyRequestSlot(url) {
+  if (!isSpotifyApiUrl(url) || SPOTIFY_REQUEST_INTERVAL_MS <= 0) return;
+  const elapsed = Date.now() - lastSpotifyRequestAt;
+  const waitMs = Math.max(0, SPOTIFY_REQUEST_INTERVAL_MS - elapsed);
+  if (waitMs > 0) await sleep(waitMs);
+  lastSpotifyRequestAt = Date.now();
 }
 
 function datePartsInBerlin(date = new Date()) {
@@ -156,6 +180,7 @@ async function fetchResponse(url, options = {}, attempts = 4) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
+      await waitForSpotifyRequestSlot(url);
       const response = await fetch(url, {
         ...options,
         headers: {
@@ -165,8 +190,18 @@ async function fetchResponse(url, options = {}, attempts = 4) {
       });
       if (response.status === 404) return response;
       if (response.status === 429 || response.status >= 500) {
+        const requestError = responseError(response);
         const retryAfter = Number(response.headers.get("retry-after") || 0);
-        if (response.status === 429 && FAST_FAIL_RATE_LIMITS) throw responseError(response);
+        if (response.status === 429 && FAST_FAIL_RATE_LIMITS) {
+          const spotifyWaitMs = isSpotifyApiUrl(url) ? spotifyRateLimitWaitMs(requestError) : 0;
+          if (attempt < attempts && spotifyWaitMs > 0) {
+            console.warn(`Spotify rate limit reached; retrying in ${Math.ceil(spotifyWaitMs / 1000)} second(s).`);
+            await sleep(spotifyWaitMs);
+            lastError = requestError;
+            continue;
+          }
+          throw requestError;
+        }
         const requestedWaitMs = retryAfter > 0 ? retryAfter * 1000 : attempt * 3000;
         const waitMs = Math.min(requestedWaitMs, MAX_RETRY_WAIT_MS);
         if (attempt < attempts) {
@@ -789,4 +824,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, loadStoredReleases, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, loadStoredReleases, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage, spotifyRateLimitWaitMs };
