@@ -14,9 +14,6 @@ on:
     branches: ["main"]
     paths:
       - ".github/workflows/refresh-release-data.yml"
-      - "scripts/fetch-releases.mjs"
-      - "lib/releases/curated-releases.json"
-      - "lib/releases/reddit-source.json"
 
 permissions:
   contents: write
@@ -28,7 +25,9 @@ concurrency:
 
 jobs:
   refresh:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4

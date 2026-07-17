@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK = "1";
+process.env.REFRESH_ARTIST_IMAGE_COVERS = "1";
 const { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, searchSpotifyArtistImage } = await import("./fetch-releases.mjs?artist-image-test");
 const {
   hasInvalidArtistProfileReleaseUrl,
@@ -88,6 +89,15 @@ try {
     },
   }), { status: 200, headers: { "content-type": "application/json" } });
   assert.equal(await searchSpotifyArtistImage(release, "test-token"), null);
+
+  globalThis.fetch = async () => new Response("", {
+    status: 429,
+    statusText: "Too Many Requests",
+    headers: { "retry-after": "3600" },
+  });
+  const rateLimitStartedAt = Date.now();
+  await assert.rejects(() => searchSpotifyArtistImage(release, "test-token"), /429 Too Many Requests/);
+  assert(Date.now() - rateLimitStartedAt < 1000, "Refresh lookup did not fail fast on a long Spotify rate limit.");
 } finally {
   globalThis.fetch = originalFetch;
 }

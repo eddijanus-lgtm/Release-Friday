@@ -22,7 +22,11 @@ const APPLE_TERMS = {
 const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
-const DISCOVERY_ENABLED = process.env.SKIP_DISCOVERY !== "1";
+const DISCOVERY_ENABLED = !["1", "true"].includes(String(process.env.SKIP_DISCOVERY || "").toLowerCase());
+const FAST_FAIL_RATE_LIMITS = ["1", "true"].includes(
+  String(process.env.REFRESH_ARTIST_IMAGE_COVERS || "").toLowerCase(),
+);
+const MAX_RETRY_WAIT_MS = Number(process.env.MAX_RETRY_WAIT_MS || 15000);
 const SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED = ["1", "true"].includes(
   String(process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK || "").toLowerCase(),
 );
@@ -30,6 +34,13 @@ const SPOTIFY_ARTIST_IMAGE_SOURCE = "Spotify artist image fallback";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 let lastAppleRequestAt = 0;
+
+function responseError(response) {
+  const error = new Error(`${response.status} ${response.statusText}`);
+  error.status = response.status;
+  error.retryAfterSeconds = Number(response.headers.get("retry-after") || 0);
+  return error;
+}
 
 function datePartsInBerlin(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -96,15 +107,18 @@ async function fetchResponse(url, options = {}, attempts = 4) {
       if (response.status === 404) return response;
       if (response.status === 429 || response.status >= 500) {
         const retryAfter = Number(response.headers.get("retry-after") || 0);
-        const waitMs = retryAfter > 0 ? retryAfter * 1000 : attempt * 3000;
+        if (response.status === 429 && FAST_FAIL_RATE_LIMITS) throw responseError(response);
+        const requestedWaitMs = retryAfter > 0 ? retryAfter * 1000 : attempt * 3000;
+        const waitMs = Math.min(requestedWaitMs, MAX_RETRY_WAIT_MS);
         if (attempt < attempts) {
           await sleep(waitMs);
           continue;
         }
       }
-      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      if (!response.ok) throw responseError(response);
       return response;
     } catch (error) {
+      if (FAST_FAIL_RATE_LIMITS && error?.status === 429) throw error;
       lastError = error;
       if (attempt < attempts) await sleep(attempt * 2500);
     }
@@ -560,7 +574,13 @@ async function searchAppleForRelease(release, targetDate) {
 }
 
 async function enrichCandidatesWithCovers(candidates, targetDate) {
-  const accessToken = await getSpotifyToken();
+  let accessToken = null;
+  try {
+    accessToken = await getSpotifyToken();
+  } catch (error) {
+    console.warn(`Spotify authentication unavailable for this run: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  let spotifyLookupAvailable = Boolean(accessToken);
   const artistImageFallbackEnabled = spotifyArtistImageFallbackEnabled(targetDate);
   const selected = MAX_COVER_CANDIDATES > 0 ? candidates.slice(0, MAX_COVER_CANDIDATES) : candidates;
   const qualified = [];
@@ -573,10 +593,16 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
     }
 
     let resolved = null;
-    try {
-      resolved = await searchSpotifyForRelease(release, targetDate, accessToken);
-    } catch (error) {
-      console.warn(`Spotify cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
+    if (spotifyLookupAvailable) {
+      try {
+        resolved = await searchSpotifyForRelease(release, targetDate, accessToken);
+      } catch (error) {
+        if (error?.status === 429) {
+          spotifyLookupAvailable = false;
+          console.warn("Spotify rate limit reached; using Apple Music for the remaining cover lookups.");
+        }
+        console.warn(`Spotify cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
     if (!resolved) {
       try {
@@ -585,10 +611,14 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
         console.warn(`Apple cover lookup failed for ${release.artist} — ${release.title}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    if (!resolved) {
+    if (!resolved && spotifyLookupAvailable) {
       try {
         resolved = await searchSpotifyArtistImage(release, accessToken, artistImageFallbackEnabled);
       } catch (error) {
+        if (error?.status === 429) {
+          spotifyLookupAvailable = false;
+          console.warn("Spotify rate limit reached; skipping further artist-image lookups in this run.");
+        }
         console.warn(`Spotify artist image lookup failed for ${release.artist}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
@@ -602,7 +632,7 @@ async function enrichCandidatesWithCovers(candidates, targetDate) {
   }
 
   if (selected.length < candidates.length) missing.push(...candidates.slice(selected.length));
-  return { qualified, missing, spotifyEnabled: Boolean(accessToken), artistImageFallbackEnabled };
+  return { qualified, missing, spotifyEnabled: spotifyLookupAvailable, artistImageFallbackEnabled };
 }
 
 async function loadCurated(targetDate) {
