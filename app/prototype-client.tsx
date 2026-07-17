@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 import { usePublishedReleases } from "@/hooks/use-published-releases";
 import { useReleaseDetailHistory } from "@/hooks/use-release-detail-history";
-import { useSwipeBack } from "@/hooks/use-swipe-back";
+import { useSwipeBack } from "@/hooks/use-swipe-back";\nimport { ReleaseRowCover } from "@/components/release-row-cover";
 
 type Tab = "drop" | "find" | "stash" | "me";
 type Region = "ALL" | ReleaseCountry;
@@ -188,23 +188,7 @@ function ReleaseListRow({ release, number, saved, onOpen, onToggleSaved }: {
   return (
     <article className="tapeRow">
       <button type="button" className="tapeRowMain" onClick={onOpen} aria-label={`${release.title} öffnen`}>
-        <span className="rowNumber">{String(number).padStart(2, "0")}</span>
-        {release.coverUrl ? (
-          <span className="rowCoverThumb">
-            <img
-              src={release.coverUrl}
-              alt=""
-              loading={number <= 4 ? "eager" : "lazy"}
-              decoding="async"
-              referrerPolicy="no-referrer"
-            />
-          </span>
-        ) : (
-          <span className="rowCoverThumb isFallback" aria-hidden="true">
-            <span>RELEASE</span><span>FRIDAY</span>
-          </span>
-        )}
-        <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist}</span></div>
+        <span className="rowNumber">{String(number).padStart(2, "0")}</span>\n        <ReleaseRowCover release={release} />\n        <div className="rowCopy"><strong>{release.title}</strong><span>{release.artist} · <em className="rowKindBadge">{kindLabels[release.kind]}</em></span></div>
         <span className="rowArrow">→</span>
       </button>
       <button type="button" className={`rowSave ${saved ? "saved" : ""}`} onClick={onToggleSaved} aria-pressed={saved} aria-label={saved ? "Aus Stash entfernen" : "In Stash speichern"}>+</button>
