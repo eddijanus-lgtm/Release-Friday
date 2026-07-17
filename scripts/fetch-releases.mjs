@@ -57,7 +57,8 @@ function isSpotifyApiUrl(value) {
 }
 
 function spotifyRateLimitWaitMs(error) {
-  const waitMs = Number(error?.retryAfterSeconds || 0) * 1000;
+  const retryAfterSeconds = Number(error?.retryAfterSeconds || 0);
+  const waitMs = (retryAfterSeconds > 0 ? retryAfterSeconds : 30) * 1000;
   return waitMs > 0 && waitMs <= SPOTIFY_RATE_LIMIT_MAX_WAIT_MS ? waitMs : 0;
 }
 
