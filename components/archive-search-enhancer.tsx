@@ -104,7 +104,7 @@ export function ArchiveSearchEnhancer() {
               <ReleaseRowCover release={release} />
               <div className="rowCopy">
                 <strong>{release.title}</strong>
-                <span>{release.artist} · {kindLabels[release.kind]}</span>
+                <span>{release.artist} · <em className="rowKindBadge">{kindLabels[release.kind]}</em></span>
                 <small className="pastReleaseLabel">PAST RELEASE</small>
               </div>
               <span className="rowArrow">→</span>
