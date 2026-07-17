@@ -35,6 +35,7 @@ function toSlug(input: string) {
 
 export function MagazineEditor({ busy, posts, onSave, onDelete }: Props) {
   const [editing, setEditing] = useState<MagazinePost>();
+  const [previewing, setPreviewing] = useState<MagazinePost>();
   const [error, setError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [formKey, setFormKey] = useState(0);
@@ -69,6 +70,7 @@ export function MagazineEditor({ busy, posts, onSave, onDelete }: Props) {
   }
 
   return <div className="releaseEditorBody">
+    {previewing ? <MagazinePreview post={previewing} onClose={() => setPreviewing(undefined)} /> : null}
     <div className="adminEditorHeading"><div><p className="adminSectionLabel">PRIVATE REDAKTION</p><h1 className="adminTitle">MAGAZIN<br />EDITOR</h1></div><button type="button" className="adminTextButton" onClick={newPost} disabled={busy}>+ NEUER BEITRAG</button></div>
     <p className="adminIntro">Die drei späteren Startseiten-Bereiche sind bereits vorbereitet: ALL, DE und US. Aktuell bleiben alle Beiträge ausschließlich im Admin sichtbar.</p>
     <form key={`${editing?.id ?? "new"}-${formKey}`} className="releaseForm" onSubmit={(event) => void submit(event)}>
@@ -88,6 +90,36 @@ export function MagazineEditor({ busy, posts, onSave, onDelete }: Props) {
       {error ? <p className="adminError" role="alert">{error}</p> : null}{notice ? <div className="adminSuccess" role="status"><strong>{notice}</strong><span>Nur im Admin gespeichert – auf der Startseite noch nicht sichtbar.</span></div> : null}
       <div className="adminActions">{editing ? <button type="button" className="adminSecondaryButton" onClick={() => void remove(editing)} disabled={busy}>LÖSCHEN</button> : null}<button type="submit" className="adminPrimaryButton" disabled={busy}>{busy ? "SPEICHERT …" : editing ? "ÄNDERUNGEN SPEICHERN →" : "BEITRAG SPEICHERN →"}</button></div>
     </form>
-    <section className="adminFormSection"><div className="adminFormSectionTitle"><span>03</span><strong>REDAKTIONS-ARCHIV ({posts.length})</strong></div><div className="releaseForm">{posts.length === 0 ? <p className="adminIntro">Noch keine Magazinbeiträge angelegt.</p> : posts.map((post) => <div className="adminSuccess" key={post.id}><strong>[{post.scope}] {post.title}</strong><span>{post.status === "published" ? "FERTIG / SPÄTER PUBLIC" : "ENTWURF"} · /magazin/{post.slug}</span><button type="button" className="adminTextButton" onClick={() => edit(post)} disabled={busy}>BEARBEITEN →</button></div>)}</div></section>
+    <section className="adminFormSection"><div className="adminFormSectionTitle"><span>03</span><strong>REDAKTIONS-ARCHIV ({posts.length})</strong></div><div className="releaseForm">{posts.length === 0 ? <p className="adminIntro">Noch keine Magazinbeiträge angelegt.</p> : posts.map((post) => <div className="adminSuccess magazineArchiveItem" key={post.id}><strong>[{post.scope}] {post.title}</strong><span>{post.status === "published" ? "FERTIG / SPÄTER PUBLIC" : "ENTWURF"} · /magazin/{post.slug}</span><div className="magazineArchiveActions"><button type="button" className="adminTextButton" onClick={() => setPreviewing(post)} disabled={busy}>PREVIEW →</button><button type="button" className="adminTextButton" onClick={() => edit(post)} disabled={busy}>BEARBEITEN →</button></div></div>)}</div></section>
   </div>;
+}
+
+function MagazinePreview({ post, onClose }: { post: MagazinePost; onClose: () => void }) {
+  const paragraphs = post.body.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  const date = post.publishedAt ? new Date(post.publishedAt) : undefined;
+  const formattedDate = date ? new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date) : "PREVIEW";
+
+  return (
+    <div className="magazinePreviewOverlay" role="dialog" aria-modal="true" aria-label={`${post.title} Vorschau`}>
+      <article className="magazinePreviewSheet">
+        <div className="detailToolbar magazinePreviewToolbar">
+          <button type="button" onClick={onClose}>← ZURÜCK</button>
+          <span>ADMIN PREVIEW</span>
+        </div>
+        {post.coverUrl ? (
+          <div className="detailCover"><div className="tapeCover"><img src={post.coverUrl} alt="" /></div></div>
+        ) : null}
+        <div className="magazinePreviewBody">
+          <span className="confirmedLabel">IN SCOPE · {post.scope}</span>
+          <p className="magazinePreviewMeta">{formattedDate} · {post.authorName || "Release Friday Redaktion"}</p>
+          <h1>{post.title}</h1>
+          <p className="magazinePreviewExcerpt">{post.excerpt}</p>
+          <div className="magazinePreviewCopy">
+            {paragraphs.length > 0 ? paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>) : <p>{post.body}</p>}
+          </div>
+          {post.sourceUrl ? <a className="magazinePreviewSource" href={post.sourceUrl} target="_blank" rel="noreferrer">QUELLE ÖFFNEN →</a> : null}
+        </div>
+      </article>
+    </div>
+  );
 }
