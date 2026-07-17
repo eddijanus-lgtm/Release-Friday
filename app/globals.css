@@ -466,6 +466,10 @@ button.settingRow, a.settingRow { cursor: pointer; }
   background-size: 100% 62px;
 }
 
+.adminEditorTabs { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 14px 14px 0; padding: 5px; background: #1c201c; border: 1px solid #3d443b; border-radius: 13px; }
+.adminEditorTabs button { min-height: 38px; border: 0; border-radius: 9px; background: transparent; color: #9ba196; font: 900 10px/1 var(--font-geist-mono), monospace; letter-spacing: .08em; cursor: pointer; }
+.adminEditorTabs button.active { color: #071005; background: var(--lime); }
+
 .adminHeader {
   display: flex;
   min-height: 92px;
