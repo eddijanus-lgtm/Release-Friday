@@ -36,8 +36,8 @@ async function fetchFeatured(issueDate: string, signal: AbortSignal): Promise<Fe
 }
 
 export function usePublishedReleases(initialReleases: MusicRelease[], _targetDate?: string) {
-  // The generated list is only a fallback. With Supabase configured, wait for
-  // the RLS-filtered response so staged releases can never flash publicly.
+  // Supabase contains manual/editorial releases while the generated list
+  // contains the automatically discovered radar. Keep both sources visible.
   const [releases, setReleases] = useState(() => isSupabaseConfigured() ? [] : newestIssue(initialReleases));
   const [scope, setScope] = useState<FeaturedScope>("ALL");
   const [featured, setFeatured] = useState<FeaturedMap>({});
@@ -54,10 +54,9 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
 
     void fetchPublishedManualReleases(undefined, controller.signal)
       .then((published) => {
-        // Supabase is the source of truth whenever it answers successfully.
-        // The generated list is only an outage/offline fallback, so a release
-        // deleted in the admin area cannot be reintroduced by local build data.
-        setReleases(newestIssue(published));
+        const byId = new Map(initialReleases.map((release) => [release.id, release]));
+        published.forEach((release) => byId.set(release.id, release));
+        setReleases(newestIssue([...byId.values()]));
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
