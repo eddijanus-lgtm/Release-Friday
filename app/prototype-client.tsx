@@ -106,7 +106,7 @@ function Cover({ release, compact = false }: { release: MusicRelease; compact?: 
   return (
     <div className={`tapeCover ${compact ? "isCompact" : ""}`}>
       {release.coverUrl ? (
-        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading="lazy" referrerPolicy="no-referrer" />
+        <img src={release.coverUrl} alt={`Cover von ${release.title}`} loading={compact ? "lazy" : "eager"} fetchPriority={compact ? "auto" : "high"} decoding="async" referrerPolicy="no-referrer" />
       ) : (
         <div className="coverFallback" aria-label={`Noch kein Cover für ${release.title}`}>
           <span>{release.artist}</span><strong>{release.title}</strong><i>RF</i>
