@@ -27,6 +27,8 @@ const FAST_FAIL_RATE_LIMITS = ["1", "true"].includes(
   String(process.env.REFRESH_ARTIST_IMAGE_COVERS || "").toLowerCase(),
 );
 const MAX_RETRY_WAIT_MS = Number(process.env.MAX_RETRY_WAIT_MS || 15000);
+const SUPABASE_URL = String(process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
+const SUPABASE_SERVICE_ROLE_KEY = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
 const SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED = ["1", "true"].includes(
   String(process.env.ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK || "").toLowerCase(),
 );
@@ -98,6 +100,55 @@ function releaseLookupMarkets(targetDate, country, currentBerlinDate = berlinDat
   return targetDate <= currentBerlinDate
     ? [...new Set([country, ...rollingMarkets])]
     : rollingMarkets;
+}
+
+function candidatesNeedingCoverLookup(candidates, storedReleases) {
+  if (!Array.isArray(storedReleases)) return candidates;
+  const storedByKey = new Map(storedReleases.map((release) => [releaseKey(release), release]));
+  return candidates.filter((release) => {
+    const stored = storedByKey.get(releaseKey(release));
+    return !stored
+      || !validCoverUrl(stored.coverUrl)
+      || String(stored.source || "").includes(SPOTIFY_ARTIST_IMAGE_SOURCE);
+  });
+}
+
+function storedRowToRelease(row) {
+  return {
+    artist: row.artist,
+    title: row.title,
+    releaseDate: row.release_date,
+    country: row.country,
+    kind: row.kind,
+    coverUrl: row.cover_url,
+    spotifyUrl: row.spotify_url ?? undefined,
+    spotifyPreSaveUrl: row.spotify_pre_save_url ?? undefined,
+    appleMusicUrl: row.apple_music_url ?? undefined,
+    youtubeUrl: row.youtube_url ?? undefined,
+    sourceUrl: row.source_url ?? undefined,
+    description: row.description ?? undefined,
+    trackCount: row.track_count ?? undefined,
+    genres: row.genres ?? [],
+    source: row.source || "Supabase",
+  };
+}
+
+async function loadStoredReleases(targetDate) {
+  if (!REFRESH_ARTIST_IMAGE_COVERS || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
+  const url = new URL(`${SUPABASE_URL}/rest/v1/releases`);
+  url.searchParams.set("select", "artist,title,release_date,country,kind,cover_url,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,description,track_count,genres,source");
+  url.searchParams.set("release_date", `eq.${targetDate}`);
+  url.searchParams.set("status", "eq.published");
+  const response = await fetchResponse(url, {
+    headers: {
+      Accept: "application/json",
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    },
+  }, 2);
+  const rows = await response.json();
+  if (!Array.isArray(rows)) throw new Error("Supabase returned an invalid release payload.");
+  return rows.map(storedRowToRelease);
 }
 
 async function fetchResponse(url, options = {}, attempts = 4) {
@@ -685,12 +736,16 @@ async function main() {
   let reddit = [];
   let musicBrainz = [];
   let apple = [];
+  let storedReleases = null;
 
   try { reddit = await loadRedditCandidates(targetDate); }
   catch (error) { fetchErrors.push(`Reddit: ${error instanceof Error ? error.message : String(error)}`); }
 
   const candidates = mergeReleases(rawCurated, reddit);
-  const coverResolution = await enrichCandidatesWithCovers(candidates, targetDate);
+  try { storedReleases = await loadStoredReleases(targetDate); }
+  catch (error) { fetchErrors.push(`Supabase refresh state: ${error instanceof Error ? error.message : String(error)}`); }
+  const coverLookupCandidates = candidatesNeedingCoverLookup(candidates, storedReleases);
+  const coverResolution = await enrichCandidatesWithCovers(coverLookupCandidates, targetDate);
 
   if (DISCOVERY_ENABLED) {
     try { musicBrainz = await searchMusicBrainz(targetDate); }
@@ -700,7 +755,7 @@ async function main() {
     catch (error) { fetchErrors.push(`Apple Music: ${error instanceof Error ? error.message : String(error)}`); }
   }
 
-  const merged = mergeReleases(musicBrainz, apple, coverResolution.qualified);
+  const merged = mergeReleases(storedReleases ?? [], musicBrainz, apple, coverResolution.qualified);
   const releases = merged.filter((release) => validCoverUrl(release.coverUrl));
   const qualifiedKeys = new Set(releases.map(releaseKey));
   const missingCovers = candidates
@@ -718,6 +773,8 @@ async function main() {
     curatedCount: rawCurated.length,
     redditSingleCount: reddit.length,
     candidateCount: candidates.length,
+    storedReleaseCount: storedReleases?.length ?? 0,
+    coverLookupCandidateCount: coverLookupCandidates.length,
     coverQualifiedCount: releases.length,
     skippedMissingCoverCount: missingCovers.length,
     missingCovers,
@@ -731,4 +788,4 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, getCurrentOrUpcomingFriday, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
+export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage };
