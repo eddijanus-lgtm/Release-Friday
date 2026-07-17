@@ -723,6 +723,111 @@ button.settingRow, a.settingRow { cursor: pointer; }
   padding-top: 2px;
 }
 
+.magazineArchiveItem { gap: 9px; }
+.magazineArchiveActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.magazineArchiveActions .adminTextButton { color: var(--lime); }
+
+.magazinePreviewOverlay {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  overflow-y: auto;
+  background: rgba(5,8,5,.86);
+  backdrop-filter: blur(10px);
+}
+
+.magazinePreviewSheet {
+  width: min(100%, 540px);
+  min-height: 100svh;
+  margin: 0 auto;
+  background:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    var(--ink);
+  background-size: 100% 62px;
+}
+
+.magazinePreviewToolbar {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  border-bottom: 1px solid #1d241b;
+  background: rgba(3,6,3,.92);
+  backdrop-filter: blur(12px);
+}
+
+.magazinePreviewToolbar span {
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.magazinePreviewBody {
+  padding: 18px 14px 92px;
+}
+
+.magazinePreviewMeta {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.magazinePreviewBody h1 {
+  max-width: 96%;
+  margin: 10px 0 16px;
+  color: var(--paper);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(50px, 15vw, 76px);
+  line-height: .82;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.magazinePreviewExcerpt {
+  margin: 0 0 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+  color: #c5cbc0;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.magazinePreviewCopy {
+  display: grid;
+  gap: 16px;
+}
+
+.magazinePreviewCopy p {
+  margin: 0;
+  color: #c5cbc0;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.62;
+}
+
+.magazinePreviewSource {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 22px;
+  border: 1px solid var(--lime);
+  border-radius: 8px;
+  background: var(--lime);
+  color: #050805;
+  font-size: 8px;
+  font-weight: 900;
+}
+
 .adminLoading {
   display: grid;
   min-height: 48svh;
