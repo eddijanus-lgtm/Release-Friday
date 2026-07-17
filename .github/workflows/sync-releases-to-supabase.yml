@@ -57,6 +57,7 @@ jobs:
       ALLOW_SPOTIFY_ARTIST_IMAGE_FALLBACK: ${{ inputs.allow_spotify_artist_image_fallback || (github.event_name == 'schedule' && (github.event.schedule == '30 16 * * 4' || github.event.schedule == '15 5 * * 5')) }}
       REFRESH_ARTIST_IMAGE_COVERS: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '15 18 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
       SKIP_DISCOVERY: ${{ inputs.refresh_artist_image_covers || github.event_name == 'push' || (github.event_name == 'schedule' && (github.event.schedule == '15 5 * * 5' || github.event.schedule == '15 18 * * 5' || github.event.schedule == '2 22 * * 4' || github.event.schedule == '2 23 * * 4')) }}
+      SPOTIFY_RATE_LIMIT_MAX_WAIT_MS: 15000
       GITHUB_TRIGGER_EVENT: ${{ github.event_name }}
       GITHUB_TRIGGER_SCHEDULE: ${{ github.event.schedule }}
       SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
