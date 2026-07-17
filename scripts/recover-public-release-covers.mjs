@@ -1,11 +1,27 @@
 const SUPABASE_URL = String(process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
 const SUPABASE_SERVICE_ROLE_KEY = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
-const RELEASE_DATE = String(process.env.RELEASE_DATE || "").trim() || new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Europe/Berlin",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).format(new Date());
+const TIME_ZONE = "Europe/Berlin";
+
+function datePartsInBerlin(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return { year: Number(values.year), month: Number(values.month), day: Number(values.day) };
+}
+
+function currentOrUpcomingFriday(date = new Date()) {
+  const { year, month, day } = datePartsInBerlin(date);
+  const berlinDay = new Date(Date.UTC(year, month - 1, day));
+  const daysUntilFriday = (5 - berlinDay.getUTCDay() + 7) % 7;
+  berlinDay.setUTCDate(berlinDay.getUTCDate() + daysUntilFriday);
+  return berlinDay.toISOString().slice(0, 10);
+}
+
+const RELEASE_DATE = String(process.env.RELEASE_DATE || "").trim() || currentOrUpcomingFriday();
 const ITUNES_SEARCH = "https://itunes.apple.com/search";
 const REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 1200);
 
@@ -110,7 +126,7 @@ async function searchItunes(release) {
         const date = String(item.releaseDate || "").slice(0, 10);
         return titleMatches(release.title, item.trackName, item.collectionName)
           && artistMatches(release.artist, item.artistName)
-          && (!date || date === release.release_date)
+          && date === release.release_date
           && artworkUrl(item.artworkUrl100);
       });
       if (match) return { match, country };
