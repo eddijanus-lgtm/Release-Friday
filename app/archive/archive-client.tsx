@@ -32,10 +32,11 @@ export function ArchiveClient() {
   }, []);
 
   const groups = useMemo(() => {
-    const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
-    return dates.slice(1).map((date) => ({
+    const archivedReleases = releases.filter((release) => release.archivedAt);
+    const dates = [...new Set(archivedReleases.map((release) => release.releaseDate))].sort().reverse();
+    return dates.map((date) => ({
       date,
-      releases: releases.filter((release) => release.releaseDate === date),
+      releases: archivedReleases.filter((release) => release.releaseDate === date),
     }));
   }, [releases]);
 
