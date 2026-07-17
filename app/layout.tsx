@@ -5,7 +5,6 @@ import { CloudStashRehydrator } from "@/components/cloud-stash-rehydrator";
 import { DropArchiveSwitch } from "@/components/drop-archive-switch";
 import { FeaturedReleaseSelector } from "@/components/admin/featured-release-selector";
 import { ReleaseDetailOverlay } from "@/components/release-detail-overlay";
-import { ReleaseTileCoverEnhancer } from "@/components/release-tile-cover-enhancer";
 import { SpotifyCountdownEnhancer } from "@/components/spotify-countdown-enhancer";
 import { TabDeepLink } from "@/components/tab-deep-link";
 import "./globals.css";
@@ -99,7 +98,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body>
         {children}
-        <ReleaseTileCoverEnhancer />
         <DropArchiveSwitch />
         <ArchiveSearchEnhancer />
         <ReleaseDetailOverlay />

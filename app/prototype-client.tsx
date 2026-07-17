@@ -5,7 +5,8 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import type { MusicRelease, ReleaseCountry, ReleaseDataMetadata } from "@/types/release";
 import { usePublishedReleases } from "@/hooks/use-published-releases";
 import { useReleaseDetailHistory } from "@/hooks/use-release-detail-history";
-import { useSwipeBack } from "@/hooks/use-swipe-back";\nimport { ReleaseRowCover } from "@/components/release-row-cover";
+import { useSwipeBack } from "@/hooks/use-swipe-back";
+import { ReleaseRowCover } from "@/components/release-row-cover";
 
 type Tab = "drop" | "find" | "stash" | "me";
 type Region = "ALL" | ReleaseCountry;
