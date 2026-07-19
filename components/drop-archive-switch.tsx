@@ -107,10 +107,14 @@ export function DropArchiveSwitch() {
   };
 
   const groups = useMemo(() => {
-    const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
-    return dates.slice(1).map((date) => ({
+    // The public query can contain archived issues only while the upcoming
+    // issue is staged until Wednesday. Filter by archive state instead of
+    // dropping the newest date by position.
+    const archivedReleases = releases.filter((release) => release.archivedAt);
+    const dates = [...new Set(archivedReleases.map((release) => release.releaseDate))].sort().reverse();
+    return dates.map((date) => ({
       date,
-      releases: releases.filter((release) => release.releaseDate === date),
+      releases: archivedReleases.filter((release) => release.releaseDate === date),
     }));
   }, [releases]);
 
