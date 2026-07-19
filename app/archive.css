@@ -46,17 +46,27 @@
 .archiveIssue { margin-top: 34px; }
 .archiveIssueTitle {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 12px;
   align-items: baseline;
+  width: 100%;
   padding-bottom: 10px;
   border-bottom: 1px solid #33402f;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .archiveIssueTitle span,
 .archiveIssueTitle small { color: var(--lime); font-size: 8px; font-weight: 900; }
-.archiveIssueTitle strong { font-size: 14px; }
+.archiveIssueTitle strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
 .archiveIssueTitle small { color: var(--muted); }
+.archiveIssueTitle i { color: var(--lime); font-size: 18px; font-style: normal; line-height: .7; }
 .archiveGrid { display: grid; gap: 10px; margin-top: 12px; }
+.archiveGrid[hidden] { display: none; }
 .archiveCard {
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr) auto;

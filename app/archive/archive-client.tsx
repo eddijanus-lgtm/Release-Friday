@@ -22,6 +22,7 @@ function formatDate(value: string) {
 export function ArchiveClient() {
   const [releases, setReleases] = useState<MusicRelease[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openDates, setOpenDates] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,6 +41,19 @@ export function ArchiveClient() {
     }));
   }, [releases]);
 
+  useEffect(() => {
+    if (!groups.length) return;
+    setOpenDates((current) => current.size ? current : new Set([groups[0].date]));
+  }, [groups]);
+
+  const toggleDate = (date: string) => {
+    setOpenDates((current) => {
+      const next = new Set(current);
+      if (next.has(date)) next.delete(date); else next.add(date);
+      return next;
+    });
+  };
+
   return (
     <main className="archivePage">
       <section className="archiveShell">
@@ -53,14 +67,18 @@ export function ArchiveClient() {
           <h1 className="posterTitle">THE<br />ARCHIVE</h1>
           {loading ? <p className="archiveState">ARCHIVE WIRD GELADEN …</p> : null}
           {!loading && groups.length === 0 ? <p className="archiveState">NO PAST ISSUES YET.</p> : null}
-          {groups.map((group) => (
+          {groups.map((group) => {
+            const isOpen = openDates.has(group.date);
+            const panelId = `archive-${group.date}`;
+            return (
             <section className="archiveIssue" key={group.date}>
-              <div className="archiveIssueTitle">
+              <button type="button" className="archiveIssueTitle" aria-expanded={isOpen} aria-controls={panelId} onClick={() => toggleDate(group.date)}>
                 <span>ISSUE</span>
                 <strong>{formatDate(group.date)}</strong>
                 <small>{group.releases.length} RELEASES</small>
-              </div>
-              <div className="archiveGrid">
+                <i aria-hidden="true">{isOpen ? "−" : "+"}</i>
+              </button>
+              <div className="archiveGrid" id={panelId} hidden={!isOpen}>
                 {group.releases.map((release) => (
                   <article className="archiveCard" key={release.id}>
                     <div className="archiveCover">
@@ -79,7 +97,8 @@ export function ArchiveClient() {
                 ))}
               </div>
             </section>
-          ))}
+            );
+          })}
         </div>
         <nav className="archiveBottomNav" aria-label="Hauptnavigation">
           <a href="../">DROP</a>
