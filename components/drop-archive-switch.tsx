@@ -98,6 +98,29 @@ export function DropArchiveSwitch() {
     }
   };
 
+  useEffect(() => {
+    const syncModeWithHash = () => {
+      if (window.location.hash === "#archive") void openArchive();
+      else setMode("current");
+    };
+
+    syncModeWithHash();
+    window.addEventListener("hashchange", syncModeWithHash);
+    return () => window.removeEventListener("hashchange", syncModeWithHash);
+  }, [loading, releases.length]);
+
+  const showCurrent = () => {
+    setMode("current");
+    if (window.location.hash === "#archive") {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
+  };
+
+  const showArchive = () => {
+    if (window.location.hash === "#archive") void openArchive();
+    else window.location.hash = "archive";
+  };
+
   const toggleSaved = (id: string) => {
     setSavedIds((current) => {
       const next = new Set(current);
@@ -136,9 +159,9 @@ export function DropArchiveSwitch() {
     <>
       {switchHost ? createPortal(
         <div className="issueArchiveSwitch" role="tablist" aria-label="Drop-Ausgabe auswählen">
-          <button type="button" role="tab" aria-selected={mode === "current"} className={mode === "current" ? "active" : undefined} onClick={() => setMode("current")}>ISSUE 29</button>
+          <button type="button" role="tab" aria-selected={mode === "current"} className={mode === "current" ? "active" : undefined} onClick={showCurrent}>ISSUE 29</button>
           <span aria-hidden="true">/</span>
-          <button type="button" role="tab" aria-selected={mode === "archive"} className={mode === "archive" ? "active" : undefined} onClick={() => void openArchive()}>ARCHIV</button>
+          <button type="button" role="tab" aria-selected={mode === "archive"} className={mode === "archive" ? "active" : undefined} onClick={showArchive}>ARCHIV</button>
         </div>,
         switchHost,
       ) : null}
