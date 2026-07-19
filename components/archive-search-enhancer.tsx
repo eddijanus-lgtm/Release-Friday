@@ -72,13 +72,10 @@ export function ArchiveSearchEnhancer() {
   }, []);
 
   const past = useMemo(() => {
-    const dates = [...new Set(releases.map((release) => release.releaseDate))].sort().reverse();
-    const currentDate = dates[0];
     const needle = query.trim().toLocaleLowerCase("de-DE");
     return releases.filter((release) => {
-      const isPast = Boolean(currentDate) && release.releaseDate < currentDate;
       const matches = !needle || `${release.title} ${release.artist}`.toLocaleLowerCase("de-DE").includes(needle);
-      return isPast && matches;
+      return Boolean(release.archivedAt) && matches;
     });
   }, [query, releases]);
 

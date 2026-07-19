@@ -14,6 +14,43 @@ function newestIssue(releases: MusicRelease[]) {
   return latestDate ? releases.filter((release) => release.releaseDate === latestDate) : releases;
 }
 
+function normalizeReleaseIdentity(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("de-DE")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function releaseIdentity(release: MusicRelease) {
+  return [
+    release.releaseDate,
+    normalizeReleaseIdentity(release.artist),
+    normalizeReleaseIdentity(release.title),
+  ].join("|");
+}
+
+function mergePublishedReleaseSources(initialReleases: MusicRelease[], published: MusicRelease[]) {
+  // Supabase rows are authoritative for archive state and replace matching
+  // generated rows even though both sources use different technical IDs.
+  const archivedIssueDates = new Set(
+    published.filter((release) => release.archivedAt).map((release) => release.releaseDate),
+  );
+  const byIdentity = new Map(
+    initialReleases.map((release) => [releaseIdentity(release), release]),
+  );
+  published.forEach((release) => byIdentity.set(releaseIdentity(release), release));
+
+  const active = [...byIdentity.values()].filter((release) => {
+    if (release.archivedAt) return false;
+    const generated = !release.id.startsWith("manual-");
+    return !(generated && archivedIssueDates.has(release.releaseDate));
+  });
+
+  return newestIssue(active);
+}
+
 function putFeaturedFirst(releases: MusicRelease[], featuredId?: string) {
   if (!featuredId) return releases;
   const index = releases.findIndex((release) => release.id === featuredId);
@@ -36,17 +73,12 @@ async function fetchFeatured(issueDate: string, signal: AbortSignal): Promise<Fe
 }
 
 export function usePublishedReleases(initialReleases: MusicRelease[], _targetDate?: string) {
-  // Supabase contains manual/editorial releases while the generated list
-  // contains the automatically discovered radar. Keep both sources visible.
   const [releases, setReleases] = useState(() => isSupabaseConfigured() ? [] : newestIssue(initialReleases));
   const [scope, setScope] = useState<FeaturedScope>("ALL");
   const [featured, setFeatured] = useState<FeaturedMap>({});
 
   useEffect(() => {
     const controller = new AbortController();
-    // Without browser-safe Supabase configuration, keep the generated list.
-    // This covers local QA/offline builds without treating a missing backend as
-    // an authoritative empty release issue.
     if (!isSupabaseConfigured()) {
       setReleases(newestIssue(initialReleases));
       return () => controller.abort();
@@ -54,11 +86,7 @@ export function usePublishedReleases(initialReleases: MusicRelease[], _targetDat
 
     void fetchPublishedManualReleases(undefined, controller.signal)
       .then((published) => {
-        const byId = new Map(initialReleases.map((release) => [release.id, release]));
-        published.forEach((release) => byId.set(release.id, release));
-        const all = [...byId.values()];
-        const issue = _targetDate ? all.filter((release) => release.releaseDate === _targetDate) : all;
-        setReleases(issue.length ? issue : newestIssue(all));
+        setReleases(mergePublishedReleaseSources(initialReleases, published));
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
