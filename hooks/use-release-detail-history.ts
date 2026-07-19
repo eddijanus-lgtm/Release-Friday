@@ -18,11 +18,22 @@ function historyState(value: unknown = window.history.state): Record<string, unk
 }
 
 function currentScrollPosition() {
-  return document.scrollingElement?.scrollTop ?? window.scrollY;
+  // Safari can report a zero scrollingElement offset while window.scrollY
+  // still contains the real page position. Keep the largest browser signal
+  // so a swipe-back from the inline archive does not restore to the top.
+  return Math.max(
+    window.scrollY,
+    window.pageYOffset,
+    document.scrollingElement?.scrollTop ?? 0,
+    document.documentElement.scrollTop,
+    document.body?.scrollTop ?? 0,
+  );
 }
 
 function restoreScrollPosition(top: number) {
   window.scrollTo({ top, left: 0, behavior: "auto" });
+  document.documentElement.scrollTop = top;
+  if (document.body) document.body.scrollTop = top;
 }
 
 export function useReleaseDetailHistory({ isOpen, owner, onClose }: UseReleaseDetailHistoryOptions) {
@@ -106,12 +117,14 @@ export function useReleaseDetailHistory({ isOpen, owner, onClose }: UseReleaseDe
       restoreScrollPosition(top);
       secondFrame = window.requestAnimationFrame(() => restoreScrollPosition(top));
     });
-    const finalCheck = window.setTimeout(() => restoreScrollPosition(top), 120);
+    const firstCheck = window.setTimeout(() => restoreScrollPosition(top), 120);
+    const finalCheck = window.setTimeout(() => restoreScrollPosition(top), 320);
 
     restoreScrollPosition(top);
     return () => {
       window.cancelAnimationFrame(firstFrame);
       window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(firstCheck);
       window.clearTimeout(finalCheck);
     };
   }, [isOpen]);
