@@ -99,6 +99,15 @@ Der 00:02-Uhr-Lauf prüft die Singles mit einem als `Spotify artist image fallba
 
 Der Sync fügt nur neue Kombinationen aus Interpret, Titel und Release-Datum ein. Er überschreibt keine vorhandenen Datensätze, abgesehen von den beschriebenen, eng begrenzten Cover-Ersetzungen und der Bereinigung fälschlich als Release-Link gespeicherter Spotify-Künstlerseiten. Der Artist-Image-Fallback ist beim ersten Donnerstagslauf deaktiviert und ab Donnerstag 18:30 Uhr deutscher Zeit aktiviert. Die Berliner Uhrzeit dient zusätzlich zum Cron-Auslöser als Freigabe, damit eine GitHub-Schedule-Verzögerung den Fallback nicht blockiert. Das Spotify-Profil muss exakt zum zuerst genannten Artist passen; nur das Profilbild wird als Cover gespeichert und die Quelle enthält `Spotify artist image fallback`. `spotify_url` bleibt leer, bis ein echter Release-Link gefunden wird. Fehlt auch das Bild, wird die Single übersprungen. Fehlende Bilder stehen im Workflow-Log und in `releaseDataMetadata.missingCovers`.
 
+## Öffentliche Freischaltung am Mittwoch
+
+- Veröffentlichte Releases werden unabhängig vom Upload-Zeitpunkt auf Mittwoch 00:00 Uhr `Europe/Berlin` vor ihrem Release-Freitag terminiert.
+- Bis zu diesem Zeitpunkt zeigt der öffentliche Drop ausschließlich **NEW RELEASES APPEAR IN** mit Countdown.
+- Im Admin-Bereich bleiben die terminierten Releases vorher sichtbar und bearbeitbar.
+- Ab Mittwoch erscheint der normale Drop; sein bestehender Countdown bis Freitag bleibt unverändert.
+- Eine Änderung des Release-Datums berechnet den Freischaltzeitpunkt automatisch neu.
+- Nach der Archivierung am Sonntag um 00:01 Uhr beginnt der Countdown für die nächste Ausgabe.
+
 Beim manuellen Start ersetzt `refresh_artist_image_covers` vorhandene Artist-Bilder, sobald ein echtes Release-Cover gefunden wird. Änderungen an den Importskripten lösen denselben eng begrenzten Nachlauf nach dem Merge automatisch aus. Die Prüfung des Berliner 00:02-Uhr-Fensters gilt nur für geplante Cron-Läufe; ein ausdrücklich gestarteter manueller oder Push-Nachlauf wird nicht blockiert.
 
 Ein Cover-Nachlauf überspringt die allgemeine MusicBrainz-/Apple-Discovery und konzentriert sich auf die Reddit-Kandidaten. Meldet Spotify ein langes Rate-Limit, wartet der Lauf nicht bis zum GitHub-Timeout, sondern nutzt Apple Music für die verbleibenden Release-Cover. Der separate Workflow **Refresh real release data** läuft nur geplant oder manuell; ein Importskript-Push startet dadurch keine zweite parallele Vollrecherche.

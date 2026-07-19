@@ -40,7 +40,11 @@ function enhanceCountdown(root: HTMLElement) {
 
   sourceNode.classList.add("spotifyCountdownSource");
   const sourceLabel = sourceNode.previousElementSibling;
-  if (sourceLabel instanceof HTMLElement) sourceLabel.classList.add("spotifyCountdownSource");
+  if (sourceLabel instanceof HTMLElement) {
+    const revealCountdown = root.classList.contains("releaseRevealCountdown") && source !== "LIVE";
+    sourceLabel.classList.toggle("spotifyCountdownLabel", revealCountdown);
+    sourceLabel.classList.toggle("spotifyCountdownSource", !revealCountdown);
+  }
 
   let presentation = root.querySelector<HTMLElement>(":scope > .spotifyCountdownPresentation");
   if (!presentation) {
