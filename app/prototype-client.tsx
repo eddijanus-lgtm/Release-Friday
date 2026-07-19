@@ -7,6 +7,7 @@ import { usePublishedReleases } from "@/hooks/use-published-releases";
 import { useReleaseDetailHistory } from "@/hooks/use-release-detail-history";
 import { useSwipeBack } from "@/hooks/use-swipe-back";
 import { ReleaseRowCover } from "@/components/release-row-cover";
+import { getPublicReleaseSchedule, type PublicReleaseSchedule } from "@/lib/releases/release-schedule";
 
 type Tab = "drop" | "find" | "stash" | "me";
 type Region = "ALL" | ReleaseCountry;
@@ -73,11 +74,14 @@ function useClock() {
   return now;
 }
 
-function useCountdown(date: string) {
+function useCountdown(target: string | number | null) {
   const [label, setLabel] = useState("--:--:--");
   useEffect(() => {
+    if (target === null) return;
+
     const update = () => {
-      const seconds = Math.max(0, Math.floor((parseLocalDate(date).getTime() - Date.now()) / 1000));
+      const targetTime = typeof target === "number" ? target : parseLocalDate(target).getTime();
+      const seconds = Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
       if (seconds <= 0) {
         setLabel("LIVE");
         return;
@@ -90,8 +94,21 @@ function useCountdown(date: string) {
     update();
     const id = window.setInterval(update, 1000);
     return () => window.clearInterval(id);
-  }, [date]);
+  }, [target]);
   return label;
+}
+
+function usePublicReleaseSchedule() {
+  const [schedule, setSchedule] = useState<PublicReleaseSchedule | null>(null);
+
+  useEffect(() => {
+    const update = () => setSchedule(getPublicReleaseSchedule());
+    update();
+    const id = window.setInterval(update, 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return schedule;
 }
 
 function BrandHeader({ label = "ISSUE 29", date }: { label?: string; date?: string }) {
@@ -251,6 +268,23 @@ function HomeScreen({ releases, savedIds, region, onRegionChange, onOpen, onTogg
             body="The editorial radar is quiet for this region. Verified releases appear here after approval."
           />
         )}
+      </div>
+    </section>
+  );
+}
+
+function ReleaseRevealScreen({ schedule }: { schedule: PublicReleaseSchedule | null }) {
+  const countdown = useCountdown(schedule?.revealAt ?? null);
+
+  return (
+    <section className="tapeScreen dropScreen">
+      <BrandHeader label="NEXT DROP" date={schedule ? formatShortDate(schedule.releaseDate) : "NEXT FRIDAY"} />
+      <TapeStrip />
+      <div className="screenInner releaseRevealGate">
+        <div className="countdownTape releaseRevealCountdown" role="timer" aria-label="New releases appear in">
+          <span>NEW RELEASES APPEAR IN</span>
+          <strong>{countdown}</strong>
+        </div>
       </div>
     </section>
   );
@@ -426,7 +460,12 @@ function loadSavedIds(releases: MusicRelease[]) {
 }
 
 export function PrototypeClient({ releases: initialReleases, metadata }: PrototypeClientProps) {
-  const releases = usePublishedReleases(initialReleases, metadata?.targetDate);
+  const schedule = usePublicReleaseSchedule();
+  const releases = usePublishedReleases(
+    initialReleases,
+    schedule?.releaseDate,
+    schedule?.isRevealOpen ?? false,
+  );
   const [activeTab, setActiveTab] = useState<Tab>("drop");
   const [selectedRelease, setSelectedRelease] = useState<MusicRelease | null>(null);
   const [region, setRegion] = useState<Region>("ALL");
@@ -483,6 +522,8 @@ export function PrototypeClient({ releases: initialReleases, metadata }: Prototy
     content = <StashScreen releases={releases} savedIds={savedIds} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   } else if (activeTab === "me") {
     content = <ProfileScreen releases={releases} savedCount={savedCount} metadata={metadata} />;
+  } else if (!schedule?.isRevealOpen) {
+    content = <ReleaseRevealScreen schedule={schedule} />;
   } else {
     content = <HomeScreen releases={releases} savedIds={savedIds} region={region} onRegionChange={setRegion} onOpen={openRelease} onToggleSaved={toggleSaved} />;
   }

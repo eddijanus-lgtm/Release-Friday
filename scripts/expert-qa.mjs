@@ -15,6 +15,49 @@ const report = {
 };
 
 const browser = await chromium.launch({ headless: true });
+
+async function freezeClock(context, isoTimestamp) {
+  await context.addInitScript(({ isoTimestamp }) => {
+    const NativeDate = Date;
+    const frozenTime = new NativeDate(isoTimestamp).getTime();
+
+    class FrozenDate extends NativeDate {
+      constructor(...args) {
+        super(...(args.length ? args : [frozenTime]));
+      }
+
+      static now() {
+        return frozenTime;
+      }
+    }
+
+    window.Date = FrozenDate;
+  }, { isoTimestamp });
+}
+
+const gateContext = await browser.newContext({
+  viewport: report.viewport,
+  deviceScaleFactor: 2,
+  isMobile: true,
+  hasTouch: true,
+  userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 Version/18.5 Mobile/15E148 Safari/604.1",
+});
+await freezeClock(gateContext, "2026-07-19T08:00:00Z");
+const gatePage = await gateContext.newPage();
+await gatePage.goto(baseUrl, { waitUntil: "networkidle" });
+await gatePage.waitForTimeout(350);
+await gatePage.screenshot({ path: `${outputDir}/00-reveal-countdown-mobile.png`, fullPage: true });
+const revealLabel = (await gatePage.locator(".releaseRevealCountdown").innerText()).trim();
+report.checkpoints.releaseRevealGate = {
+  label: revealLabel,
+  featuredCount: await gatePage.locator(".dropHero").count(),
+  navigation: await gatePage.locator(".tapeNav button").allInnerTexts(),
+};
+assert(revealLabel.includes("NEW RELEASES APPEAR IN"), "The Wednesday reveal countdown label is missing.");
+assert(report.checkpoints.releaseRevealGate.featuredCount === 0, "A release is visible before the Wednesday reveal.");
+assert(report.checkpoints.releaseRevealGate.navigation.join(" ") === "DROP FIND STASH ME", "The countdown navigation labels are incorrect.");
+await gateContext.close();
+
 const context = await browser.newContext({
   viewport: report.viewport,
   deviceScaleFactor: 2,
@@ -22,6 +65,7 @@ const context = await browser.newContext({
   hasTouch: true,
   userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 Version/18.5 Mobile/15E148 Safari/604.1",
 });
+await freezeClock(context, "2026-07-17T12:00:00Z");
 const page = await context.newPage();
 page.on("console", (message) => {
   if (["error", "warning"].includes(message.type())) report.consoleErrors.push({ type: message.type(), text: message.text() });

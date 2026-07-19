@@ -72,30 +72,43 @@ async function fetchFeatured(issueDate: string, signal: AbortSignal): Promise<Fe
   return Object.fromEntries(rows.map((row) => [row.scope, `manual-${row.release_id}`])) as FeaturedMap;
 }
 
-export function usePublishedReleases(initialReleases: MusicRelease[], _targetDate?: string) {
-  const [releases, setReleases] = useState(() => isSupabaseConfigured() ? [] : newestIssue(initialReleases));
+export function usePublishedReleases(
+  initialReleases: MusicRelease[],
+  targetDate?: string,
+  isRevealOpen = true,
+) {
+  const [releases, setReleases] = useState<MusicRelease[]>([]);
   const [scope, setScope] = useState<FeaturedScope>("ALL");
   const [featured, setFeatured] = useState<FeaturedMap>({});
 
   useEffect(() => {
     const controller = new AbortController();
+    const currentFallback = targetDate
+      ? initialReleases.filter((release) => release.releaseDate === targetDate)
+      : initialReleases;
+
+    if (!isRevealOpen) {
+      setReleases([]);
+      return () => controller.abort();
+    }
+
     if (!isSupabaseConfigured()) {
-      setReleases(newestIssue(initialReleases));
+      setReleases(newestIssue(currentFallback));
       return () => controller.abort();
     }
 
     void fetchPublishedManualReleases(undefined, controller.signal)
       .then((published) => {
-        setReleases(mergePublishedReleaseSources(initialReleases, published));
+        setReleases(mergePublishedReleaseSources(currentFallback, published));
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
-          setReleases(newestIssue(initialReleases));
+          setReleases(newestIssue(currentFallback));
         }
       });
 
     return () => controller.abort();
-  }, [initialReleases]);
+  }, [initialReleases, isRevealOpen, targetDate]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
