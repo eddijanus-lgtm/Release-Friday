@@ -39,6 +39,7 @@ export function DropArchiveSwitch() {
   const [mode, setMode] = useState<"current" | "archive">("current");
   const [releases, setReleases] = useState<MusicRelease[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
+  const [openDates, setOpenDates] = useState<Set<string>>(() => new Set());
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -118,6 +119,19 @@ export function DropArchiveSwitch() {
     }));
   }, [releases]);
 
+  useEffect(() => {
+    if (!groups.length) return;
+    setOpenDates((current) => current.size ? current : new Set([groups[0].date]));
+  }, [groups]);
+
+  const toggleDate = (date: string) => {
+    setOpenDates((current) => {
+      const next = new Set(current);
+      if (next.has(date)) next.delete(date); else next.add(date);
+      return next;
+    });
+  };
+
   return (
     <>
       {switchHost ? createPortal(
@@ -134,10 +148,15 @@ export function DropArchiveSwitch() {
           <h1 className="posterTitle">THE<br />ARCHIVE</h1>
           {loading ? <p className="inlineArchiveState">ARCHIVE WIRD GELADEN …</p> : null}
           {!loading && groups.length === 0 ? <p className="inlineArchiveState">NO PAST ISSUES YET.</p> : null}
-          {groups.map((group) => (
+          {groups.map((group) => {
+            const isOpen = openDates.has(group.date);
+            const panelId = `inline-archive-${group.date}`;
+            return (
             <section className="inlineArchiveIssue" key={group.date}>
-              <header><span>ISSUE</span><strong>{formatDate(group.date)}</strong><small>{group.releases.length} RELEASES</small></header>
-              <div className="homeRows inlineArchiveRows">
+              <button type="button" className="inlineArchiveIssueToggle" aria-expanded={isOpen} aria-controls={panelId} onClick={() => toggleDate(group.date)}>
+                <span>ISSUE</span><strong>{formatDate(group.date)}</strong><small>{group.releases.length} RELEASES</small><i aria-hidden="true">{isOpen ? "−" : "+"}</i>
+              </button>
+              <div className="homeRows inlineArchiveRows" id={panelId} hidden={!isOpen}>
                 {group.releases.map((release, index) => (
                   <article className="tapeRow" key={release.id}>
                     <button type="button" className="tapeRowMain" onClick={() => openRelease(release)} aria-label={`${release.artist} – ${release.title} öffnen`}>
@@ -151,7 +170,8 @@ export function DropArchiveSwitch() {
                 ))}
               </div>
             </section>
-          ))}
+            );
+          })}
         </div>,
         archiveHost,
       ) : null}
