@@ -285,6 +285,7 @@ function ReleaseRevealScreen({ schedule }: { schedule: PublicReleaseSchedule | n
           <span>NEW RELEASES APPEAR IN</span>
           <strong>{countdown}</strong>
         </div>
+        <a className="releaseRevealArchiveLink" href="./archive/">go to the Archive</a>
       </div>
     </section>
   );
