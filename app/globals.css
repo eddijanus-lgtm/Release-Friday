@@ -738,6 +738,75 @@ button.settingRow, a.settingRow { cursor: pointer; }
   accent-color: var(--lime);
 }
 
+.magazineComposer {
+  gap: 10px;
+}
+
+.magazineComposerToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5,8,5,.5);
+}
+
+.magazineComposerToolbar button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #3c4737;
+  border-radius: 7px;
+  background: #111710;
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  cursor: pointer;
+}
+
+.magazineComposerToolbar button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.magazineComposer textarea {
+  min-height: 380px;
+  resize: vertical;
+}
+
+.magazineInlineImages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.magazineInlineImage {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255,255,255,.03);
+}
+
+.magazineInlineImage img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.magazineInlineImage button {
+  width: 100%;
+  min-height: 32px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: #ff8d7f;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .adminActions {
   display: grid;
   grid-template-columns: .8fr 1.2fr;
@@ -852,6 +921,47 @@ button.settingRow, a.settingRow { cursor: pointer; }
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 15px;
   line-height: 1.62;
+}
+
+.magazinePreviewCopy h2 {
+  margin: 4px 0 0;
+  color: var(--paper);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 30px;
+  line-height: .92;
+  text-transform: uppercase;
+}
+
+.magazinePreviewCopy blockquote {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--lime);
+  background: rgba(189,255,0,.08);
+  color: var(--paper);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.magazinePreviewCopy ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: #c5cbc0;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.magazinePreviewInlineImage {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 10px;
 }
 
 .magazinePreviewSource {
