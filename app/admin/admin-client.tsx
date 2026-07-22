@@ -5,7 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 import { ReleaseForm } from "@/components/admin/release-form";
-import { MagazineEditor, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
+import { MagazineEditor, type BodyImage, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
@@ -262,11 +262,12 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
     }
   }
 
-  async function saveMagazinePost(values: MagazinePostValues, cover: File | null, existing?: MagazinePost) {
+  async function saveMagazinePost(values: MagazinePostValues, cover: File | null, bodyImages: BodyImage[], existing?: MagazinePost): Promise<MagazinePost> {
     const client = getSupabaseBrowserClient();
     if (!client || !session) throw new Error("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
     setBusy(true);
     let newStoragePath: string | null = null;
+    const uploadedBodyPaths: string[] = [];
     try {
       let coverUrl = values.coverUrl ?? existing?.coverUrl ?? null;
       let storagePath = existing?.storagePath ?? null;
@@ -281,6 +282,19 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
         coverUrl = client.storage.from("magazine-assets").getPublicUrl(newStoragePath).data.publicUrl;
         storagePath = newStoragePath;
       }
+      let body = values.body;
+      for (const image of bodyImages) {
+        const imagePath = `${session.user.id}/body/${crypto.randomUUID()}.${safeFileExtension(image.file)}`;
+        const { error: uploadError } = await client.storage.from("magazine-assets").upload(imagePath, image.file, {
+          cacheControl: "31536000",
+          contentType: image.file.type,
+          upsert: false,
+        });
+        if (uploadError) throw new Error("Ein eingefügtes Artikelbild konnte nicht hochgeladen werden.");
+        uploadedBodyPaths.push(imagePath);
+        const publicUrl = client.storage.from("magazine-assets").getPublicUrl(imagePath).data.publicUrl;
+        body = body.replaceAll(`local:${image.id}`, publicUrl);
+      }
 
       const payload = {
         title: values.title,
@@ -289,7 +303,7 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
         category: values.category,
         region: values.region,
         excerpt: values.excerpt,
-        body: values.body,
+        body,
         facts: values.facts,
         cover_url: coverUrl,
         storage_path: storagePath,
@@ -311,8 +325,10 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
       if (newStoragePath && existing?.storagePath && existing.storagePath !== newStoragePath) {
         await client.storage.from("magazine-assets").remove([existing.storagePath]);
       }
+      return mapped;
     } catch (error) {
       if (newStoragePath) await client.storage.from("magazine-assets").remove([newStoragePath]);
+      if (uploadedBodyPaths.length > 0) await client.storage.from("magazine-assets").remove(uploadedBodyPaths);
       throw error;
     } finally { setBusy(false); }
   }
