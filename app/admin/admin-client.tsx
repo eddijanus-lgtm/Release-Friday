@@ -34,13 +34,34 @@ type ReleaseRow = {
 };
 
 type MagazineRow = {
-  id: string; title: string; slug: string; scope: MagazinePost["scope"]; excerpt: string; body: string;
-  cover_url: string | null; source_url: string | null; author_name: string | null;
-  status: MagazinePost["status"]; published_at: string | null;
+  id: string; title: string; slug: string; scope: MagazinePost["scope"];
+  category: MagazinePost["category"]; region: MagazinePost["region"];
+  excerpt: string; body: string; facts: string[] | null;
+  cover_url: string | null; storage_path: string | null; source_url: string | null; author_name: string | null;
+  status: MagazinePost["status"]; release_week: string | null; publish_at: string | null; featured: boolean | null; published_at: string | null;
 };
 
 function mapMagazinePost(row: MagazineRow): MagazinePost {
-  return { id: row.id, title: row.title, slug: row.slug, scope: row.scope, excerpt: row.excerpt, body: row.body, coverUrl: row.cover_url ?? undefined, sourceUrl: row.source_url ?? undefined, authorName: row.author_name ?? undefined, status: row.status, publishedAt: row.published_at ?? undefined };
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    scope: row.scope,
+    category: row.category,
+    region: row.region,
+    excerpt: row.excerpt,
+    body: row.body,
+    facts: row.facts ?? [],
+    coverUrl: row.cover_url ?? undefined,
+    storagePath: row.storage_path ?? undefined,
+    sourceUrl: row.source_url ?? undefined,
+    authorName: row.author_name ?? undefined,
+    status: row.status,
+    releaseWeek: row.release_week ?? undefined,
+    publishAt: row.publish_at ?? undefined,
+    featured: row.featured ?? false,
+    publishedAt: row.published_at ?? undefined,
+  };
 }
 
 function safeFileExtension(file: File) {
@@ -133,7 +154,7 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
         if (active) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
         const { data: magazineRows } = await client
           .from("magazine_posts")
-          .select("id,title,slug,scope,excerpt,body,cover_url,source_url,author_name,status,published_at")
+          .select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at")
           .order("created_at", { ascending: false });
         if (active) setMagazinePosts(((magazineRows ?? []) as MagazineRow[]).map(mapMagazinePost));
       });
@@ -241,20 +262,58 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
     }
   }
 
-  async function saveMagazinePost(values: MagazinePostValues, existing?: MagazinePost) {
+  async function saveMagazinePost(values: MagazinePostValues, cover: File | null, existing?: MagazinePost) {
     const client = getSupabaseBrowserClient();
     if (!client || !session) throw new Error("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
     setBusy(true);
+    let newStoragePath: string | null = null;
     try {
-      const payload = { title: values.title, slug: values.slug, scope: values.scope, excerpt: values.excerpt, body: values.body, cover_url: nullable(values.coverUrl), source_url: nullable(values.sourceUrl), author_name: nullable(values.authorName), status: values.status };
+      let coverUrl = values.coverUrl ?? existing?.coverUrl ?? null;
+      let storagePath = existing?.storagePath ?? null;
+      if (cover) {
+        newStoragePath = `${session.user.id}/${crypto.randomUUID()}.${safeFileExtension(cover)}`;
+        const { error: uploadError } = await client.storage.from("magazine-assets").upload(newStoragePath, cover, {
+          cacheControl: "31536000",
+          contentType: cover.type,
+          upsert: false,
+        });
+        if (uploadError) throw new Error("Das Magazinbild konnte nicht hochgeladen werden.");
+        coverUrl = client.storage.from("magazine-assets").getPublicUrl(newStoragePath).data.publicUrl;
+        storagePath = newStoragePath;
+      }
+
+      const payload = {
+        title: values.title,
+        slug: values.slug,
+        scope: values.scope,
+        category: values.category,
+        region: values.region,
+        excerpt: values.excerpt,
+        body: values.body,
+        facts: values.facts,
+        cover_url: coverUrl,
+        storage_path: storagePath,
+        source_url: nullable(values.sourceUrl),
+        author_name: nullable(values.authorName),
+        status: values.status,
+        release_week: values.releaseWeek ?? null,
+        publish_at: values.publishAt ? new Date(values.publishAt).toISOString() : null,
+        featured: values.featured,
+      };
       const query = existing ? client.from("magazine_posts").update(payload).eq("id", existing.id) : client.from("magazine_posts").insert({ ...payload, created_by: session.user.id });
-      const { data, error } = await query.select("id,title,slug,scope,excerpt,body,cover_url,source_url,author_name,status,published_at").single();
+      const { data, error } = await query.select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at").single();
       if (error || !data) {
         if (error?.code === "23505") throw new Error("Dieser URL-Slug existiert bereits. Bitte passe ihn an.");
         throw new Error("Der Magazinbeitrag konnte nicht gespeichert werden.");
       }
       const mapped = mapMagazinePost(data as MagazineRow);
       setMagazinePosts((current) => existing ? current.map((post) => post.id === mapped.id ? mapped : post) : [mapped, ...current]);
+      if (newStoragePath && existing?.storagePath && existing.storagePath !== newStoragePath) {
+        await client.storage.from("magazine-assets").remove([existing.storagePath]);
+      }
+    } catch (error) {
+      if (newStoragePath) await client.storage.from("magazine-assets").remove([newStoragePath]);
+      throw error;
     } finally { setBusy(false); }
   }
 
