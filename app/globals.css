@@ -738,7 +738,166 @@ button.settingRow, a.settingRow { cursor: pointer; }
   accent-color: var(--lime);
 }
 
+.magazineStudio {
+  display: grid;
+  gap: 12px;
+}
+
+.magazineStudioBar {
+  position: sticky;
+  z-index: 15;
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto auto;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(5,8,5,.94);
+  backdrop-filter: blur(14px);
+}
+
+.magazineStudioBar label,
+.magazineDetailBox label {
+  display: grid;
+  gap: 6px;
+}
+
+.magazineStudioBar span,
+.magazineDetailBox span,
+.magazineTitleField span,
+.magazineTeaserField span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.magazineStudioBar select,
+.magazineDetailBox select,
+.magazineDetailBox input,
+.magazineDetailBox textarea,
+.magazineTitleField input,
+.magazineTeaserField textarea {
+  width: 100%;
+  border: 1px solid #283225;
+  border-radius: 8px;
+  background: #070b06;
+  color: var(--paper);
+  font: inherit;
+  outline: none;
+}
+
+.magazineStudioBar select {
+  min-height: 40px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.magazineStudioGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 30%);
+  gap: 12px;
+  align-items: start;
+}
+
+.magazineWriterPane,
+.magazineSidePane {
+  display: grid;
+  gap: 12px;
+}
+
+.magazineWriterPane {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    rgba(17,23,16,.76);
+  background-size: 100% 44px;
+}
+
+.magazineTitleField,
+.magazineTeaserField {
+  display: grid;
+  gap: 7px;
+}
+
+.magazineTitleField input {
+  min-height: 72px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(38px, 12vw, 62px);
+  line-height: .9;
+  text-transform: uppercase;
+}
+
+.magazineTeaserField textarea {
+  min-height: 92px;
+  padding: 12px;
+  resize: vertical;
+  color: #d7ddd1;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.magazineHeroDrop {
+  position: relative;
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed #586452;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 80% 15%, rgba(189,255,0,.14), transparent 25%),
+    #0b100a;
+  cursor: pointer;
+}
+
+.magazineHeroDrop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.magazineHeroDrop div {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 8px;
+  text-align: center;
+}
+
+.magazineHeroDrop strong {
+  color: var(--lime);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.magazineHeroDrop img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.magazineHeroDrop.hasPreview {
+  border-style: solid;
+  border-color: var(--lime);
+}
+
 .magazineComposer {
+  display: grid;
   gap: 10px;
 }
 
@@ -773,6 +932,161 @@ button.settingRow, a.settingRow { cursor: pointer; }
 .magazineComposer textarea {
   min-height: 380px;
   resize: vertical;
+}
+
+.magazineSidePane {
+  position: sticky;
+  top: 78px;
+}
+
+.magazineLivePreview,
+.magazineDetailBox {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(17,23,16,.72);
+}
+
+.magazineLivePreviewHeader {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.magazineLivePreviewHeader span,
+.magazineDetailBox summary {
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.magazineLivePreviewHeader button {
+  border: 0;
+  background: transparent;
+  color: var(--paper);
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.magazineMiniPreview {
+  display: grid;
+  gap: 12px;
+  padding: 10px;
+}
+
+.magazineMiniPreview img,
+.magazineMiniPreviewEmpty {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: cover;
+  background: #070b06;
+}
+
+.magazineMiniPreviewEmpty {
+  display: grid;
+  place-items: center;
+  color: #394235;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.magazineMiniPreview span {
+  color: var(--lime);
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.magazineMiniPreview h2 {
+  margin: 7px 0 8px;
+  color: var(--paper);
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 32px;
+  line-height: .92;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.magazineMiniPreview p {
+  margin: 0;
+  color: #c5cbc0;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.magazineMiniPreview ul {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.magazineMiniPreview li {
+  padding-left: 8px;
+  border-left: 2px solid var(--lime);
+  color: var(--paper);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.magazineDetailBox {
+  padding: 0;
+}
+
+.magazineDetailBox summary {
+  min-height: 44px;
+  padding: 14px 12px;
+  cursor: pointer;
+}
+
+.magazineDetailBox label,
+.magazineDetailBox textarea {
+  margin: 0 10px 10px;
+}
+
+.magazineDetailBox input,
+.magazineDetailBox select,
+.magazineDetailBox textarea {
+  min-height: 40px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.magazineDetailBox textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+@media (max-width: 760px) {
+  .magazineStudioBar {
+    grid-template-columns: 1fr 1fr;
+    top: 0;
+  }
+
+  .magazineStudioBar .adminSecondaryButton,
+  .magazineStudioBar .adminPrimaryButton {
+    grid-column: span 1;
+  }
+
+  .magazineStudioGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .magazineSidePane {
+    position: static;
+  }
 }
 
 .magazineInlineImages {
