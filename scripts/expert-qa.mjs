@@ -204,7 +204,7 @@ await page.waitForURL(/\/admin\/?$/);
 await settle();
 await page.screenshot({ path: `${outputDir}/07-release-inbox-mobile.png`, fullPage: true });
 assert((await text(".adminTitle"))?.replace(/\s+/g, " ").toUpperCase() === "PRÜFEN. FREIGEBEN.", "The release inbox is missing.");
-assert((await text(".inboxStats"))?.includes("3 gefunden"), "The inbox summary is incorrect.");
+assert((await text(".inboxStats"))?.replace(/\s+/g, " ").includes("3 gefunden"), "The inbox summary is incorrect.");
 assert(await page.locator(".inboxCandidate").count() === 2, "Problem-first filtering is incorrect.");
 await page.getByRole("button", { name: "ALLE 3", exact: true }).click();
 await settle();
