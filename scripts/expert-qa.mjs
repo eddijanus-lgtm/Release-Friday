@@ -202,9 +202,11 @@ assert(await adminLink.count() === 1, "The private release editor is not linked 
 await adminLink.click();
 await page.waitForURL(/\/admin\/?$/);
 await settle();
+await page.locator(".inboxStats").waitFor({ state: "visible" });
 await page.screenshot({ path: `${outputDir}/07-release-inbox-mobile.png`, fullPage: true });
 assert((await text(".adminTitle"))?.replace(/\s+/g, " ").toUpperCase() === "PRÜFEN. FREIGEBEN.", "The release inbox is missing.");
-assert((await text(".inboxStats"))?.replace(/\s+/g, " ").includes("3 gefunden"), "The inbox summary is incorrect.");
+const inboxStats = await page.locator(".inboxStats strong").allInnerTexts();
+assert(inboxStats.join(",") === "3,1,2", `The inbox summary is incorrect: ${inboxStats.join(",")}`);
 assert(await page.locator(".inboxCandidate").count() === 2, "Problem-first filtering is incorrect.");
 await page.getByRole("button", { name: "ALLE 3", exact: true }).click();
 await settle();
