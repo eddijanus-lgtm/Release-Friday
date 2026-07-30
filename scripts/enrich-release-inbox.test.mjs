@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
+import { createServer } from "node:http";
 import test from "node:test";
-import { SPOTIFY_ARTIST_IMAGE_SOURCE } from "./fetch-releases.mjs";
+import { SPOTIFY_ARTIST_IMAGE_SOURCE, fetchResponse } from "./fetch-releases.mjs";
 import {
   candidateToRelease,
   imageFormat,
@@ -91,4 +92,22 @@ test("candidate mapping keeps catalog fields separate", () => {
 test("image signatures reject non-images", () => {
   assert.equal(imageFormat(Uint8Array.from([0xff, 0xd8, 0xff])).contentType, "image/jpeg");
   assert.throws(() => imageFormat(new TextEncoder().encode("not an image")));
+});
+
+test("permanent catalog request errors fail without repeated retries", async (context) => {
+  let requests = 0;
+  const server = createServer((_request, response) => {
+    requests += 1;
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ error: "invalid request" }));
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  context.after(() => server.close());
+  const address = server.address();
+  assert.equal(typeof address, "object");
+  await assert.rejects(
+    fetchResponse(`http://127.0.0.1:${address.port}/search`, {}, 4),
+    /400 Bad Request/,
+  );
+  assert.equal(requests, 1);
 });

@@ -220,6 +220,7 @@ async function fetchResponse(url, options = {}, attempts = 4) {
       return response;
     } catch (error) {
       if (FAST_FAIL_RATE_LIMITS && error?.status === 429) throw error;
+      if (error?.status && error.status !== 429 && error.status < 500) throw error;
       lastError = error;
       if (attempt < attempts) await sleep(attempt * 2500);
     }
@@ -644,7 +645,8 @@ async function searchSpotifyForRelease(release, targetDate, accessToken) {
       url.searchParams.set("q", query);
       url.searchParams.set("type", "track,album");
       url.searchParams.set("market", market);
-      url.searchParams.set("limit", "20");
+      // Spotify currently caps Search at 10 results per requested item type.
+      url.searchParams.set("limit", "10");
       const response = await fetchResponse(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
       const payload = await response.json();
       const track = (payload.tracks?.items ?? []).find((item) => spotifyItemMatch(item, release, targetDate));
@@ -900,6 +902,7 @@ export {
   candidatesNeedingCoverLookup,
   getCurrentOrUpcomingFriday,
   getSpotifyToken,
+  fetchResponse,
   loadStoredReleases,
   primaryArtistName,
   releaseLookupMarkets,
