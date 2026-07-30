@@ -10,6 +10,7 @@ const headers = {
 };
 
 const githubDispatchUrl = "https://api.github.com/repos/eddijanus-lgtm/Release-Friday/actions/workflows/import-spotify-release.yml/dispatches";
+const inboxEnrichmentDispatchUrl = "https://api.github.com/repos/eddijanus-lgtm/Release-Friday/actions/workflows/enrich-release-inbox.yml/dispatches";
 
 function reply(status: number, body: unknown) {
   return new Response(JSON.stringify(body), { status, headers });
@@ -237,6 +238,31 @@ async function dispatchImport(requestId: string, token: string) {
   }
 }
 
+async function dispatchInboxEnrichment(runId: string, targetDate: string, token: string) {
+  const response = await fetch(inboxEnrichmentDispatchUrl, {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "User-Agent": "release-friday-inbox-enrichment",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+    body: JSON.stringify({
+      ref: "main",
+      inputs: {
+        run_id: runId,
+        release_date: targetDate,
+        allow_artist_image_fallback: "false",
+      },
+    }),
+  });
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 1000);
+    throw new Error(`Inbox enrichment dispatch failed with HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+  }
+}
+
 Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers });
   const configured = Deno.env.get("RELEASE_FRIDAY_ACTION_API_KEY") ?? "";
@@ -323,6 +349,17 @@ Deno.serve(async (request: Request) => {
         p_candidates: storedCandidates,
       });
       if (ingestError) throw ingestError;
+      let enrichmentStatus = "not_configured";
+      const githubToken = Deno.env.get("GITHUB_ACTIONS_TOKEN") ?? "";
+      if (githubToken) {
+        try {
+          await dispatchInboxEnrichment(run.id, targetDate, githubToken);
+          enrichmentStatus = "dispatched";
+        } catch (error) {
+          enrichmentStatus = "dispatch_failed";
+          console.warn(error);
+        }
+      }
 
       return reply(202, {
         action: "inbox_ready",
@@ -331,8 +368,31 @@ Deno.serve(async (request: Request) => {
         received: payload.candidates.length,
         deduplicated: storedCandidates.length,
         unresolved_covers: storedCandidates.filter((candidate) => !candidate.storage_path).length,
+        enrichment_status: enrichmentStatus,
         result: ingestResult,
         review_url: "https://eddijanus-lgtm.github.io/Release-Friday/admin/",
+      });
+    }
+
+    const enrichMatch = path.match(/^\/inbox\/runs\/([0-9a-fA-F-]{36})\/enrich$/);
+    if (request.method === "POST" && enrichMatch) {
+      const { data: run, error } = await supabase
+        .from("release_import_runs")
+        .select("id,target_date,status")
+        .eq("id", enrichMatch[1])
+        .maybeSingle();
+      if (error) throw error;
+      if (!run) return reply(404, { error: "Inbox run not found" });
+      if (!["collecting", "review"].includes(run.status)) {
+        return reply(409, { error: "Only active Inbox runs can be enriched" });
+      }
+      const githubToken = Deno.env.get("GITHUB_ACTIONS_TOKEN") ?? "";
+      if (!githubToken) return reply(503, { error: "Inbox enrichment is not configured" });
+      await dispatchInboxEnrichment(run.id, run.target_date, githubToken);
+      return reply(202, {
+        action: "inbox_enrichment_dispatched",
+        run_id: run.id,
+        target_date: run.target_date,
       });
     }
 

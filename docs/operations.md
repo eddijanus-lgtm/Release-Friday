@@ -31,6 +31,17 @@ Der geschützte Editor läuft unter:
 
 Der breite Suchlauf wird über `POST /inbox/runs` an die Edge Function übertragen. Wiederholte Pässe für dasselbe Datum und denselben Regionsumfang ergänzen den aktiven Lauf idempotent.
 
+Direkt nach der Übertragung startet automatisch **Enrich Release Inbox**. Der Hintergrundlauf:
+
+1. sucht für jeden noch coverlosen Kandidaten zuerst ein nach Artist, Titel und Datum passendes Spotify-Release;
+2. nutzt Apple Music als unabhängigen Katalog-Fallback;
+3. speichert das externe Bild dauerhaft im Bucket `release-covers`;
+4. ergänzt echte Spotify-/Apple-Release-Links, ohne vorhandene Redaktionswerte zu überschreiben;
+5. verwendet nach Donnerstag 18:30 Uhr bei weiterhin fehlendem Release-Cover ein exakt passendes Spotify-Artist-Bild und markiert es in der Inbox als **Artist-Bild**;
+6. überspringt Kandidaten, die während des Laufs manuell geändert wurden.
+
+Für einen gezielten Nachlauf kann die Edge Function mit `POST /inbox/runs/<run-id>/enrich` aufgerufen oder der GitHub-Workflow manuell mit Run-ID beziehungsweise Release-Datum gestartet werden. Der Lauf verändert ausschließlich offene Inbox-Kandidaten und veröffentlicht nichts.
+
 ## Pflicht- und optionale Felder
 
 Pflicht:

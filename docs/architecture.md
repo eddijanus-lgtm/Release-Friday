@@ -59,13 +59,15 @@ Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen 
 ### Release-Inbox
 
 1. Ein Multi-Source-Suchlauf sendet bis zu 300 DE/US-Kandidaten gesammelt an die Edge Function `release-friday-import`.
-2. Die Edge Function normalisiert den Fund, führt gleiche Kandidaten zusammen und speichert erreichbare JPEG-, PNG-, WebP- oder AVIF-Cover deterministisch im Bucket `release-covers`.
-3. `release_import_runs` repräsentiert einen aktiven Wochenlauf. Spätere Such- und Friday-Catch-up-Pässe ergänzen denselben Lauf.
-4. `release_candidates` speichert Kandidaten, Plattformlinks, Confidence, Warnungen und sämtliche Quellen. Die Identität besteht aus Release-Datum, normalisierten Artist-Credits und Titel; der Release-Typ ist kein Identitätsbestandteil.
-5. Der Admin sieht zuerst Problemfälle. Vollständige Kandidaten sind für die Sammelfreigabe vorausgewählt.
-6. `accept_release_candidates` verarbeitet die Auswahl atomar. Neue Releases werden angelegt, bestehende nur um leere Metadaten ergänzt.
-7. Kandidaten ohne im eigenen Storage gesichertes Cover bleiben bei einer Veröffentlichung offen und blockieren den Rest nicht.
-8. `release_import_changes` protokolliert den Batch. `rollback_release_import` nimmt nur unverändert gebliebene Batch-Änderungen zurück und schützt spätere manuelle Bearbeitungen.
+2. Die Edge Function normalisiert den Fund, führt gleiche Kandidaten zusammen und speichert bereits mitgelieferte JPEG-, PNG-, WebP- oder AVIF-Cover deterministisch im Bucket `release-covers`.
+3. Nach jedem Batch startet sie automatisch den reinen Datenlauf **Enrich Release Inbox**. Dieser gleicht offene Kandidaten streng nach Artist, Titel und Datum gegen Spotify sowie Apple Music ab, speichert Treffer im eigenen Storage und ergänzt ausschließlich bislang leere Plattformfelder.
+4. Ist nach Donnerstag 18:30 Uhr `Europe/Berlin` noch kein Release-Cover verfügbar, darf ein exakt passendes Spotify-Artist-Bild als sichtbar markierter redaktioneller Fallback verwendet werden. Die Künstlerseite bleibt Provenienz und wird nie als Release-Link gespeichert.
+5. `release_import_runs` repräsentiert einen aktiven Wochenlauf. Spätere Such- und Friday-Catch-up-Pässe ergänzen denselben Lauf.
+6. `release_candidates` speichert Kandidaten, Plattformlinks, Confidence, Warnungen und sämtliche Quellen. Die Identität besteht aus Release-Datum, normalisierten Artist-Credits und Titel; der Release-Typ ist kein Identitätsbestandteil.
+7. Der Admin sieht zuerst Problemfälle. Vollständige Kandidaten sind für die Sammelfreigabe vorausgewählt.
+8. `accept_release_candidates` verarbeitet die Auswahl atomar. Neue Releases werden angelegt, bestehende nur um leere Metadaten ergänzt.
+9. Kandidaten ohne im eigenen Storage gesichertes Cover bleiben bei einer Veröffentlichung offen und blockieren den Rest nicht.
+10. `release_import_changes` protokolliert den Batch. `rollback_release_import` nimmt nur unverändert gebliebene Batch-Änderungen zurück und schützt spätere manuelle Bearbeitungen.
 
 ## Datenmodell
 

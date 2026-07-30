@@ -23,6 +23,8 @@ const ROLLING_RELEASE_MARKETS = ["NZ", "AU"];
 const APPLE_REQUEST_INTERVAL_MS = Number(process.env.APPLE_REQUEST_INTERVAL_MS || 3200);
 const SPOTIFY_REQUEST_INTERVAL_MS = Number(process.env.SPOTIFY_REQUEST_INTERVAL_MS || 6000);
 const SPOTIFY_RATE_LIMIT_MAX_WAIT_MS = Number(process.env.SPOTIFY_RATE_LIMIT_MAX_WAIT_MS || 120000);
+const SPOTIFY_COVER_QUERY_LIMIT = Number(process.env.SPOTIFY_COVER_QUERY_LIMIT || 5);
+const APPLE_COVER_QUERY_LIMIT = Number(process.env.APPLE_COVER_QUERY_LIMIT || 3);
 const MAX_COVER_CANDIDATES = Number(process.env.MAX_COVER_CANDIDATES || 0);
 const DISCOVERY_ENABLED = !["1", "true"].includes(String(process.env.SKIP_DISCOVERY || "").toLowerCase());
 const REFRESH_ARTIST_IMAGE_COVERS = ["1", "true"].includes(
@@ -634,7 +636,7 @@ function spotifyItemMatch(item, release, targetDate) {
 async function searchSpotifyForRelease(release, targetDate, accessToken) {
   if (!accessToken) return null;
   const markets = releaseLookupMarkets(targetDate, release.country);
-  const queries = releaseQueryVariants(release).slice(0, 5);
+  const queries = releaseQueryVariants(release).slice(0, Math.max(1, SPOTIFY_COVER_QUERY_LIMIT));
 
   for (const market of markets) {
     for (const query of queries) {
@@ -661,9 +663,14 @@ async function searchSpotifyForRelease(release, targetDate, accessToken) {
   return null;
 }
 
-async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED) {
+async function searchSpotifyArtistImage(
+  release,
+  accessToken,
+  fallbackEnabled = SPOTIFY_ARTIST_IMAGE_FALLBACK_REQUESTED,
+  options = {},
+) {
   if (!fallbackEnabled || !accessToken) return null;
-  if (release.kind !== "single" || release.source !== "r/GermanRap") return null;
+  if (!options.allowAnyCandidate && (release.kind !== "single" || release.source !== "r/GermanRap")) return null;
 
   const primaryArtist = primaryArtistName(release.artist);
   if (!primaryArtist) return null;
@@ -690,12 +697,15 @@ async function searchSpotifyArtistImage(release, accessToken, fallbackEnabled = 
     spotifyUrl: undefined,
     description: release.description,
     source: `${release.source} + ${SPOTIFY_ARTIST_IMAGE_SOURCE}`,
+    artistImageSourceUrl: artist.external_urls.spotify,
   };
 }
 
 async function searchAppleForRelease(release, targetDate) {
   const storefronts = releaseLookupMarkets(targetDate, release.country);
-  const queries = releaseQueryVariants(release).filter((query) => !query.includes(":")).slice(0, 3);
+  const queries = releaseQueryVariants(release)
+    .filter((query) => !query.includes(":"))
+    .slice(0, Math.max(1, APPLE_COVER_QUERY_LIMIT));
 
   for (const storefront of storefronts) {
     for (const query of queries) {
@@ -884,4 +894,18 @@ async function main() {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE) await main();
 
-export { artistFallbackCutoffOpen, candidatesNeedingCoverLookup, getCurrentOrUpcomingFriday, loadStoredReleases, primaryArtistName, releaseLookupMarkets, searchSpotifyArtistImage, spotifyRateLimitWaitMs };
+export {
+  SPOTIFY_ARTIST_IMAGE_SOURCE,
+  artistFallbackCutoffOpen,
+  candidatesNeedingCoverLookup,
+  getCurrentOrUpcomingFriday,
+  getSpotifyToken,
+  loadStoredReleases,
+  primaryArtistName,
+  releaseLookupMarkets,
+  searchAppleForRelease,
+  searchSpotifyArtistImage,
+  searchSpotifyForRelease,
+  spotifyArtistImageFallbackEnabled,
+  spotifyRateLimitWaitMs,
+};
