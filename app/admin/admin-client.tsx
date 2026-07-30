@@ -9,7 +9,93 @@ import { ReleaseForm } from "@/components/admin/release-form";
 import { MagazineEditor, type BodyImage, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
+import type {
+  EditableRelease,
+  ReleaseCandidate,
+  ReleaseCreateResult,
+  ReleaseFormValues,
+  ReleaseImportRun,
+  ReleaseWriteStatus,
+} from "@/types/admin";
+
+const expertQaInboxFixture: {
+  runs: ReleaseImportRun[];
+  candidates: ReleaseCandidate[];
+} | undefined = process.env.NEXT_PUBLIC_EXPERT_QA === "1" ? {
+  runs: [{
+    id: "qa-run-2026-07-31",
+    targetDate: "2026-07-31",
+    regionScope: "ALL",
+    source: "expert_qa",
+    status: "review",
+    stats: { total: 3, pending: 3 },
+    createdAt: "2026-07-30T18:30:00.000Z",
+  }],
+  candidates: [
+    {
+      id: "qa-ready",
+      runId: "qa-run-2026-07-31",
+      artist: "Little Simz",
+      title: "North Star",
+      releaseDate: "2026-07-31",
+      country: "US",
+      kind: "single",
+      description: "Little Simz returns with a new Friday single.",
+      genres: ["Hip-Hop/Rap"],
+      spotifyUrl: "https://open.spotify.com/search/Little%20Simz%20North%20Star",
+      sourceUrl: "https://example.com/qa/little-simz",
+      coverUrl: "https://i.scdn.co/image/ab6761610000e5eb48fe0c3f3a3f14791a6d38f2",
+      storagePath: "qa/little-simz-north-star.webp",
+      coverKind: "official",
+      primarySource: "Official artist announcement",
+      sources: [{ name: "Official", url: "https://example.com/qa/little-simz" }],
+      confidence: "confirmed",
+      warningCodes: [],
+      status: "pending",
+      createdAt: "2026-07-30T18:31:00.000Z",
+    },
+    {
+      id: "qa-missing-cover",
+      runId: "qa-run-2026-07-31",
+      artist: "Karo",
+      title: "Nachts wach",
+      releaseDate: "2026-07-31",
+      country: "DE",
+      kind: "single",
+      description: "Ein plausibler Fund, dessen Cover noch geprüft werden muss.",
+      genres: ["Deutschrap"],
+      sourceUrl: "https://example.com/qa/karo",
+      coverKind: "missing",
+      primarySource: "r/GermanRap",
+      sources: [{ name: "Reddit", url: "https://example.com/qa/karo" }],
+      confidence: "uncertain",
+      warningCodes: ["missing_stored_cover", "weak_source"],
+      status: "pending",
+      createdAt: "2026-07-30T18:32:00.000Z",
+    },
+    {
+      id: "qa-duplicate",
+      runId: "qa-run-2026-07-31",
+      artist: "Vince Staples",
+      title: "Summer Work",
+      releaseDate: "2026-07-31",
+      country: "US",
+      kind: "ep",
+      description: "A likely release with a possible existing match.",
+      genres: ["Hip-Hop/Rap"],
+      sourceUrl: "https://example.com/qa/vince-staples",
+      coverUrl: "https://i.scdn.co/image/ab6761610000e5eb559d87aa17eba92b456a3e44",
+      storagePath: "qa/vince-staples-summer-work.webp",
+      coverKind: "official",
+      primarySource: "Drop Watch",
+      sources: [{ name: "Drop Watch", url: "https://example.com/qa/vince-staples" }],
+      confidence: "likely",
+      warningCodes: ["possible_duplicate"],
+      status: "pending",
+      createdAt: "2026-07-30T18:33:00.000Z",
+    },
+  ],
+} : undefined;
 
 type AccessState = "loading" | "signed-out" | "checking" | "admin" | "denied" | "unconfigured";
 
@@ -361,6 +447,26 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
 
   const configured = isSupabaseConfigured();
   const showLogin = access === "signed-out" || access === "unconfigured";
+
+  if (expertQaInboxFixture) {
+    return (
+      <main className="adminPage">
+        <section className="adminPhone">
+          <AdminHeader email="qa@release-friday.test" />
+          <nav className="adminEditorTabs" aria-label="Admin-Bereich">
+            <button type="button" className="active">INBOX</button>
+            <button type="button">RELEASES</button>
+            <button type="button">MAGAZIN</button>
+          </nav>
+          <ReleaseInbox
+            qaFixture={expertQaInboxFixture}
+            onLogout={async () => undefined}
+            onReleasesChanged={async () => undefined}
+          />
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="adminPage">
