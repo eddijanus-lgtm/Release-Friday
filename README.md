@@ -18,6 +18,8 @@ Release Friday ist ein responsiver Release-Radar für deutsche und US-amerikanis
 - persönlicher Stash im lokalen Browser-Speicher
 - responsive iPhone- und iPad-Oberflächen
 - geschützter Admin-Bereich zum Anlegen, Bearbeiten, Veröffentlichen, als Entwurf Speichern und Löschen
+- mobile Release-Inbox für komplette DE/US-Suchläufe mit Problemfilter, Inline-Korrektur und Sammelfreigabe
+- normalisierter Dublettenschutz, Quellenhistorie und geschützte Rücknahme eines Wochenimports
 - automatische WebP-Komprimierung hochgeladener Cover vor dem Upload
 - Supabase Auth, Postgres, Row Level Security und Storage
 - automatischer Release-Import aus dem wöchentlichen r/GermanRap-Post und Musikplattformen über GitHub Actions
@@ -91,6 +93,7 @@ Bei `DEPLOY_TARGET=github-pages` wird ein statischer Export im Verzeichnis `out/
 
 - `.github/workflows/pages.yml` baut und veröffentlicht die Website.
 - `.github/workflows/sync-releases-to-supabase.yml` liest die r/GermanRap-Singleliste, löst offizielle Cover in rollenden Spotify-/Apple-Music-Märkten auf und fügt ausschließlich cover-geprüfte neue Datensätze in Supabase ein.
+- Die Edge Function `release-friday-import` übernimmt komplette Multi-Source-Funde in einem Request, speichert unterstützte Cover im eigenen Storage und legt sie in der privaten Release-Inbox ab.
 
 ## Projektstatus
 

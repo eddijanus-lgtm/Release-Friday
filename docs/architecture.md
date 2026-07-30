@@ -56,6 +56,17 @@ Die Startseite muss statisch exportierbar bleiben. Produktive Supabase-Abfragen 
 8. Beim 00:02-Uhr-Lauf werden ausschließlich automatisch als `Spotify artist image fallback` markierte Datensätze aktualisiert, wenn inzwischen ein eindeutiges Release-Cover verfügbar ist. Cover, Storage-Pfad, Plattformlink, Beschreibung und Quellenmarkierung werden anschließend verifiziert.
 9. Andere bestehende Datensätze und manuelle Änderungen werden nicht überschrieben.
 
+### Release-Inbox
+
+1. Ein Multi-Source-Suchlauf sendet bis zu 300 DE/US-Kandidaten gesammelt an die Edge Function `release-friday-import`.
+2. Die Edge Function normalisiert den Fund, führt gleiche Kandidaten zusammen und speichert erreichbare JPEG-, PNG-, WebP- oder AVIF-Cover deterministisch im Bucket `release-covers`.
+3. `release_import_runs` repräsentiert einen aktiven Wochenlauf. Spätere Such- und Friday-Catch-up-Pässe ergänzen denselben Lauf.
+4. `release_candidates` speichert Kandidaten, Plattformlinks, Confidence, Warnungen und sämtliche Quellen. Die Identität besteht aus Release-Datum, normalisierten Artist-Credits und Titel; der Release-Typ ist kein Identitätsbestandteil.
+5. Der Admin sieht zuerst Problemfälle. Vollständige Kandidaten sind für die Sammelfreigabe vorausgewählt.
+6. `accept_release_candidates` verarbeitet die Auswahl atomar. Neue Releases werden angelegt, bestehende nur um leere Metadaten ergänzt.
+7. Kandidaten ohne im eigenen Storage gesichertes Cover bleiben bei einer Veröffentlichung offen und blockieren den Rest nicht.
+8. `release_import_changes` protokolliert den Batch. `rollback_release_import` nimmt nur unverändert gebliebene Batch-Änderungen zurück und schützt spätere manuelle Bearbeitungen.
+
 ## Datenmodell
 
 ### `releases`
@@ -76,10 +87,17 @@ Fehlen Spotify, Apple Music oder YouTube, können Suchlinks aus Interpret und Ti
 
 Explizite Allowlist aus Supabase-User-IDs. Eine erfolgreiche Anmeldung allein verleiht keine Redaktionsrechte.
 
+### Release-Inbox-Tabellen
+
+- `release_import_runs` – ein idempotenter Such- und Prüflauf pro Freitag und Regionsumfang
+- `release_candidates` – normalisierte Kandidaten samt Quellen, Warnungen und Coverstatus
+- `release_import_changes` – Auditdaten für die sichere Rücknahme eines Batches
+
 ## Sicherheitsmodell
 
 - Anonyme Benutzer dürfen nur `published` Releases lesen.
 - Freigeschaltete Admins dürfen alle Releases lesen und verwalten.
+- Inbox-Tabellen und Batch-Funktionen sind ausschließlich für freigeschaltete Admins beziehungsweise den serverseitigen Import zugänglich.
 - Cover-Schreibrechte sind auf Admins und deren Benutzerordner beschränkt.
 - Der Publishable Key darf im Browser verwendet werden.
 - Der Service-Role-Key liegt ausschließlich im GitHub-Actions-Secret `SUPABASE_SERVICE_ROLE_KEY`.

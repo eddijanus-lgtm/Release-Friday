@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
+import { ReleaseInbox } from "@/components/admin/release-inbox";
 import { ReleaseForm } from "@/components/admin/release-form";
 import { MagazineEditor, type BodyImage, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -107,7 +108,18 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
   const [loginError, setLoginError] = useState<string>();
   const [releases, setReleases] = useState<EditableRelease[]>([]);
   const [magazinePosts, setMagazinePosts] = useState<MagazinePost[]>([]);
-  const [editor, setEditor] = useState<"releases" | "magazine">("releases");
+  const [editor, setEditor] = useState<"inbox" | "releases" | "magazine">("inbox");
+
+  const refreshReleases = useCallback(async () => {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    const { data: releaseRows, error } = await client
+      .from("releases")
+      .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
+      .order("release_date", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (!error) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
+  }, []);
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -146,16 +158,19 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
           return;
         }
         setAccess("admin");
-        const { data: releaseRows } = await client
-          .from("releases")
-          .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
-          .order("release_date", { ascending: false })
-          .order("created_at", { ascending: false });
-        if (active) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
-        const { data: magazineRows } = await client
-          .from("magazine_posts")
-          .select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at")
-          .order("created_at", { ascending: false });
+        const [releaseResult, magazineResult] = await Promise.all([
+          client
+            .from("releases")
+            .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
+            .order("release_date", { ascending: false })
+            .order("created_at", { ascending: false }),
+          client
+            .from("magazine_posts")
+            .select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at")
+            .order("created_at", { ascending: false }),
+        ]);
+        if (active) setReleases((((releaseResult.data ?? []) as ReleaseRow[]).map(mapRelease)));
+        const magazineRows = magazineResult.data;
         if (active) setMagazinePosts(((magazineRows ?? []) as MagazineRow[]).map(mapMagazinePost));
       });
     return () => { active = false; };
@@ -363,10 +378,13 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
         ) : null}
         {access === "admin" ? <>
           <nav className="adminEditorTabs" aria-label="Admin-Bereich">
+            <button type="button" className={editor === "inbox" ? "active" : ""} onClick={() => setEditor("inbox")}>INBOX</button>
             <button type="button" className={editor === "releases" ? "active" : ""} onClick={() => setEditor("releases")}>RELEASES</button>
             <button type="button" className={editor === "magazine" ? "active" : ""} onClick={() => setEditor("magazine")}>MAGAZIN</button>
           </nav>
-          {editor === "releases" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : <MagazineEditor busy={busy} posts={magazinePosts} onSave={saveMagazinePost} onDelete={deleteMagazinePost} />}
+          {editor === "inbox" ? <ReleaseInbox onLogout={logout} onReleasesChanged={refreshReleases} /> : null}
+          {editor === "releases" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : null}
+          {editor === "magazine" ? <MagazineEditor busy={busy} posts={magazinePosts} onSave={saveMagazinePost} onDelete={deleteMagazinePost} /> : null}
         </> : null}
       </section>
     </main>
