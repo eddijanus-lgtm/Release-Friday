@@ -31,6 +31,7 @@ jobs:
       - name: Build static app
         env:
           DEPLOY_TARGET: github-pages
+          NEXT_PUBLIC_EXPERT_QA: "1"
         run: npm run build
 
       - name: Prepare local GitHub Pages path
