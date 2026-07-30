@@ -54,6 +54,10 @@ type ReleaseCandidateRow = {
 type ReleaseInboxProps = {
   onLogout: () => Promise<void>;
   onReleasesChanged: () => Promise<void>;
+  qaFixture?: {
+    runs: ReleaseImportRun[];
+    candidates: ReleaseCandidate[];
+  };
 };
 
 const runSelect =
@@ -149,19 +153,30 @@ function formatBatch(result: ReleaseInboxBatchResult) {
   return parts.join(" · ") || "Keine Änderung";
 }
 
-export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps) {
-  const [runs, setRuns] = useState<ReleaseImportRun[]>([]);
-  const [candidates, setCandidates] = useState<ReleaseCandidate[]>([]);
+export function ReleaseInbox({ onLogout, onReleasesChanged, qaFixture }: ReleaseInboxProps) {
+  const [runs, setRuns] = useState<ReleaseImportRun[]>(qaFixture?.runs ?? []);
+  const [candidates, setCandidates] = useState<ReleaseCandidate[]>(qaFixture?.candidates ?? []);
   const [activeRunId, setActiveRunId] = useState<string>();
   const [filter, setFilter] = useState<InboxFilter>("problems");
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [editingId, setEditingId] = useState<string>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!qaFixture);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const [notice, setNotice] = useState<string>();
 
   const loadInbox = useCallback(async () => {
+    if (qaFixture) {
+      setRuns(qaFixture.runs);
+      setCandidates(qaFixture.candidates);
+      setActiveRunId((current) => (
+        current && qaFixture.runs.some((run) => run.id === current)
+          ? current
+          : qaFixture.runs[0]?.id
+      ));
+      setLoading(false);
+      return;
+    }
     const client = getSupabaseBrowserClient();
     if (!client) return;
     setLoading(true);
@@ -197,7 +212,7 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
         : nextRuns[0]?.id
     ));
     setLoading(false);
-  }, []);
+  }, [qaFixture]);
 
   useEffect(() => {
     void loadInbox();
@@ -256,7 +271,7 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
 
   async function acceptSelected() {
     const client = getSupabaseBrowserClient();
-    if (!client || !activeRun || selectedPendingIds.length === 0) return;
+    if (qaFixture || !client || !activeRun || selectedPendingIds.length === 0) return;
     setSaving(true);
     setError(undefined);
     setNotice(undefined);
@@ -276,7 +291,7 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
 
   async function rejectSelected() {
     const client = getSupabaseBrowserClient();
-    if (!client || !activeRun || selectedPendingIds.length === 0) return;
+    if (qaFixture || !client || !activeRun || selectedPendingIds.length === 0) return;
     setSaving(true);
     setError(undefined);
     setNotice(undefined);
@@ -294,7 +309,7 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
 
   async function rollbackRun() {
     const client = getSupabaseBrowserClient();
-    if (!client || !activeRun) return;
+    if (qaFixture || !client || !activeRun) return;
     if (!window.confirm(`Import für den ${activeRun.targetDate} zurücknehmen? Spätere manuelle Änderungen bleiben geschützt.`)) return;
     setSaving(true);
     setError(undefined);
@@ -313,7 +328,7 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
   async function saveCandidate(event: FormEvent<HTMLFormElement>, candidate: ReleaseCandidate) {
     event.preventDefault();
     const client = getSupabaseBrowserClient();
-    if (!client) return;
+    if (qaFixture || !client) return;
     const form = new FormData(event.currentTarget);
     const cover = form.get("cover");
     let uploadedPath: string | undefined;
@@ -524,8 +539,8 @@ export function ReleaseInbox({ onLogout, onReleasesChanged }: ReleaseInboxProps)
 
           <div className="inboxBatchBar">
             <span><strong>{selectedPendingIds.length}</strong> ausgewählt</span>
-            <button type="button" className="adminSecondaryButton" onClick={() => void rejectSelected()} disabled={saving || selectedPendingIds.length === 0}>VERWERFEN</button>
-            <button type="button" className="adminPrimaryButton" onClick={() => void acceptSelected()} disabled={saving || selectedPendingIds.length === 0}>
+            <button type="button" className="adminSecondaryButton" onClick={() => void rejectSelected()} disabled={Boolean(qaFixture) || saving || selectedPendingIds.length === 0}>VERWERFEN</button>
+            <button type="button" className="adminPrimaryButton" onClick={() => void acceptSelected()} disabled={Boolean(qaFixture) || saving || selectedPendingIds.length === 0}>
               {saving ? "VERARBEITET …" : `${selectedPendingIds.length} ÜBERNEHMEN`}
             </button>
           </div>
