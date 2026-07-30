@@ -18,6 +18,8 @@ import type {
   ReleaseWriteStatus,
 } from "@/types/admin";
 
+const expertQaCover = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20400'%3E%3Crect%20width='400'%20height='400'%20fill='%23111111'/%3E%3Ccircle%20cx='285'%20cy='110'%20r='105'%20fill='%23c7ff00'/%3E%3Cpath%20d='M35%20345L215%20120l150%20225z'%20fill='%23ff5b35'/%3E%3C/svg%3E";
+
 const expertQaInboxFixture: {
   runs: ReleaseImportRun[];
   candidates: ReleaseCandidate[];
@@ -44,7 +46,7 @@ const expertQaInboxFixture: {
       genres: ["Hip-Hop/Rap"],
       spotifyUrl: "https://open.spotify.com/search/Little%20Simz%20North%20Star",
       sourceUrl: "https://example.com/qa/little-simz",
-      coverUrl: "https://i.scdn.co/image/ab6761610000e5eb48fe0c3f3a3f14791a6d38f2",
+      coverUrl: expertQaCover,
       storagePath: "qa/little-simz-north-star.webp",
       coverKind: "official",
       primarySource: "Official artist announcement",
@@ -84,7 +86,7 @@ const expertQaInboxFixture: {
       description: "A likely release with a possible existing match.",
       genres: ["Hip-Hop/Rap"],
       sourceUrl: "https://example.com/qa/vince-staples",
-      coverUrl: "https://i.scdn.co/image/ab6761610000e5eb559d87aa17eba92b456a3e44",
+      coverUrl: expertQaCover,
       storagePath: "qa/vince-staples-summer-work.webp",
       coverKind: "official",
       primarySource: "Drop Watch",
