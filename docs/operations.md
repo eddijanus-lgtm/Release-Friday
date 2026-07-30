@@ -19,6 +19,18 @@ Der geschützte Editor läuft unter:
 5. Als Entwurf speichern oder direkt veröffentlichen.
 6. Bestehende Releases erscheinen unter **Alle Releases** und können bearbeitet oder gelöscht werden.
 
+## Release-Inbox prüfen
+
+1. `/admin/` öffnen und **INBOX** wählen.
+2. Den Suchlauf für den gewünschten Freitag auswählen.
+3. Unter **PRÜFEN** zuerst fehlende Cover, mögliche Dubletten, unsichere Daten und Quellenkonflikte bearbeiten.
+4. Vollständige Kandidaten sind bereits ausgewählt. Mit **BEREITE AUSWÄHLEN** lässt sich diese sichere Vorauswahl wiederherstellen.
+5. Einzelne Karten können inline korrigiert und mit einem neuen Cover ergänzt werden.
+6. Mit **ÜBERNEHMEN** wird die Auswahl als ein Datenbank-Batch veröffentlicht. Unvollständige Cover bleiben offen und blockieren die übrigen Kandidaten nicht.
+7. Falsch übernommene Wochen können über **LETZTEN WOCHENIMPORT ZURÜCKNEHMEN** zurückgesetzt werden. Releases mit späteren manuellen Änderungen werden dabei übersprungen.
+
+Der breite Suchlauf wird über `POST /inbox/runs` an die Edge Function übertragen. Wiederholte Pässe für dasselbe Datum und denselben Regionsumfang ergänzen den aktiven Lauf idempotent.
+
 ## Pflicht- und optionale Felder
 
 Pflicht:

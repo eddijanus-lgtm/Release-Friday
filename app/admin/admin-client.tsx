@@ -1,14 +1,103 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
+import { ReleaseInbox } from "@/components/admin/release-inbox";
 import { ReleaseForm } from "@/components/admin/release-form";
 import { MagazineEditor, type BodyImage, type MagazinePost, type MagazinePostValues } from "@/components/admin/magazine-editor";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import type { EditableRelease, ReleaseCreateResult, ReleaseFormValues, ReleaseWriteStatus } from "@/types/admin";
+import type {
+  EditableRelease,
+  ReleaseCandidate,
+  ReleaseCreateResult,
+  ReleaseFormValues,
+  ReleaseImportRun,
+  ReleaseWriteStatus,
+} from "@/types/admin";
+
+const expertQaCover = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20400'%3E%3Crect%20width='400'%20height='400'%20fill='%23111111'/%3E%3Ccircle%20cx='285'%20cy='110'%20r='105'%20fill='%23c7ff00'/%3E%3Cpath%20d='M35%20345L215%20120l150%20225z'%20fill='%23ff5b35'/%3E%3C/svg%3E";
+
+const expertQaInboxFixture: {
+  runs: ReleaseImportRun[];
+  candidates: ReleaseCandidate[];
+} | undefined = process.env.NEXT_PUBLIC_EXPERT_QA === "1" ? {
+  runs: [{
+    id: "qa-run-2026-07-31",
+    targetDate: "2026-07-31",
+    regionScope: "ALL",
+    source: "expert_qa",
+    status: "review",
+    stats: { total: 3, pending: 3 },
+    createdAt: "2026-07-30T18:30:00.000Z",
+  }],
+  candidates: [
+    {
+      id: "qa-ready",
+      runId: "qa-run-2026-07-31",
+      artist: "Little Simz",
+      title: "North Star",
+      releaseDate: "2026-07-31",
+      country: "US",
+      kind: "single",
+      description: "Little Simz returns with a new Friday single.",
+      genres: ["Hip-Hop/Rap"],
+      spotifyUrl: "https://open.spotify.com/search/Little%20Simz%20North%20Star",
+      sourceUrl: "https://example.com/qa/little-simz",
+      coverUrl: expertQaCover,
+      storagePath: "qa/little-simz-north-star.webp",
+      coverKind: "official",
+      primarySource: "Official artist announcement",
+      sources: [{ name: "Official", url: "https://example.com/qa/little-simz" }],
+      confidence: "confirmed",
+      warningCodes: [],
+      status: "pending",
+      createdAt: "2026-07-30T18:31:00.000Z",
+    },
+    {
+      id: "qa-missing-cover",
+      runId: "qa-run-2026-07-31",
+      artist: "Karo",
+      title: "Nachts wach",
+      releaseDate: "2026-07-31",
+      country: "DE",
+      kind: "single",
+      description: "Ein plausibler Fund, dessen Cover noch geprüft werden muss.",
+      genres: ["Deutschrap"],
+      sourceUrl: "https://example.com/qa/karo",
+      coverKind: "missing",
+      primarySource: "r/GermanRap",
+      sources: [{ name: "Reddit", url: "https://example.com/qa/karo" }],
+      confidence: "uncertain",
+      warningCodes: ["missing_stored_cover", "weak_source"],
+      status: "pending",
+      createdAt: "2026-07-30T18:32:00.000Z",
+    },
+    {
+      id: "qa-duplicate",
+      runId: "qa-run-2026-07-31",
+      artist: "Vince Staples",
+      title: "Summer Work",
+      releaseDate: "2026-07-31",
+      country: "US",
+      kind: "ep",
+      description: "A likely release with a possible existing match.",
+      genres: ["Hip-Hop/Rap"],
+      sourceUrl: "https://example.com/qa/vince-staples",
+      coverUrl: expertQaCover,
+      storagePath: "qa/vince-staples-summer-work.webp",
+      coverKind: "official",
+      primarySource: "Drop Watch",
+      sources: [{ name: "Drop Watch", url: "https://example.com/qa/vince-staples" }],
+      confidence: "likely",
+      warningCodes: ["possible_duplicate"],
+      status: "pending",
+      createdAt: "2026-07-30T18:33:00.000Z",
+    },
+  ],
+} : undefined;
 
 type AccessState = "loading" | "signed-out" | "checking" | "admin" | "denied" | "unconfigured";
 
@@ -107,7 +196,18 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
   const [loginError, setLoginError] = useState<string>();
   const [releases, setReleases] = useState<EditableRelease[]>([]);
   const [magazinePosts, setMagazinePosts] = useState<MagazinePost[]>([]);
-  const [editor, setEditor] = useState<"releases" | "magazine">("releases");
+  const [editor, setEditor] = useState<"inbox" | "releases" | "magazine">("inbox");
+
+  const refreshReleases = useCallback(async () => {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    const { data: releaseRows, error } = await client
+      .from("releases")
+      .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
+      .order("release_date", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (!error) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
+  }, []);
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -146,16 +246,19 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
           return;
         }
         setAccess("admin");
-        const { data: releaseRows } = await client
-          .from("releases")
-          .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
-          .order("release_date", { ascending: false })
-          .order("created_at", { ascending: false });
-        if (active) setReleases(((releaseRows ?? []) as ReleaseRow[]).map(mapRelease));
-        const { data: magazineRows } = await client
-          .from("magazine_posts")
-          .select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at")
-          .order("created_at", { ascending: false });
+        const [releaseResult, magazineResult] = await Promise.all([
+          client
+            .from("releases")
+            .select("id,artist,title,release_date,country,kind,track_count,description,genres,spotify_url,spotify_pre_save_url,apple_music_url,youtube_url,source_url,cover_url,storage_path,source,status")
+            .order("release_date", { ascending: false })
+            .order("created_at", { ascending: false }),
+          client
+            .from("magazine_posts")
+            .select("id,title,slug,scope,category,region,excerpt,body,facts,cover_url,storage_path,source_url,author_name,status,release_week,publish_at,featured,published_at")
+            .order("created_at", { ascending: false }),
+        ]);
+        if (active) setReleases((((releaseResult.data ?? []) as ReleaseRow[]).map(mapRelease)));
+        const magazineRows = magazineResult.data;
         if (active) setMagazinePosts(((magazineRows ?? []) as MagazineRow[]).map(mapMagazinePost));
       });
     return () => { active = false; };
@@ -347,6 +450,26 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
   const configured = isSupabaseConfigured();
   const showLogin = access === "signed-out" || access === "unconfigured";
 
+  if (expertQaInboxFixture) {
+    return (
+      <main className="adminPage">
+        <section className="adminPhone">
+          <AdminHeader email="qa@release-friday.test" />
+          <nav className="adminEditorTabs" aria-label="Admin-Bereich">
+            <button type="button" className="active">INBOX</button>
+            <button type="button">RELEASES</button>
+            <button type="button">MAGAZIN</button>
+          </nav>
+          <ReleaseInbox
+            qaFixture={expertQaInboxFixture}
+            onLogout={async () => undefined}
+            onReleasesChanged={async () => undefined}
+          />
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="adminPage">
       <section className="adminPhone">
@@ -363,10 +486,13 @@ export function AdminClient({ targetDate }: { targetDate: string }) {
         ) : null}
         {access === "admin" ? <>
           <nav className="adminEditorTabs" aria-label="Admin-Bereich">
+            <button type="button" className={editor === "inbox" ? "active" : ""} onClick={() => setEditor("inbox")}>INBOX</button>
             <button type="button" className={editor === "releases" ? "active" : ""} onClick={() => setEditor("releases")}>RELEASES</button>
             <button type="button" className={editor === "magazine" ? "active" : ""} onClick={() => setEditor("magazine")}>MAGAZIN</button>
           </nav>
-          {editor === "releases" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : <MagazineEditor busy={busy} posts={magazinePosts} onSave={saveMagazinePost} onDelete={deleteMagazinePost} />}
+          {editor === "inbox" ? <ReleaseInbox onLogout={logout} onReleasesChanged={refreshReleases} /> : null}
+          {editor === "releases" ? <ReleaseForm targetDate={targetDate} busy={busy} releases={releases} onSave={saveRelease} onDelete={deleteRelease} onLogout={logout} /> : null}
+          {editor === "magazine" ? <MagazineEditor busy={busy} posts={magazinePosts} onSave={saveMagazinePost} onDelete={deleteMagazinePost} /> : null}
         </> : null}
       </section>
     </main>

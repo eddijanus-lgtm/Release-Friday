@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: Release Friday Spotify Import Action
-  version: 1.0.0
-  description: Queue Spotify album and prerelease imports and check their processing status.
+  title: Release Friday Import Action
+  version: 2.0.0
+  description: Send a complete multi-source release search to the editorial inbox or use the legacy single Spotify import.
 servers:
   - url: https://otjvkorslczqdpzltjpj.supabase.co/functions/v1/release-friday-import
 security:
@@ -73,6 +73,72 @@ paths:
           description: Invalid request
         "401":
           description: Invalid API key
+  /inbox/runs:
+    post:
+      operationId: prepareReleaseInbox
+      summary: Send one complete weekly DE/US research batch to the Release Inbox
+      description: Use this after the Reddit-first and non-Reddit discovery passes are complete. Send all candidates in one request. Repeated calls for the same date update the active run instead of creating duplicate candidates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [target_date, candidates]
+              properties:
+                target_date:
+                  type: string
+                  format: date
+                region_scope:
+                  type: string
+                  enum: [ALL, DE, US]
+                  default: ALL
+                source:
+                  type: string
+                  maxLength: 120
+                  default: multi_source_research
+                candidates:
+                  type: array
+                  minItems: 1
+                  maxItems: 300
+                  items:
+                    $ref: "#/components/schemas/ReleaseCandidate"
+      responses:
+        "202":
+          description: The candidates were normalized, their covers were stored when possible, and the inbox is ready for review
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Invalid batch or candidate
+        "401":
+          description: Invalid API key
+        "409":
+          description: The same inbox run is currently being published
+  /inbox/runs/{runId}:
+    get:
+      operationId: getReleaseInboxStatus
+      summary: Read one Release Inbox run and all of its candidates
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current run and candidate status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "404":
+          description: Inbox run not found
   /imports/{requestId}:
     get:
       operationId: getSpotifyReleaseImportStatus
@@ -96,6 +162,96 @@ paths:
         "404":
           description: Request was not found
 components:
+  schemas:
+    ReleaseCandidate:
+      type: object
+      additionalProperties: false
+      required:
+        - artist
+        - title
+        - country
+        - kind
+        - primary_source
+      properties:
+        artist:
+          type: string
+          maxLength: 200
+        title:
+          type: string
+          maxLength: 240
+        release_date:
+          type: string
+          format: date
+          description: Defaults to the batch target_date.
+        country:
+          type: string
+          enum: [DE, US]
+        kind:
+          type: string
+          enum: [single, ep, album, mixtape]
+        track_count:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 999
+        description:
+          type: [string, "null"]
+          maxLength: 5000
+          description: Write DE candidates in German and US candidates in English.
+        genres:
+          type: array
+          maxItems: 12
+          items:
+            type: string
+        spotify_url:
+          type: [string, "null"]
+          format: uri
+        spotify_pre_save_url:
+          type: [string, "null"]
+          format: uri
+        apple_music_url:
+          type: [string, "null"]
+          format: uri
+        youtube_url:
+          type: [string, "null"]
+          format: uri
+        source_url:
+          type: [string, "null"]
+          format: uri
+        cover_url:
+          type: [string, "null"]
+          format: uri
+        cover_kind:
+          type: string
+          enum: [official, artist_fallback, missing]
+        primary_source:
+          type: string
+          maxLength: 120
+        sources:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            additionalProperties: false
+            required: [url]
+            properties:
+              name:
+                type: string
+                maxLength: 120
+              url:
+                type: string
+                format: uri
+              type:
+                type: string
+                maxLength: 60
+        confidence:
+          type: string
+          enum: [uncertain, likely, confirmed]
+          default: likely
+        warning_codes:
+          type: array
+          maxItems: 20
+          items:
+            type: string
   securitySchemes:
     bearerAuth:
       type: http
