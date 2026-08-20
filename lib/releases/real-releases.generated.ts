@@ -4,703 +4,749 @@
 import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
-  "targetDate": "2026-08-14",
-  "generatedAt": "2026-08-13T20:02:35.581Z",
+  "targetDate": "2026-08-21",
+  "generatedAt": "2026-08-20T17:08:50.851Z",
   "coverRequired": true,
   "spotifyCoverLookupEnabled": true,
   "spotifyArtistImageFallbackEnabled": true,
-  "spotifyArtistImageFallbackCount": 8,
+  "spotifyArtistImageFallbackCount": 15,
   "fetchedCount": 0,
   "curatedCount": 0,
-  "redditSingleCount": 41,
-  "candidateCount": 41,
+  "redditSingleCount": 43,
+  "candidateCount": 43,
   "storedReleaseCount": 0,
-  "coverLookupCandidateCount": 41,
-  "coverQualifiedCount": 39,
-  "skippedMissingCoverCount": 2,
+  "coverLookupCandidateCount": 43,
+  "coverQualifiedCount": 42,
+  "skippedMissingCoverCount": 1,
   "missingCovers": [
     {
-      "artist": "DXVE",
-      "title": "DEJAVU",
-      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/"
-    },
-    {
-      "artist": "Erda, Sampagne",
-      "title": "wie du liebst",
-      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/"
+      "artist": "Marlo, Mali",
+      "title": "Clipchaser",
+      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/"
     }
   ],
   "fetchError": null,
   "sourceCounts": {
-    "r/GermanRap + Spotify NZ": 30,
-    "r/GermanRap + Spotify artist image fallback": 8,
+    "r/GermanRap + Spotify NZ": 26,
+    "r/GermanRap + Spotify artist image fallback": 15,
     "r/GermanRap + Apple Music NZ": 1
   }
 } as const;
 
 export const realReleases: MusicRelease[] = [
   {
-    "id": "reddit-0a53665004dbac72",
-    "artist": "AQUA",
-    "title": "Low Lights",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-389c54a8daba3c2d",
+    "artist": "1 Tasche, JET069",
+    "title": "CD's im VIP",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "AQUA veröffentlicht die Single „Low Lights“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "1 Tasche, JET069 veröffentlicht die Single „CD's im VIP“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273dd3cc36874e7cabd8f35ff88",
-    "spotifyUrl": "https://open.spotify.com/track/1zxpc1xDLxA4gzaUZhPF2H"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273177f9150cf478c0bc06dbfee",
+    "spotifyUrl": "https://open.spotify.com/track/7wxAmMr94OjZ2D80Ef1p1j"
   },
   {
-    "id": "reddit-3f7bfe23167d4e15",
+    "id": "reddit-513860ba885e6059",
     "artist": "Aymen",
-    "title": "Chaba",
-    "releaseDate": "2026-08-14",
+    "title": "Drunk in Love",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Aymen veröffentlicht die Single „Chaba“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Aymen veröffentlicht die Single „Drunk in Love“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735078c883c70a1e4e7174bece",
-    "spotifyUrl": "https://open.spotify.com/track/648yOfxcjEeR5EQ1933Sya"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ab36843ad217c308c03c79aa",
+    "spotifyUrl": "https://open.spotify.com/track/6vHCbs4JIkd9uGBRfchWDN"
   },
   {
-    "id": "reddit-6a53e9a5349fd77d",
-    "artist": "Azo, KG Family",
-    "title": "Papaya",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-9896c562312bf6fa",
+    "artist": "Baba F",
+    "title": "Er ist da drüben",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Azo, KG Family veröffentlicht die Single „Papaya“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732cb230f85708cd56c1a4b5ff",
-    "spotifyUrl": "https://open.spotify.com/track/1wv7ugnZ6AHlJzZGijcHMw"
-  },
-  {
-    "id": "reddit-15dffdb3624f2993",
-    "artist": "badmómzjay, JUMPA",
-    "title": "BACK2BUSINESS (RED BULL 64 BARS)",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "badmómzjay, JUMPA veröffentlicht die Single „BACK2BUSINESS (RED BULL 64 BARS)“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273036c8cbd1e9039a7143988bb",
-    "spotifyUrl": "https://open.spotify.com/track/09rArXfldYQWGhq1kIjXJP"
-  },
-  {
-    "id": "reddit-ddc0ec794441611d",
-    "artist": "CALLI",
-    "title": "WINE UP",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "CALLI veröffentlicht die Single „WINE UP“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273af06f89f1627233efb20ae6f",
-    "spotifyUrl": "https://open.spotify.com/track/6s2j0vRZXYGrO7eoN3Pth5"
-  },
-  {
-    "id": "reddit-ca0a19dd92c58ba5",
-    "artist": "Cr7z",
-    "title": "Shinbu",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Cr7z veröffentlicht die Single „Shinbu“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273b736d64d1de906fcfeccdebc",
-    "spotifyUrl": "https://open.spotify.com/track/0UTZBiSY7CJXYS8tnbcvn6"
-  },
-  {
-    "id": "reddit-0f0d4f6c52f213ef",
-    "artist": "Danny Deadweight, LOCKJAW",
-    "title": "348",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Danny Deadweight, LOCKJAW veröffentlicht die Single „348“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2738cbcafceb188e8c0b281809d",
-    "spotifyUrl": "https://open.spotify.com/track/75RlM45ZwDHlTE0p7iM6kJ"
-  },
-  {
-    "id": "reddit-50911904b0cd2e3c",
-    "artist": "Drogu",
-    "title": "Bruce Banner",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Drogu veröffentlicht die Single „Bruce Banner“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27303a2b73466b5adcb53ed9676",
-    "spotifyUrl": "https://open.spotify.com/track/5fLPxmHa7dMy9q9TFbvYXQ"
-  },
-  {
-    "id": "reddit-f96289faba7614ac",
-    "artist": "Eddin, Valexus",
-    "title": "Meine Welt (Valexus Remix)",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Eddin, Valexus veröffentlicht die Single „Meine Welt (Valexus Remix)“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273d0842456b925a9bb58adc989",
-    "spotifyUrl": "https://open.spotify.com/track/7wWfvKYu9qxTM8T6kbvgFs"
-  },
-  {
-    "id": "reddit-083cb99d78dc96f7",
-    "artist": "EGO",
-    "title": "Outside",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "EGO veröffentlicht die Single „Outside“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Baba F veröffentlicht die Single „Er ist da drüben“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb2307263f9b86646101f04eaa",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/2L3W8TmknCpxsOCiZQixyl"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27342c7f0158e5f6290f58a918d",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/3dRfIFn2ITahu7IN1xdcR7"
   },
   {
-    "id": "reddit-1490057987c133fb",
-    "artist": "Fatoni, TABY",
-    "title": "Komm auf die Party",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-7209dc6f68fb079b",
+    "artist": "Blender, absent",
+    "title": "Schweigepflicht",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Fatoni, TABY veröffentlicht die Single „Komm auf die Party“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Blender, absent veröffentlicht die Single „Schweigepflicht“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2730164588c37d0e4b50d12a0a7",
-    "spotifyUrl": "https://open.spotify.com/track/4UREmkizdqtGENJdNQcejJ"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273f5a7f57c694801dc62d383a0",
+    "spotifyUrl": "https://open.spotify.com/track/12Twlhs4oejhMEdQ6SGwRE"
   },
   {
-    "id": "reddit-c76baa5cc6693720",
-    "artist": "FFRAGEZEICHEN, KG Family",
-    "title": "Can't stop",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-c8c8016aef722f32",
+    "artist": "Bobby Vandamme",
+    "title": "Brazil Funk Freestyle 3 🇧🇷",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "FFRAGEZEICHEN, KG Family veröffentlicht die Single „Can't stop“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27355d14596499157eaff33e6b7",
-    "spotifyUrl": "https://open.spotify.com/track/1UdMnZUYZrPUkxqrwB2bOb"
-  },
-  {
-    "id": "reddit-4d28f54849116145",
-    "artist": "kid kapri, Florida Juicy",
-    "title": "Kleine Dinge",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "kid kapri, Florida Juicy veröffentlicht die Single „Kleine Dinge“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Bobby Vandamme veröffentlicht die Single „Brazil Funk Freestyle 3 🇧🇷“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebe096965136cebcc4125f6b77",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/2fPTKvCZ1fEiDiuGFGMh2w"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb1abed3cdee25ae2e6fab69d3",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/054k3bx4tpjx1tfypvq3eq"
   },
   {
-    "id": "reddit-78020476d24f9b64",
-    "artist": "KITSCHKRIEG, Omah Lay, Blumengarten, 255",
-    "title": "Gut Genug",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-89321ddedfbdde89",
+    "artist": "CANER, CALO",
+    "title": "OMG",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "KITSCHKRIEG, Omah Lay, Blumengarten, 255 veröffentlicht die Single „Gut Genug“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "CANER, CALO veröffentlicht die Single „OMG“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e80e5518208b3a7b76ff511e",
-    "spotifyUrl": "https://open.spotify.com/track/3GD3zI0aO2rlk1BrtwDTy3"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2734ace13965fdf484c5944681e",
+    "spotifyUrl": "https://open.spotify.com/track/1ND0x4kertYBQyITnFTNMy"
   },
   {
-    "id": "reddit-b0f67246f82e9aef",
-    "artist": "Kroka Koka",
-    "title": "Quarter Milli",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-0b4e16c87b5af593",
+    "artist": "Capital Bra, Samra, LACAZETTE",
+    "title": "Böse Jungs",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Kroka Koka veröffentlicht die Single „Quarter Milli“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2733254cc171ef91fed3878fb71",
-    "spotifyUrl": "https://open.spotify.com/track/17oYGxamPDOUiRyxQIIwBv"
-  },
-  {
-    "id": "reddit-d577b359d47e78ed",
-    "artist": "Lune",
-    "title": "Nur mit dir.",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Lune veröffentlicht die Single „Nur mit dir.“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27362a346af23f85ea32fbc4bae",
-    "spotifyUrl": "https://open.spotify.com/track/0Vqt8BrMbacozu4Lvm4vrw"
-  },
-  {
-    "id": "reddit-f6736661d93b81e8",
-    "artist": "Majoe",
-    "title": "Goat Bars",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Majoe veröffentlicht die Single „Goat Bars“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Capital Bra, Samra, LACAZETTE veröffentlicht die Single „Böse Jungs“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebaa74ab1dd024e6b499044546",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/1a71mkqZC54WhePSbnq7RK"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebfc9cbf00210113b93a91efd1",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/4WZGDpNwrC0vNQyl9QzF7d"
   },
   {
-    "id": "reddit-cf03a5519e2bc890",
-    "artist": "Milano",
-    "title": "Mein Favorite",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-5d8f00921589b9b3",
+    "artist": "Chayn, absent",
+    "title": "LAUT",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Milano veröffentlicht die Single „Mein Favorite“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Chayn, absent veröffentlicht die Single „LAUT“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735c57bd534ba818a30706e127",
+    "spotifyUrl": "https://open.spotify.com/track/51PIoDE9jo3ZKMST3yl42y"
+  },
+  {
+    "id": "reddit-1d7dd10bc77b9cbb",
+    "artist": "Der Yavuz",
+    "title": "Hustler Ambitions",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Der Yavuz veröffentlicht die Single „Hustler Ambitions“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27331bee5af1e6e8455e0747f5e",
+    "spotifyUrl": "https://open.spotify.com/track/5z1upFFqyFZ9y1pLTBXWXa"
+  },
+  {
+    "id": "reddit-08853834116e9d7c",
+    "artist": "DJ TÖRKE, FiNCH, Doktormethoden & Doktormithoden",
+    "title": "50 KUBiK",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "DJ TÖRKE, FiNCH, Doktormethoden & Doktormithoden veröffentlicht die Single „50 KUBiK“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273cbd6e50a6134c074ac3b28de",
+    "spotifyUrl": "https://open.spotify.com/track/50n0IAdwXx3ExIBM0R7gRB"
+  },
+  {
+    "id": "reddit-f669cf92068ec190",
+    "artist": "Elly",
+    "title": "Wo bist du",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Elly veröffentlicht die Single „Wo bist du“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273c5f2f269602582f2b43aaa3b",
+    "spotifyUrl": "https://open.spotify.com/track/5Il7KZKdX0saAscs0JNBJa"
+  },
+  {
+    "id": "reddit-700be4af7c347db2",
+    "artist": "Fa",
+    "title": "17 Uhr",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Fa veröffentlicht die Single „17 Uhr“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27320fb042a26af7a7d333b0b15",
+    "spotifyUrl": "https://open.spotify.com/track/3otFBHOkR8cAo9AId4adFS"
+  },
+  {
+    "id": "reddit-4dbc2655371cce4f",
+    "artist": "Faroon",
+    "title": "ONE",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Faroon veröffentlicht die Single „ONE“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb661d44f8cb1df1cd302a479f",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/4Jd9XCHzRXTB7ZPPVzJoUm"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb172705a4b66cac65102092c1",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/697ZbUKLJSEWWhtayAGxBY"
   },
   {
-    "id": "reddit-228544c3e19c6c62",
-    "artist": "Miss Marla",
-    "title": "They Need Me",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-6cf299c61064f618",
+    "artist": "FAYAN",
+    "title": "LÄCHELN IM GESICHT",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Miss Marla veröffentlicht die Single „They Need Me“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27349bda1e2c148890697c38285",
-    "spotifyUrl": "https://open.spotify.com/track/28b1djA9jhvnX6GasV3yKh"
-  },
-  {
-    "id": "reddit-8cea5c8782d067d8",
-    "artist": "MiZeb, Parker",
-    "title": "Staub in meinen Händen",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "MiZeb, Parker veröffentlicht die Single „Staub in meinen Händen“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27363dced2d8e4ee6d948c0c097",
-    "spotifyUrl": "https://open.spotify.com/track/0xsLy82W1OxIfMt4R6JUks"
-  },
-  {
-    "id": "reddit-83ded0717ef122f8",
-    "artist": "Mosh36, Saven",
-    "title": "Gneisenau Freestyle",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Mosh36, Saven veröffentlicht die Single „Gneisenau Freestyle“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ae87ed337c02b8e7e0f8a4a5",
-    "spotifyUrl": "https://open.spotify.com/track/26LAANwP8prl2njk1wrbPL"
-  },
-  {
-    "id": "reddit-6fe16b48af0d8c99",
-    "artist": "Olexesh",
-    "title": "Wolke 7",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Olexesh veröffentlicht die Single „Wolke 7“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb740c43b584f7ccc36e621915",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/2Z9KL8Zmqx5Sg3cd7Fldhl"
-  },
-  {
-    "id": "reddit-74a345f7b1938cff",
-    "artist": "Prezident, Jay Baez",
-    "title": "Zwiebel",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Prezident, Jay Baez veröffentlicht die Single „Zwiebel“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2739b878ae824a4a38f521ca218",
-    "spotifyUrl": "https://open.spotify.com/track/6LIAGqXe2dcNoKLU79yBsW"
-  },
-  {
-    "id": "reddit-dc5d27e9fbdc97ff",
-    "artist": "Ramzey",
-    "title": "Monster",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Ramzey veröffentlicht die Single „Monster“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273db8e4a8cea1ad49bb6149482",
-    "spotifyUrl": "https://open.spotify.com/track/2haR7PoCwyLcYEwGNjbN3M"
-  },
-  {
-    "id": "reddit-a340d0746d6a08c2",
-    "artist": "SadiQ",
-    "title": "Naxos",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "SadiQ veröffentlicht die Single „Naxos“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ffb2769d2a06dcebe84263b3",
-    "spotifyUrl": "https://open.spotify.com/track/02yfHCf6CgZAws5xCsJIHH"
-  },
-  {
-    "id": "reddit-b519e2ab577c6c1e",
-    "artist": "Schubi AKpella",
-    "title": "BARBIE",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Schubi AKpella veröffentlicht die Single „BARBIE“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e1f9f5e0e39fab688de5e5e8",
-    "spotifyUrl": "https://open.spotify.com/track/6gl81C4QUDCi9xAsda2LS9"
-  },
-  {
-    "id": "reddit-d55cef1c83c505b7",
-    "artist": "Shabab",
-    "title": "VENEDIG",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Shabab veröffentlicht die Single „VENEDIG“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273fdddd1ed6a7af24d1a6eefed",
-    "spotifyUrl": "https://open.spotify.com/track/7bxvIdbAl2PX7ZMSoxlKax"
-  },
-  {
-    "id": "reddit-29889ad4638e185f",
-    "artist": "Ski Aggu",
-    "title": "Verschwommen",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Ski Aggu veröffentlicht die Single „Verschwommen“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "FAYAN veröffentlicht die Single „LÄCHELN IM GESICHT“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Apple Music NZ",
-    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/53/96/b0/5396b0b7-3b50-a154-bf04-e5b8d09109c4/26UMGIM46436.rgb.jpg/1200x1200bb.jpg",
-    "appleMusicUrl": "https://music.apple.com/nz/album/verschwommen/1893929047?i=6762360818&uo=4",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/7a/9b/0a/7a9b0af0-d5e2-9d5d-30df-09cb0c96e40f/8718521104177.jpg/1200x1200bb.jpg",
+    "appleMusicUrl": "https://music.apple.com/nz/album/l%C3%A4cheln-im-gesicht/6789563737?i=6789563751&uo=4",
     "trackCount": 1
   },
   {
-    "id": "reddit-03e7725d4cc15a6f",
-    "artist": "Summer Cem, Shirin David",
-    "title": "MO' MONEY MO' HATERS",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-2c97323e1b0cff47",
+    "artist": "Gangsta Ralph",
+    "title": "Plötzlich",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Summer Cem, Shirin David veröffentlicht die Single „MO' MONEY MO' HATERS“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Gangsta Ralph veröffentlicht die Single „Plötzlich“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb8aba85c40eb3ab9a1fbe9c0c",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/3drqpTL4sQOckmAfF9i1wg"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebbb4f3d89d29681085845654a",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/2N3l2KHvPvRPi4qFFoVZuU"
   },
   {
-    "id": "reddit-b82c4bbe3afdf8dd",
-    "artist": "Tiavo",
-    "title": "apricot",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-b1cee196f019d1ff",
+    "artist": "Hemso, GAMBINO 36",
+    "title": "Auf den Strassen",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Tiavo veröffentlicht die Single „apricot“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Hemso, GAMBINO 36 veröffentlicht die Single „Auf den Strassen“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273b91240cc11bd290dc97b8238",
-    "spotifyUrl": "https://open.spotify.com/track/2bL8aIeEzDaRK5Y5ehkPKj"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732c2741070e60252847c7aae1",
+    "spotifyUrl": "https://open.spotify.com/track/1nPWUXGHFH0FPzxMZ3l9Lw"
   },
   {
-    "id": "reddit-181f7df73a919fcf",
-    "artist": "Tommy Cash, Ikkimel",
-    "title": "Miss Universe",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-ffd5d4958b05b697",
+    "artist": "Hoti",
+    "title": "Kopfsache",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Tommy Cash, Ikkimel veröffentlicht die Single „Miss Universe“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2734e5e81e7576f5685bc10f627",
-    "spotifyUrl": "https://open.spotify.com/track/4h58ofhjwQl0CSflFyUNRU"
-  },
-  {
-    "id": "reddit-b2ec0b8c02d8d16f",
-    "artist": "tooloudfortheroom, moé, ELEF",
-    "title": "Gesicht auf Gesicht",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "tooloudfortheroom, moé, ELEF veröffentlicht die Single „Gesicht auf Gesicht“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2738494390e9b8f92ad820b9c0b",
-    "spotifyUrl": "https://open.spotify.com/track/4TpG5qBbZvrBsahhtztFjD"
-  },
-  {
-    "id": "reddit-3ccd41949eb0880d",
-    "artist": "Trailerpark, Hämatom",
-    "title": "BDU",
-    "releaseDate": "2026-08-14",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Trailerpark, Hämatom veröffentlicht die Single „BDU“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Hoti veröffentlicht die Single „Kopfsache“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb6ad4b4d02cae67e5cf60561e",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/1eeWVOCazGzGQXOGhnDHTB"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebcea7310f46f6529f1fd6c43c",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/3JjV29S3jjRRqt82qdqVJC"
   },
   {
-    "id": "reddit-4da5815e0bb437a9",
-    "artist": "Tream, Bausa",
-    "title": "DER SONNE IMMER NÄHER",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-5df48c847e46fe0e",
+    "artist": "IMMI",
+    "title": "Oranienplatz",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Tream, Bausa veröffentlicht die Single „DER SONNE IMMER NÄHER“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "IMMI veröffentlicht die Single „Oranienplatz“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2733182ad6dc87d9ae8a75ffc57",
+    "spotifyUrl": "https://open.spotify.com/track/1h93DSP4YsNq2RxLVrqpX0"
+  },
+  {
+    "id": "reddit-8283ad01a504dc24",
+    "artist": "Jean, Solé",
+    "title": "KANKA",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Jean, Solé veröffentlicht die Single „KANKA“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732da280521b0c0ecbe8a30127",
+    "spotifyUrl": "https://open.spotify.com/track/734yUviYuPyjIPhjXjZNxw"
+  },
+  {
+    "id": "reddit-1a85a0566efef792",
+    "artist": "KARDO, X Wave",
+    "title": "BABY BOY (2026)",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "KARDO, X Wave veröffentlicht die Single „BABY BOY (2026)“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebab96d76ff8000d4bafb6bff9",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/6vNAKgK5d74N1I0zTxRPDp"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb2a66d8e74b27d014061dd5cb",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/3NZPZUWDcJngcu8MuBpT69"
   },
   {
-    "id": "reddit-f54da88ab240814a",
-    "artist": "Venti, Einseinsfuenf",
-    "title": "EX-FAKTOR",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-e5e14513934ff05a",
+    "artist": "Koushino",
+    "title": "Ich denk",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Venti, Einseinsfuenf veröffentlicht die Single „EX-FAKTOR“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Koushino veröffentlicht die Single „Ich denk“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb50639fa73d331fd7624b5353",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/6TR6dUNDpqyitYzDvY7DI0"
+  },
+  {
+    "id": "reddit-89634fe278f13af8",
+    "artist": "Layn",
+    "title": "Besser zu zweit",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Layn veröffentlicht die Single „Besser zu zweit“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27377b9708743f595c52bb82b49",
-    "spotifyUrl": "https://open.spotify.com/track/3cdExetbkjvI0X4Ra6f2Uy"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273612ff1ab435574c617600958",
+    "spotifyUrl": "https://open.spotify.com/track/0bxFv4tnEDkE4A18EkW4ls"
   },
   {
-    "id": "reddit-95059e800030c1e5",
-    "artist": "Yeko, VS Mosquito",
-    "title": "Run Pico",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-9e146506822776a3",
+    "artist": "LX, Maxwell",
+    "title": "JUMP'N RUN",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Yeko, VS Mosquito veröffentlicht die Single „Run Pico“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "LX, Maxwell veröffentlicht die Single „JUMP'N RUN“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb982be803076749939374ae64",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/10XY9PZCJKzUFzZOdtlQLU"
+  },
+  {
+    "id": "reddit-ce46063d5fe287bd",
+    "artist": "makko, The Chainsmokers",
+    "title": "Inundauswendig",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "makko, The Chainsmokers veröffentlicht die Single „Inundauswendig“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2731deeb4455de95b9ba6f7e015",
-    "spotifyUrl": "https://open.spotify.com/track/25KWTpXBKwu4jWACnB2mRY"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273bd9982d65b699012379d87ce",
+    "spotifyUrl": "https://open.spotify.com/track/1DOVkuzAdnyHgDJXbp92Wq"
   },
   {
-    "id": "reddit-fc3439130fc4ac6c",
-    "artist": "YGT, Dietrich, 42, Prod. by PYC",
-    "title": "UniCenterFreestyle",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-478ebba989908569",
+    "artist": "Marteria, luzey",
+    "title": "Endlich Normale Träume",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "YGT, Dietrich, 42, Prod. by PYC veröffentlicht die Single „UniCenterFreestyle“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Marteria, luzey veröffentlicht die Single „Endlich Normale Träume“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27376cdf67b00b390ed46f88661",
-    "spotifyUrl": "https://open.spotify.com/track/78f4VMrCkfk7tu1a2E6jEQ"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2739f904e4c861e406df1f411be",
+    "spotifyUrl": "https://open.spotify.com/track/5tI29X3CK0J4qF65vLORQq"
   },
   {
-    "id": "reddit-d8208cbb6b275827",
-    "artist": "yungrenz74",
-    "title": "Flasche Killt",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-32965628024dbc9b",
+    "artist": "Milli, boundrxy",
+    "title": "COD",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "yungrenz74 veröffentlicht die Single „Flasche Killt“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Milli, boundrxy veröffentlicht die Single „COD“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273a693c25d7aca7acfb1b28711",
-    "spotifyUrl": "https://open.spotify.com/track/5tnjRjaHMLbIWzXnCmrqHz"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2736b5e398fcd1c2dc1eaccddbd",
+    "spotifyUrl": "https://open.spotify.com/track/1O3Q2O4PF4lHIH8e4X3GFA"
   },
   {
-    "id": "reddit-87ab58abd3c8dbf9",
-    "artist": "Yuyu19",
-    "title": "Bolo",
-    "releaseDate": "2026-08-14",
+    "id": "reddit-70cae7bc68f8475c",
+    "artist": "Milonair",
+    "title": "Drogenmusik",
+    "releaseDate": "2026-08-21",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vnbv7w/die_releases_am_14082026/",
-    "description": "Yuyu19 veröffentlicht die Single „Bolo“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Milonair veröffentlicht die Single „Drogenmusik“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebd18ba298d05c5b0d0516b306",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/6AZfDB8isLU2sHkSm3sRhX"
+  },
+  {
+    "id": "reddit-9242f50349f57068",
+    "artist": "MiZeb",
+    "title": "Abrechnung",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "MiZeb veröffentlicht die Single „Abrechnung“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273bb3e4b1f7fa7cd7b3650c4a3",
-    "spotifyUrl": "https://open.spotify.com/track/3PSNEshCZtvkOJepd21Rf4"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273da962926e3e56ba2afdd7614",
+    "spotifyUrl": "https://open.spotify.com/track/1M9YX8DZldKEZ6nV6684in"
+  },
+  {
+    "id": "reddit-0f739982066df952",
+    "artist": "PA Sports, Mucco",
+    "title": "Dubai",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "PA Sports, Mucco veröffentlicht die Single „Dubai“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebafe12346e8683f11e5722acb",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/2qMezKrAKRh2Z2uR3fCqHt"
+  },
+  {
+    "id": "reddit-c57870715a28ab3b",
+    "artist": "Pajel",
+    "title": "4YOU / TRENDZ",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Pajel veröffentlicht die Single „4YOU / TRENDZ“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb60d421cdfdbc1dbdb616ee06",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/1bpI6QDUqmfKmV0Tlhj0Jm"
+  },
+  {
+    "id": "reddit-5d6bbdb408e03196",
+    "artist": "Paul, 01099",
+    "title": "Wo ist der DJ",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Paul, 01099 veröffentlicht die Single „Wo ist der DJ“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2731c04a2e43618526e216e3c3e",
+    "spotifyUrl": "https://open.spotify.com/track/6GagT50zogqk5qzAPT6nVw"
+  },
+  {
+    "id": "reddit-398f4c056060216b",
+    "artist": "RAPK",
+    "title": "Dalmatiner",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "RAPK veröffentlicht die Single „Dalmatiner“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2737e205615e34e9fcc6cabeabe",
+    "spotifyUrl": "https://open.spotify.com/track/2NF4OSSSL5zfvladb185Y9"
+  },
+  {
+    "id": "reddit-1fc47058b7ee71a4",
+    "artist": "Rubi",
+    "title": "2MG",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Rubi veröffentlicht die Single „2MG“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273971610f96f91b4004bce1566",
+    "spotifyUrl": "https://open.spotify.com/track/3fIY3qPEfdvUiD35HPbOtq"
+  },
+  {
+    "id": "reddit-0a69262a6670fdc6",
+    "artist": "Sero El Mero",
+    "title": "Güzelim",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Sero El Mero veröffentlicht die Single „Güzelim“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273c494e5566ab2e40cee86efd7",
+    "spotifyUrl": "https://open.spotify.com/track/0uJDlEQq0l18fXbavoWPB9"
+  },
+  {
+    "id": "reddit-f0350423222bfec4",
+    "artist": "Sharaktah",
+    "title": "VERMISS MICH",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Sharaktah veröffentlicht die Single „VERMISS MICH“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ede44ef81dcf66fd86a00882",
+    "spotifyUrl": "https://open.spotify.com/track/3v0VIKNvSEvShiN6fpd3YO"
+  },
+  {
+    "id": "reddit-cc5c0d099a28c83f",
+    "artist": "Sido",
+    "title": "ISSA",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Sido veröffentlicht die Single „ISSA“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb63efaf5ffb7ecc44e25a72cf",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/4Yttlv9ndGjCDCVLqM7ACq"
+  },
+  {
+    "id": "reddit-4d873b27b299ac7d",
+    "artist": "SIL3A",
+    "title": "Gangsters Fi Marbella",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "SIL3A veröffentlicht die Single „Gangsters Fi Marbella“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2739a56e9d137939235430ea179",
+    "spotifyUrl": "https://open.spotify.com/track/4YWsyT0JLQOM8QsVXTLdzb"
+  },
+  {
+    "id": "reddit-c18f5ce199eee712",
+    "artist": "Undacava, Lyrica030",
+    "title": "A.B.S (Nachts im Tunnel)",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Undacava, Lyrica030 veröffentlicht die Single „A.B.S (Nachts im Tunnel)“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eba255725c8d5a046682b5cf4c",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0GICHCgSgJrRnanaNRFIMX"
+  },
+  {
+    "id": "reddit-109c342621759af7",
+    "artist": "Verifiziert",
+    "title": "vvm",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Verifiziert veröffentlicht die Single „vvm“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf898fb8510da1c57bc2f2baf",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/1SF4jakSq8kI38MYjFdaJG"
+  },
+  {
+    "id": "reddit-15666079a7d532bc",
+    "artist": "Vetlaney",
+    "title": "Märchenprinz",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Vetlaney veröffentlicht die Single „Märchenprinz“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27388af9c1fe072edfc8cfcee4c",
+    "spotifyUrl": "https://open.spotify.com/track/2slcMoVNhcLNgV97kuhqjs"
+  },
+  {
+    "id": "reddit-598e05fc7e662155",
+    "artist": "YENVI",
+    "title": "TEST",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "YENVI veröffentlicht die Single „TEST“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27323a61be30d0e048f46203009",
+    "spotifyUrl": "https://open.spotify.com/track/4ae7Cl6HR4399LBTeH9Cut"
+  },
+  {
+    "id": "reddit-2e4dccb59c5577be",
+    "artist": "Zate",
+    "title": "Letzter Bus",
+    "releaseDate": "2026-08-21",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1vtn3kv/die_releases_am_21082026/",
+    "description": "Zate veröffentlicht die Single „Letzter Bus“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732c24319bffb1f71e275d3644",
+    "spotifyUrl": "https://open.spotify.com/track/0LGQtfnQASSKn9OaZ0RTUj"
   }
 ];
