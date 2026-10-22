@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  title: Release Friday Draft Action
+  version: 0.2.0
+  description: Creates API-key-authenticated Release Friday drafts. It cannot publish, update, or delete releases.
+servers:
+  - url: https://otjvkorslczqdpzltjpj.supabase.co/functions/v1
+paths:
+  /chatgpt-release-drafts:
+    post:
+      operationId: createReleaseDraft
+      summary: Create a private release draft
+      description: >-
+        Creates exactly one private release draft after checking for a duplicate with the same
+        normalized artist, title, and release date. This action never publishes a release.
+      x-openai-isConsequential: true
+      security:
+        - ReleaseFridayDraftKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseDraftInput"
+      responses:
+        "201":
+          description: Draft created and verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateDraftResponse"
+        "400":
+          description: Invalid or unsupported input
+        "401":
+          description: The draft API key is missing or invalid
+        "409":
+          description: A matching release already exists
+components:
+  securitySchemes:
+    ReleaseFridayDraftKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+  schemas:
+    ReleaseDraftInput:
+      type: object
+      additionalProperties: false
+      required:
+        - artist
+        - title
+        - release_date
+        - country
+        - kind
+      properties:
+        artist:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Artist name exactly as it should appear on Release Friday.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 240
+          description: Release title exactly as it should appear on Release Friday.
+        release_date:
+          type: string
+          format: date
+          description: Release date in YYYY-MM-DD format.
+        country:
+          type: string
+          enum: [DE, US]
+        kind:
+          type: string
+          enum: [album, ep, single, mixtape]
+        track_count:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          maximum: 999
+        genres:
+          type: array
+          maxItems: 12
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 80
+        description:
+          type:
+            - string
+            - "null"
+          maxLength: 5000
+        spotify_url:
+          type:
+            - string
+            - "null"
+          format: uri
+          description: Real open.spotify.com/album URL only. Never use a prerelease URL here.
+        spotify_pre_save_url:
+          type:
+            - string
+            - "null"
+          format: uri
+          description: Real open.spotify.com/prerelease URL only.
+        apple_music_url:
+          type:
+            - string
+            - "null"
+          format: uri
+        youtube_url:
+          type:
+            - string
+            - "null"
+          format: uri
+        source_url:
+          type:
+            - string
+            - "null"
+          format: uri
+        cover_url:
+          type:
+            - string
+            - "null"
+          format: uri
+          description: Direct HTTPS image URL. ChatGPT file attachments are not supported in this first test.
+    Release:
+      type: object
+      required: [id, artist, title, release_date, country, kind, source, status, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        artist:
+          type: string
+        title:
+          type: string
+        release_date:
+          type: string
+          format: date
+        country:
+          type: string
+          enum: [DE, US]
+        kind:
+          type: string
+          enum: [album, ep, single, mixtape]
+        status:
+          type: string
+          const: draft
+        source:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CreateDraftResponse:
+      type: object
+      required: [action, message, release]
+      properties:
+        action:
+          type: string
+          const: created
+        message:
+          type: string
+        release:
+          $ref: "#/components/schemas/Release"
