@@ -4,8 +4,8 @@
 import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
-  "targetDate": "2026-10-30",
-  "generatedAt": "2026-10-29T21:26:02.104Z",
+  "targetDate": "2026-11-06",
+  "generatedAt": "2026-11-05T22:24:45.747Z",
   "coverRequired": true,
   "spotifyCoverLookupEnabled": true,
   "spotifyArtistImageFallbackEnabled": true,
@@ -16,806 +16,769 @@ export const releaseDataMetadata = {
   "candidateCount": 47,
   "storedReleaseCount": 0,
   "coverLookupCandidateCount": 47,
-  "coverQualifiedCount": 46,
-  "skippedMissingCoverCount": 1,
+  "coverQualifiedCount": 43,
+  "skippedMissingCoverCount": 4,
   "missingCovers": [
     {
-      "artist": "Yc",
-      "title": "Mason",
-      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/"
+      "artist": "Azo, KG Family",
+      "title": "Vater",
+      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/"
+    },
+    {
+      "artist": "CARLI",
+      "title": "Glücklich",
+      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/"
+    },
+    {
+      "artist": "kt",
+      "title": "bas gaza (wegue)",
+      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/"
+    },
+    {
+      "artist": "Primo, Fat S",
+      "title": "Smooth",
+      "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/"
     }
   ],
-  "fetchError": null,
+  "fetchError": "MusicBrainz: 503 Service Temporarily Unavailable",
   "sourceCounts": {
-    "r/GermanRap + Spotify NZ": 28,
+    "r/GermanRap + Spotify NZ": 26,
     "r/GermanRap + Spotify artist image fallback": 16,
-    "r/GermanRap + Apple Music NZ": 2
+    "r/GermanRap + Apple Music NZ": 1
   }
 } as const;
 
 export const realReleases: MusicRelease[] = [
   {
-    "id": "reddit-f4a7c231f531658e",
-    "artist": "60 Kilo",
-    "title": "Hayat Boş",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-caf3ba9f7dbdce40",
+    "artist": "18 Karat, Kolja Goldstein",
+    "title": "NACHWEISLICH",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "60 Kilo veröffentlicht die Single „Hayat Boş“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "18 Karat, Kolja Goldstein veröffentlicht die Single „NACHWEISLICH“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2733f1aca1c2db80e733ffb401e",
-    "spotifyUrl": "https://open.spotify.com/track/5Mt1XSwLDdNB9cTUBM5wRz"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2730c83f370c8b3763f26be89a8",
+    "spotifyUrl": "https://open.spotify.com/track/3NmfvlSVyrAMseaR9exvxo"
   },
   {
-    "id": "reddit-1a564847499e0738",
-    "artist": "AYLIVA",
-    "title": "Für immer",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-3612373e6a676976",
+    "artist": "6eyno, HABELBEATS",
+    "title": "6stellig",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "AYLIVA veröffentlicht die Single „Für immer“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "6eyno, HABELBEATS veröffentlicht die Single „6stellig“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2733a795c7a9cf483df1c9befd8",
+    "spotifyUrl": "https://open.spotify.com/track/3RtzBhjqgUzLvRWequeQhy"
+  },
+  {
+    "id": "reddit-181196bc1b692c35",
+    "artist": "AAJ, KG Family",
+    "title": "Baki Hanma",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "AAJ, KG Family veröffentlicht die Single „Baki Hanma“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb996830f67fa1ae09c3b5edab",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/2rEVnwCPBeGkWMv425KoG1"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebdc6a2b88e44bc9af2d4d5e63",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/66N5OVFetshGJDByGMhRlL"
   },
   {
-    "id": "reddit-35ff87ddad638334",
-    "artist": "BILLA JOE",
-    "title": "no friends",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-e979c8da027b3fe1",
+    "artist": "Afrob, Ferris MC, Eko Fresh, PA Sports, Haaland936, CALLI, Swiss, Die P, Olli Banjo, Sazou, Chefket, Tatwaffe, Meckie Berlinutz",
+    "title": "Monsterreime",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "BILLA JOE veröffentlicht die Single „no friends“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273f91144c85863894af71f216f",
-    "spotifyUrl": "https://open.spotify.com/track/3ixKlQdFWO6uKmPzBqPBXa"
-  },
-  {
-    "id": "reddit-d938383f8a312984",
-    "artist": "CAPO",
-    "title": "French Kiss",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "CAPO veröffentlicht die Single „French Kiss“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Afrob, Ferris MC, Eko Fresh, PA Sports, Haaland936, CALLI, Swiss, Die P, Olli Banjo, Sazou, Chefket, Tatwaffe, Meckie Berlinutz veröffentlicht die Single „Monsterreime“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb38788f9e0baa8cd8dc33b43d",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/5y9wg9qkGBl0n9v9RzaPKu"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb46bce0cf37d943686b347875",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0XTiLzJ1VpU4HygM7uKA8c"
   },
   {
-    "id": "reddit-12ffec445adf05ec",
-    "artist": "Ceevon, Einseinsfuenf",
-    "title": "OUT OF MY MIND",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-79af4c3db0e6e644",
+    "artist": "AGHA",
+    "title": "Kinder der Berge",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Ceevon, Einseinsfuenf veröffentlicht die Single „OUT OF MY MIND“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "AGHA veröffentlicht die Single „Kinder der Berge“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273cd53a9b86111c53121197f72",
+    "spotifyUrl": "https://open.spotify.com/track/1FPF7oP696gTrMwnvCXkHl"
+  },
+  {
+    "id": "reddit-bb5e313c31c7cc8d",
+    "artist": "AK AUSSERKONTROLLE",
+    "title": "A.S.S.N. 2.0",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "AK AUSSERKONTROLLE veröffentlicht die Single „A.S.S.N. 2.0“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebc56f9d78ef2ac0180fbfc80d",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/7rzYjo6foTDFincWf91njz"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb2a234069b7b3af67b888b1d3",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/07SFzTMeYf5P8Rd32a9Zzw"
   },
   {
-    "id": "reddit-d46fed4f975ce305",
-    "artist": "Dahabflex",
-    "title": "Shut Elbit Down",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-831b4b9f5281880a",
+    "artist": "BANGWHITE, X Wave",
+    "title": "FÜR DIE (GANG)",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Dahabflex veröffentlicht die Single „Shut Elbit Down“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273838cf3137669cf91abf034a5",
-    "spotifyUrl": "https://open.spotify.com/track/5Ohb15GTt6RZYt8kB1j6iu"
-  },
-  {
-    "id": "reddit-db52cd804fef355a",
-    "artist": "Danase, Tru Comers",
-    "title": "Retour",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Danase, Tru Comers veröffentlicht die Single „Retour“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27314036ca2dc452fa5f6f2d98b",
-    "spotifyUrl": "https://open.spotify.com/track/3KM0stbikKynp4nuUiBUXU"
-  },
-  {
-    "id": "reddit-ec4ff3e9fa383ee0",
-    "artist": "Eddin, DANO",
-    "title": "Ride or Die",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Eddin, DANO veröffentlicht die Single „Ride or Die“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27377e8be360b1c0c2e0f488480",
-    "spotifyUrl": "https://open.spotify.com/track/1C1fsf8hvy0GfRhC3TixIT"
-  },
-  {
-    "id": "reddit-65ebfdf664ed6fa9",
-    "artist": "ELIF",
-    "title": "wenn du jetzt gehst",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "ELIF veröffentlicht die Single „wenn du jetzt gehst“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273fd254eac5d620963d544a89f",
-    "spotifyUrl": "https://open.spotify.com/track/0LoX8djmr02WGhMQcLTQM3"
-  },
-  {
-    "id": "reddit-abab3ab2e030e95d",
-    "artist": "EstA, Nolo",
-    "title": "Lovesongs",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "EstA, Nolo veröffentlicht die Single „Lovesongs“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "BANGWHITE, X Wave veröffentlicht die Single „FÜR DIE (GANG)“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb6fdf2339486163a07863bb27",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/4KZmpaIhanIo46eaQimtgO"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb14a3e81ef63f07e2ec1125fe",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0wBwLFp1PdNbFrykIA4rom"
   },
   {
-    "id": "reddit-c249fcc752d900de",
-    "artist": "Filow, Maxim K.I.Z, Drunken Masters",
-    "title": "gutefrage.net",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-7f2e27ac3747ba3d",
+    "artist": "Big Toe",
+    "title": "Pflaster",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Filow, Maxim K.I.Z, Drunken Masters veröffentlicht die Single „gutefrage.net“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Big Toe veröffentlicht die Single „Pflaster“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27339f15a3602c67369f0daa99e",
+    "spotifyUrl": "https://open.spotify.com/track/20HBfz5yN7jMzBMk8wBKa7"
+  },
+  {
+    "id": "reddit-05ef4985769ea4a4",
+    "artist": "BOJAN, Avie",
+    "title": "600 PS",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "BOJAN, Avie veröffentlicht die Single „600 PS“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebefef1c457bad15229b705696",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0oxWjDXa2iXcVB11n8RY3U"
+  },
+  {
+    "id": "reddit-d084f745aaeca9cf",
+    "artist": "Boondawg, reezy",
+    "title": "GRABSTEIN",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Boondawg, reezy veröffentlicht die Single „GRABSTEIN“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebb5c4e892224a259558f6959e",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/46RrxZVxLkgEbraenPAmbz"
+  },
+  {
+    "id": "reddit-0b02ed8d2963d13f",
+    "artist": "Bosca",
+    "title": "069hates110",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Bosca veröffentlicht die Single „069hates110“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273bf69d72872a8f8736f31edeb",
+    "spotifyUrl": "https://open.spotify.com/track/6d5L5DcLNjQ8Gk6bPXCcsT"
+  },
+  {
+    "id": "reddit-ad176a07cc3c7b34",
+    "artist": "Celo & Abdi",
+    "title": "Go!",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Celo & Abdi veröffentlicht die Single „Go!“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebc50f01eb3a38d735acea583d",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0cF121Uo22slYVIvyft0Eh"
+  },
+  {
+    "id": "reddit-95a7ac9ee55095dd",
+    "artist": "Charlize",
+    "title": "BLACK SWAN",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Charlize veröffentlicht die Single „BLACK SWAN“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273174007fb1081f5b3d635479f",
+    "spotifyUrl": "https://open.spotify.com/track/2rdu1Ebpmf7Zm2Hdel44bB"
+  },
+  {
+    "id": "reddit-6a892ffb3078113d",
+    "artist": "Ché Salah",
+    "title": "Amy Winehouse",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Ché Salah veröffentlicht die Single „Amy Winehouse“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273c9b28ee9cb73aac616ee6c8d",
+    "spotifyUrl": "https://open.spotify.com/track/0isP3ADL2MgYcBAdNoS6UM"
+  },
+  {
+    "id": "reddit-2fa4b6a4a4328fbd",
+    "artist": "Dante YN",
+    "title": "Bruce Wayne",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Dante YN veröffentlicht die Single „Bruce Wayne“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273f819dabdf97a93959fbb7ebc",
+    "spotifyUrl": "https://open.spotify.com/track/4NTVVt0agFFT9HyPrxH2Sy"
+  },
+  {
+    "id": "reddit-4bd136d7ef1f85ae",
+    "artist": "Delil, Veysel",
+    "title": "LIBERTA",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Delil, Veysel veröffentlicht die Single „LIBERTA“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27357a6b73813b22c6be70472b7",
+    "spotifyUrl": "https://open.spotify.com/track/2btP0iwO9rfKv6llCV9qaw"
+  },
+  {
+    "id": "reddit-5cd2b5c01b646a8a",
+    "artist": "DUEJA",
+    "title": "ICH BIN ES",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "DUEJA veröffentlicht die Single „ICH BIN ES“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732293223983fe18681194a95d",
+    "spotifyUrl": "https://open.spotify.com/track/5j6LnTXZk44qEGlZfOp7wl"
+  },
+  {
+    "id": "reddit-9036df3d0c7fc904",
+    "artist": "Edo Saiya",
+    "title": "wo ist?",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Edo Saiya veröffentlicht die Single „wo ist?“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2734d6a0a0aa3bd66cc7bd7590f",
+    "spotifyUrl": "https://open.spotify.com/track/5JhLDTOlYlCU3RlfHqgDyG"
+  },
+  {
+    "id": "reddit-8f337450f08961a2",
+    "artist": "EGO",
+    "title": "Karate Tommy",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "EGO veröffentlicht die Single „Karate Tommy“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735dc19451701cda8cee95bc85",
+    "spotifyUrl": "https://open.spotify.com/track/687rbyzOQ6bsJHtNaWo03S"
+  },
+  {
+    "id": "reddit-79599f6ae47691e8",
+    "artist": "FEDX",
+    "title": "Fürs Gewinnen musst verlieren",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "FEDX veröffentlicht die Single „Fürs Gewinnen musst verlieren“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27371f15ec493780152d3958f92",
+    "spotifyUrl": "https://open.spotify.com/track/3yGLD7t7OEyrRCE0bMxlOB"
+  },
+  {
+    "id": "reddit-a4b03eeb34c81639",
+    "artist": "Fischermätteli Hood Gäng, C. Perkins",
+    "title": "Meer us Tropfe",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Fischermätteli Hood Gäng, C. Perkins veröffentlicht die Single „Meer us Tropfe“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735edcd441a66b8c5de731c0e6",
+    "spotifyUrl": "https://open.spotify.com/track/1gRyijCtjH4KkEm9nmnfXt"
+  },
+  {
+    "id": "reddit-747097361526ca92",
+    "artist": "Haqat & Cazal",
+    "title": "GEN A",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Haqat & Cazal veröffentlicht die Single „GEN A“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb7bfe9b67bb5eccfd28066c68",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0xbqy1U0jAxAxYNTo5D5jW"
+  },
+  {
+    "id": "reddit-2a3b72ed5186c71c",
+    "artist": "Hemso",
+    "title": "Meine Welt",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Hemso veröffentlicht die Single „Meine Welt“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273744cfad8b1030c013adabf81",
+    "spotifyUrl": "https://open.spotify.com/track/5r7Oh0nV4GI4lVhUO4p1ay"
+  },
+  {
+    "id": "reddit-b932a9b17174547e",
+    "artist": "HWZ",
+    "title": "Alle schreien",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "HWZ veröffentlicht die Single „Alle schreien“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb2df00bdd4eb3f60af937062a",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/7JrwW0qqL3V7LBTyHTrHIT"
+  },
+  {
+    "id": "reddit-7001c691c6f01928",
+    "artist": "JoeyAK, THIZZY52",
+    "title": "MANNSCHAFT",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "JoeyAK, THIZZY52 veröffentlicht die Single „MANNSCHAFT“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ce62161774b20de4d2633b46",
+    "spotifyUrl": "https://open.spotify.com/track/1MAs7Bj45yopDgZzRV5sYL"
+  },
+  {
+    "id": "reddit-1fc348e640f21163",
+    "artist": "Lolito, Bobbyezz",
+    "title": "TOLEKA",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Lolito, Bobbyezz veröffentlicht die Single „TOLEKA“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273b4fd74293328bd34806206af",
+    "spotifyUrl": "https://open.spotify.com/track/6GWnG3BDOsh95ja12aDneu"
+  },
+  {
+    "id": "reddit-c4d19df4b5fc0f82",
+    "artist": "Lucio101, Nizi19",
+    "title": "Original",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Lucio101, Nizi19 veröffentlicht die Single „Original“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb540aec4e1bee9357fc3531d4",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/4LwRgSkj7AJJTKLnEaHjMv"
+  },
+  {
+    "id": "reddit-48647f05eb854896",
+    "artist": "Mauvaisboy",
+    "title": "Für dich",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Mauvaisboy veröffentlicht die Single „Für dich“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb0daff38ce6fb97c09331028f",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/2TEhS6z8As3fQZMXLeeL6i"
+  },
+  {
+    "id": "reddit-dd120c4a68b610e4",
+    "artist": "Morpheuz",
+    "title": "Wie lang",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Morpheuz veröffentlicht die Single „Wie lang“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27340fa1eac980ce839cfad8da0",
+    "spotifyUrl": "https://open.spotify.com/track/6CuknsZAq8zG0SYSf6N13c"
+  },
+  {
+    "id": "reddit-299efc598d9a26a1",
+    "artist": "MP FRESHLY, Ramzey, the Kii",
+    "title": "PUT IT UP",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "MP FRESHLY, Ramzey, the Kii veröffentlicht die Single „PUT IT UP“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ab216a787e7fdef729db9dc0",
+    "spotifyUrl": "https://open.spotify.com/track/1ozCauKLJ1lH7WMRewsdER"
+  },
+  {
+    "id": "reddit-69237db5af3a39b9",
+    "artist": "Nemzzz, Sosa La M",
+    "title": "ICONIC",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Nemzzz, Sosa La M veröffentlicht die Single „ICONIC“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735dea3ad8f1900b75e0791bab",
+    "spotifyUrl": "https://open.spotify.com/track/4uTVsBZTRTwx4ZZUdZJrcE"
+  },
+  {
+    "id": "reddit-464a8c1157e9482d",
+    "artist": "Noé Jr, Faroon",
+    "title": "Mhh Mhh",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Noé Jr, Faroon veröffentlicht die Single „Mhh Mhh“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebc282ca69e4b0d469764d3293",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/0hCPrQ4xXYlfnTMfOkzgXk"
+  },
+  {
+    "id": "reddit-f76eb84b2dc1301d",
+    "artist": "PA Sports, Farid Bang",
+    "title": "GG",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "PA Sports, Farid Bang veröffentlicht die Single „GG“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb357f3c0e7caa631a65a0fab5",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/2qMezKrAKRh2Z2uR3fCqHt"
+  },
+  {
+    "id": "reddit-527c998c51239365",
+    "artist": "Samy Deluxe, DJ Desue",
+    "title": "On Point",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Samy Deluxe, DJ Desue veröffentlicht die Single „On Point“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify artist image fallback",
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb68b041c75000f5eb780fc905",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/7J207fU1tty4DWCIhJSzh0"
+  },
+  {
+    "id": "reddit-5d28ab3af2409e68",
+    "artist": "Satix",
+    "title": "Aufwachen",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Satix veröffentlicht die Single „Aufwachen“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Apple Music NZ",
-    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f1/a2/0a/f1a20a0c-3e91-da5b-ebdc-e032680e7ae7/1aa7b9b7-79e7-4949-b291-62b07af7731e.jpg/1200x1200bb.jpg",
-    "appleMusicUrl": "https://music.apple.com/nz/album/gutefrage-net/6824006101?i=6824006102&uo=4",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/82/2d/a3/822da3ae-1291-39c5-c232-67d17aab9675/cover_4062851371599.jpg/1200x1200bb.jpg",
+    "appleMusicUrl": "https://music.apple.com/nz/album/aufwachen/6827468261?i=6827468262&uo=4",
     "trackCount": 1
   },
   {
-    "id": "reddit-21f1d61e50fbbbe8",
-    "artist": "FiNCH",
-    "title": "WAS JETZT?!",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-7db965d0857eb6d4",
+    "artist": "selfyy",
+    "title": "wmd",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "FiNCH veröffentlicht die Single „WAS JETZT?!“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "selfyy veröffentlicht die Single „wmd“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273b94fc0b12812dafd0555716c",
-    "spotifyUrl": "https://open.spotify.com/track/5BkrW9aA4xlvdcmRwhRNbc"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273eecd639527b0d7bbe2a9e0bf",
+    "spotifyUrl": "https://open.spotify.com/track/3hf6Zl2DpP9xaVO6lWrx2g"
   },
   {
-    "id": "reddit-b6468ee54c9e005a",
-    "artist": "Haaland936",
-    "title": "Van Dijk",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-c351765cc1d7e350",
+    "artist": "Seso",
+    "title": "Bella im Block",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Haaland936 veröffentlicht die Single „Van Dijk“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Seso veröffentlicht die Single „Bella im Block“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27372d06e57b5cd2f76954c5b0f",
+    "spotifyUrl": "https://open.spotify.com/track/2Rgf5KAyymYjf6TcgNTFLL"
+  },
+  {
+    "id": "reddit-63c499c88e0e97ce",
+    "artist": "Sipo",
+    "title": "RAR",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Sipo veröffentlicht die Single „RAR“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebef54af58856cfd3e36186659",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/6OBEI1JlLksVqrVOJXWdRe"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf9d0c8ff611e79df90c77971",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/1vLew3o8JIJ9XTCRkOCCbb"
   },
   {
-    "id": "reddit-442b5446f308c1a1",
-    "artist": "idolinjo",
-    "title": "VIOLON",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-aaaf9fb4bb5a9825",
+    "artist": "Sprinter",
+    "title": "Minusgrade",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "idolinjo veröffentlicht die Single „VIOLON“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Sprinter veröffentlicht die Single „Minusgrade“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2739e48c92e13c89d57e05953b3",
-    "spotifyUrl": "https://open.spotify.com/track/3SzcF62dh7FA2HhZ1Sts0s"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273f2b46060bcd98688e0c49cfc",
+    "spotifyUrl": "https://open.spotify.com/track/77GZNZosGRAn5vyZlfi6OZ"
   },
   {
-    "id": "reddit-c606e1c003f76891",
-    "artist": "Jamal",
-    "title": "GEFANGEN",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-aedfd02ba263b045",
+    "artist": "Tinguely dä Chnächt, Kwest",
+    "title": "Seel über Sales",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Jamal veröffentlicht die Single „GEFANGEN“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Tinguely dä Chnächt, Kwest veröffentlicht die Single „Seel über Sales“.",
+    "genres": [
+      "Deutschrap",
+      "Hip-Hop/Rap"
+    ],
+    "source": "r/GermanRap + Spotify NZ",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273611a708493872f0ebb972a38",
+    "spotifyUrl": "https://open.spotify.com/track/0lOvCIRrbqCfhpZQAE8h9F"
+  },
+  {
+    "id": "reddit-758c66d56102911a",
+    "artist": "Toujour, LIYAN",
+    "title": "Unter Tränen",
+    "releaseDate": "2026-11-06",
+    "country": "DE",
+    "kind": "single",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Toujour, LIYAN veröffentlicht die Single „Unter Tränen“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb4709471d3d04e30279785b6b",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/7wljsIwScBNShUPFULDCB3"
+    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb1db16cf7dd1324b7269993f4",
+    "artistImageSourceUrl": "https://open.spotify.com/artist/38LdoxnKXV3OQl0hgpuZVv"
   },
   {
-    "id": "reddit-0a8513c5fae2091f",
-    "artist": "KAI$eR, AYMIKA",
-    "title": "Falsche Entscheidung",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-53a06d57e50830b4",
+    "artist": "Yungmon",
+    "title": "März 2020",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "KAI$eR, AYMIKA veröffentlicht die Single „Falsche Entscheidung“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "Yungmon veröffentlicht die Single „März 2020“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27381c363be96d811d0e4f3a715",
-    "spotifyUrl": "https://open.spotify.com/track/5nKmii4xPXVASBYXcydlGS"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2737000d2472f21dae616f5f63a",
+    "spotifyUrl": "https://open.spotify.com/track/1YoeJeoh92BcPzpKvBSeM7"
   },
   {
-    "id": "reddit-0b5809b3938d06b4",
-    "artist": "Kaisa Natron, Lef, RAA",
-    "title": "Schizophrène",
-    "releaseDate": "2026-10-30",
+    "id": "reddit-38b95ecdc7585163",
+    "artist": "zara",
+    "title": "patron",
+    "releaseDate": "2026-11-06",
     "country": "DE",
     "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Kaisa Natron, Lef, RAA veröffentlicht die Single „Schizophrène“.",
+    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xor3ht/die_releases_am_06112026/",
+    "description": "zara veröffentlicht die Single „patron“.",
     "genres": [
       "Deutschrap",
       "Hip-Hop/Rap"
     ],
     "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273321fe30d88ac8b7da9bf308e",
-    "spotifyUrl": "https://open.spotify.com/track/15s4LuTRAhFnNErXLnAKXN"
-  },
-  {
-    "id": "reddit-36d363c1ca980e8b",
-    "artist": "KALIM",
-    "title": "ALLES WAS GLÄNZT",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "KALIM veröffentlicht die Single „ALLES WAS GLÄNZT“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2737572e89a918aab59e10c250e",
-    "spotifyUrl": "https://open.spotify.com/track/2gCs885YKmdGctNLiMvd3D"
-  },
-  {
-    "id": "reddit-ddf94defdc5823f0",
-    "artist": "Karate Andi, Torky Tork, Sportler99",
-    "title": "Pssst!",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Karate Andi, Torky Tork, Sportler99 veröffentlicht die Single „Pssst!“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735e57324bf0a2272d98aab674",
-    "spotifyUrl": "https://open.spotify.com/track/331Y8XyqCsZDvLfdZ6ciYq"
-  },
-  {
-    "id": "reddit-8001d533bba8e905",
-    "artist": "KASIMIR1441",
-    "title": "GENERATION Z",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "KASIMIR1441 veröffentlicht die Single „GENERATION Z“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebd5c154b3d558091906576448",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/7ADRm1oT7VmhRRZrZqycV6"
-  },
-  {
-    "id": "reddit-6232577cf408bfcf",
-    "artist": "Kauta",
-    "title": "Ich weiß nicht",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Kauta veröffentlicht die Single „Ich weiß nicht“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e668af405fd926cdee634a24",
-    "spotifyUrl": "https://open.spotify.com/track/1S2gKwDs6UTQcDevPmJP0A"
-  },
-  {
-    "id": "reddit-ba39d264af108836",
-    "artist": "Kitty Kat, TYAZ",
-    "title": "Jordan Outfit",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Kitty Kat, TYAZ veröffentlicht die Single „Jordan Outfit“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2730017aa8b1634dc8b9fa499d6",
-    "spotifyUrl": "https://open.spotify.com/track/23j1bbSZC56BgpAIIF8HS0"
-  },
-  {
-    "id": "reddit-9c5be697bb92262e",
-    "artist": "LACAZETTE",
-    "title": "ARL",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "LACAZETTE veröffentlicht die Single „ARL“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb8a472663b7522f3ef26ee633",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/7rBed6Ya7Hwa2fXbh5btJE"
-  },
-  {
-    "id": "reddit-b412e875484e35e5",
-    "artist": "Lance Butters",
-    "title": "Selfcare",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Lance Butters veröffentlicht die Single „Selfcare“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2730c2a0977a72f4e6984b17969",
-    "spotifyUrl": "https://open.spotify.com/track/5GFfv4ixnvSdwilGSD9pNU"
-  },
-  {
-    "id": "reddit-060c625324f9df89",
-    "artist": "Lelosa",
-    "title": "Schlag den Raab",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Lelosa veröffentlicht die Single „Schlag den Raab“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb1a8e73ed8b9a502e857d1194",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/0RHTQm9f0cO7uay999YTiW"
-  },
-  {
-    "id": "reddit-902ea5b98f25c4da",
-    "artist": "LENNSKO",
-    "title": "stecklinge.wav",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "LENNSKO veröffentlicht die Single „stecklinge.wav“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27347725d1523108aa46de87556",
-    "spotifyUrl": "https://open.spotify.com/track/6uXfOsHs4CsjRR5tVknSYu"
-  },
-  {
-    "id": "reddit-d8a992038f6d7334",
-    "artist": "LieVin",
-    "title": "Lonely",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "LieVin veröffentlicht die Single „Lonely“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2730f0361047e3efdc419b9ff28",
-    "spotifyUrl": "https://open.spotify.com/track/31H6Og1KHj2GFzcKxG7qSA"
-  },
-  {
-    "id": "reddit-41f317661fb9be74",
-    "artist": "Longus Mongus, Monk",
-    "title": "belong",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Longus Mongus, Monk veröffentlicht die Single „belong“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2735cf8c4bdc8620ad70c7c2f95",
-    "spotifyUrl": "https://open.spotify.com/track/0Y0BS608YsUmVuDMtvVEid"
-  },
-  {
-    "id": "reddit-f08f34fc52ace152",
-    "artist": "Lumaraa",
-    "title": "Schiefe Bahn",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Lumaraa veröffentlicht die Single „Schiefe Bahn“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27369f44a9411d3735b5f654f37",
-    "spotifyUrl": "https://open.spotify.com/track/2rrKuHZZ1vgkDp9HVagJgl"
-  },
-  {
-    "id": "reddit-d1aac805f3a5bb7d",
-    "artist": "Lyran Dasz, Yatsu",
-    "title": "100 KRÖTEN",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Lyran Dasz, Yatsu veröffentlicht die Single „100 KRÖTEN“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27370d2a4de373b28de8865ebeb",
-    "spotifyUrl": "https://open.spotify.com/track/4El15vxc7eqf0MUdai5shZ"
-  },
-  {
-    "id": "reddit-e74e6665a6a4d5fd",
-    "artist": "Manuellsen",
-    "title": "Gudda",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Manuellsen veröffentlicht die Single „Gudda“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2734eb7476020dc9e83f44cf729",
-    "spotifyUrl": "https://open.spotify.com/track/3SKoZUXb23BNdENu2cbah9"
-  },
-  {
-    "id": "reddit-14f9ef154f75580c",
-    "artist": "Megaloh",
-    "title": "In Indigo geschrieben",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Megaloh veröffentlicht die Single „In Indigo geschrieben“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273f00e23080bdac3495176a136",
-    "spotifyUrl": "https://open.spotify.com/album/5ygQ14MNvreq6zP5MM2nyN"
-  },
-  {
-    "id": "reddit-9480e970b571f29b",
-    "artist": "Milonair, Haftbefehl",
-    "title": "GEN 100",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Milonair, Haftbefehl veröffentlicht die Single „GEN 100“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Apple Music NZ",
-    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/40/37/fd4037be-8f2b-e536-de0f-69d6b244a19b/cover_4062851367141.jpg/1200x1200bb.jpg",
-    "appleMusicUrl": "https://music.apple.com/nz/album/gen-100/6824469974?i=6824469976&uo=4",
-    "trackCount": 1
-  },
-  {
-    "id": "reddit-d192091484aa30e3",
-    "artist": "MiZeb",
-    "title": "ITAMI",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "MiZeb veröffentlicht die Single „ITAMI“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273362f4ffe22107752035c9c8d",
-    "spotifyUrl": "https://open.spotify.com/track/01V0woNIoruxpbKcPShzm6"
-  },
-  {
-    "id": "reddit-9fac59185bc858de",
-    "artist": "Monet192",
-    "title": "Riff Raff",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Monet192 veröffentlicht die Single „Riff Raff“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27383e06f5cca801d786f996545",
-    "spotifyUrl": "https://open.spotify.com/track/5IBGnoBuExgsfVKww9IBkp"
-  },
-  {
-    "id": "reddit-b1eba4ea1f37c344",
-    "artist": "NGEE",
-    "title": "Ehre wem Ehre gebührt",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "NGEE veröffentlicht die Single „Ehre wem Ehre gebührt“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2731a3bd38fae1cbc412d9010b9",
-    "spotifyUrl": "https://open.spotify.com/track/7v4hIuPkv9ryCGW1gq2DpX"
-  },
-  {
-    "id": "reddit-bbaec7c82712c040",
-    "artist": "Pajel, Dardan, Headie One",
-    "title": "THERAPY",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Pajel, Dardan, Headie One veröffentlicht die Single „THERAPY“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb86a8d94fe16ee2aac2c5ec8e",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/1bpI6QDUqmfKmV0Tlhj0Jm"
-  },
-  {
-    "id": "reddit-a49f10f61bc6aa6e",
-    "artist": "PRETTYFACECAPI",
-    "title": "GD",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "PRETTYFACECAPI veröffentlicht die Single „GD“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb80a3ad2c3e53ec9b2e834b42",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/7EoLE2mFjMKROqvIpRgi6K"
-  },
-  {
-    "id": "reddit-1e208aaf830153a5",
-    "artist": "Raportagen",
-    "title": "Marco",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Raportagen veröffentlicht die Single „Marco“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27384f41c95e0813b18831729b9",
-    "spotifyUrl": "https://open.spotify.com/track/3A10AORu6x6F1nILysIsfu"
-  },
-  {
-    "id": "reddit-dd3a917ea7202c80",
-    "artist": "Sergen",
-    "title": "Immernoch",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Sergen veröffentlicht die Single „Immernoch“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273d57f2967e0ade8bf13f7bbc3",
-    "spotifyUrl": "https://open.spotify.com/track/5q32hrUGke2PaHVHY4hgQv"
-  },
-  {
-    "id": "reddit-350e63d2ff5f6d17",
-    "artist": "Sero El Mero",
-    "title": "Reich mir nicht deine Hand",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Sero El Mero veröffentlicht die Single „Reich mir nicht deine Hand“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify NZ",
-    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27374299544dbaed8f338d0f3bf",
-    "spotifyUrl": "https://open.spotify.com/track/5walD6UURFlhKWvfRGxDrD"
-  },
-  {
-    "id": "reddit-f986189f1c7defa1",
-    "artist": "Sido, Fler",
-    "title": "PROPAGANDA",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Sido, Fler veröffentlicht die Single „PROPAGANDA“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb63efaf5ffb7ecc44e25a72cf",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/4Yttlv9ndGjCDCVLqM7ACq"
-  },
-  {
-    "id": "reddit-f6d7901a12c51204",
-    "artist": "Ski Aggu, Wir sind Helden, Ericson, Philemon",
-    "title": "Verschwommen x Von hier an blind",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Ski Aggu, Wir sind Helden, Ericson, Philemon veröffentlicht die Single „Verschwommen x Von hier an blind“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5eb9b0fcea36366e96a7a34708a",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/6CP5wWvO8oIxedESJNCN4H"
-  },
-  {
-    "id": "reddit-7deecade77b54e4d",
-    "artist": "Verifiziert",
-    "title": "pink",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Verifiziert veröffentlicht die Single „pink“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebf898fb8510da1c57bc2f2baf",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/1SF4jakSq8kI38MYjFdaJG"
-  },
-  {
-    "id": "reddit-eaab64ca76007cd3",
-    "artist": "Zackavelli",
-    "title": "probiert dich auch zu hassen",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "Zackavelli veröffentlicht die Single „probiert dich auch zu hassen“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebc4b25e0d102eb298400ccf39",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/3NSdRHaVCc4BOF0sbkgvZk"
-  },
-  {
-    "id": "reddit-61d71b3dc9714112",
-    "artist": "ZAH1DE",
-    "title": "Chayas & Cuzengs",
-    "releaseDate": "2026-10-30",
-    "country": "DE",
-    "kind": "single",
-    "sourceUrl": "https://www.reddit.com/r/GermanRap/comments/1xiloga/die_releases_am_30102026/",
-    "description": "ZAH1DE veröffentlicht die Single „Chayas & Cuzengs“.",
-    "genres": [
-      "Deutschrap",
-      "Hip-Hop/Rap"
-    ],
-    "source": "r/GermanRap + Spotify artist image fallback",
-    "coverUrl": "https://i.scdn.co/image/ab6761610000e5ebeefb589d2f5a5bada7484066",
-    "artistImageSourceUrl": "https://open.spotify.com/artist/3efIR8hdrilpdBfWxVrxRd"
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273ab47d621d9b49a0b279226ea",
+    "spotifyUrl": "https://open.spotify.com/track/4tzenLJPgkrFuKxU6fHRFc"
   }
 ];
