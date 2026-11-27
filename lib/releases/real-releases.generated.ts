@@ -4,8 +4,8 @@
 import type { MusicRelease } from "@/types/release";
 
 export const releaseDataMetadata = {
-  "targetDate": "2026-11-20",
-  "generatedAt": "2026-11-19T23:01:29.970Z",
+  "targetDate": "2026-11-27",
+  "generatedAt": "2026-11-27T00:33:40.845Z",
   "coverRequired": true,
   "spotifyCoverLookupEnabled": true,
   "spotifyArtistImageFallbackEnabled": true,
@@ -19,7 +19,7 @@ export const releaseDataMetadata = {
   "coverQualifiedCount": 0,
   "skippedMissingCoverCount": 0,
   "missingCovers": [],
-  "fetchError": "Reddit: Reddit release post was not found for 2026-11-20.",
+  "fetchError": "Reddit: Reddit release post was not found for 2026-11-27. | MusicBrainz: 503 Service Temporarily Unavailable",
   "sourceCounts": {}
 } as const;
 
